@@ -1,4 +1,4 @@
-import app from '@/config/firebaseConfig';
+import app from '@/src/config/firebaseConfig';
 import { useRouter } from 'expo-router';
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';

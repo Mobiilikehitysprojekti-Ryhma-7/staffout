@@ -1,5 +1,5 @@
 
-import { useColorScheme } from '@/components/useColorScheme';
+import { useColorScheme } from '@/src/components/useColorScheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
