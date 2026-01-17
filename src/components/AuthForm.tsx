@@ -1,6 +1,6 @@
-import { Text, View } from '@/src/components/Themed';
+import { Text, View, TextInput } from '@/src/components/Themed';
 import React from 'react';
-import { Button, StyleSheet, TextInput } from 'react-native';
+import { Button, StyleSheet } from 'react-native';
 
 interface AuthFormProps {
   email: string;

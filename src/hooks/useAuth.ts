@@ -1,6 +1,6 @@
-import app from '@/src/config/firebaseConfig';
 import { useRouter } from 'expo-router';
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/src/config/firebaseConfig';
 import { useState } from 'react';
 
 export function useAuth() {
@@ -11,8 +11,6 @@ export function useAuth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [signInScreen, setSignInScreen] = useState(true);
-
-  const auth = getAuth(app);
 
   const handleSignup = async () => {
     setError('');
