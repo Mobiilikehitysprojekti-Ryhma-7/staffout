@@ -1,4 +1,3 @@
-
 import AuthForm from '@/src/components/AuthForm';
 import { useAuth } from '@/src/hooks/useAuth';
 import React from 'react';
