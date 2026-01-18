@@ -5,6 +5,10 @@ import { Button, StyleSheet } from 'react-native';
 interface AuthFormProps {
   email: string;
   setEmail: (email: string) => void;
+  firstName: string;
+  setFirstName: (firstName: string) => void;
+  lastName: string;
+  setLastName: (lastName: string) => void;
   password: string;
   setPassword: (password: string) => void;
   confirmPassword: string;
@@ -20,6 +24,10 @@ interface AuthFormProps {
 export default function AuthForm({
   email,
   setEmail,
+  firstName,
+  setFirstName,
+  lastName,
+  setLastName,
   password,
   setPassword,
   confirmPassword,
@@ -34,17 +42,25 @@ export default function AuthForm({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Auth Screen</Text>
-      <TextInput placeholder="Email address" value={email} onChangeText={setEmail} style={styles.input} autoCorrect={false} autoCapitalize="none" keyboardType="email-address"/>
-      <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
-      {signInScreen ? null :
-        <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
+      <TextInput placeholder="Email address" value={email} onChangeText={setEmail} style={styles.input} autoCorrect={false} autoCapitalize="none" keyboardType="email-address" />
+      {
+        !signInScreen && <TextInput placeholder="First Name" value={firstName} onChangeText={setFirstName} style={styles.input} autoCorrect={false} />
       }
-      {error ? <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text> : null}
+      {
+        !signInScreen && <TextInput placeholder="Last Name" value={lastName} onChangeText={setLastName} style={styles.input} autoCorrect={false} />
+      }
+      <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
+      {
+        !signInScreen && <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
+      }
+      {
+        error ? <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text> : null
+      }
       <View style={styles.button}>
         <Button onPress={signInScreen ? handleSignin : handleSignup} title={loading ? (signInScreen ? "Signing in..." : "Signing up...") : (signInScreen ? "Sign In" : "Sign Up")} disabled={loading} />
       </View>
-      {signInScreen && <Text style={{marginTop:12}} >Don't have an account? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Create an account</Text></Text>}
-      {!signInScreen && <Text style={{marginTop:12}} >Have an account? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Login</Text></Text>}
+      {signInScreen && <Text style={{ marginTop: 12 }} >Don't have an account? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Create an account</Text></Text>}
+      {!signInScreen && <Text style={{ marginTop: 12 }} >Have an account? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Login</Text></Text>}
     </View>
   );
 }
