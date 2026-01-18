@@ -4,7 +4,6 @@ import { Text, View } from '@/src/components/Themed';
 import { handleSignOut } from '@/src/services/handleSignout';
 import { getUser } from '@/src/services/useUser';
 import React, { useEffect, useState } from 'react';
-import { Button, StyleSheet } from 'react-native';
 export default function TabOneScreen() {
 const [user, setUser] = useState<any>(null);
 
