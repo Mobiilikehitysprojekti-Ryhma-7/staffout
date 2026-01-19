@@ -1,8 +1,9 @@
+import { StatusBar } from 'expo-status-bar';
+import { Button, StyleSheet } from 'react-native';
 import { Text, View } from '@/src/components/Themed';
 import { handleSignOut } from '@/src/services/handleSignout';
 import { getUser } from '@/src/services/useUser';
 import React, { useEffect, useState } from 'react';
-import { Button, StyleSheet } from 'react-native';
 export default function TabOneScreen() {
 const [user, setUser] = useState<any>(null);
 
@@ -16,7 +17,7 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
+      <Text style={styles.title}>Home</Text>
       <Text 
       style={{margin: 10}}>
         Tervetuloa {user?.first}!

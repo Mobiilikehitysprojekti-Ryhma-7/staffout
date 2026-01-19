@@ -28,7 +28,6 @@ export function useAuth() {
       
       await setUser(firstName, lastName);
       console.log('User created:', user.email);
-
       router.replace('/(tabs)');
     } catch (err: any) {
       setError(err.message);
