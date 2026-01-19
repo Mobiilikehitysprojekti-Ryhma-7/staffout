@@ -28,7 +28,7 @@ export function useAuth() {
       
       await setUser(firstName, lastName);
       console.log('User created:', user.email);
-      router.replace('/(tabs)/Home');
+      router.replace('/(tabs)/home');
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -43,7 +43,7 @@ export function useAuth() {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
       console.log('User signed in:', user.email);
-      router.replace('/(tabs)/Home');
+      router.replace('/(tabs)/home');
     } catch (err: any) {
       setError(err.message);
     } finally {
