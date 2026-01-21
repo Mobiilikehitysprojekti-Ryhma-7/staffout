@@ -28,37 +28,39 @@ function RootLayoutNav() {
     const colorScheme = useColorScheme();
 
     // Set an initializing state whilst Firebase connects
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState<any>();
+    const [initializing, setInitializing] = useState(true);
+    const [user, setUser] = useState<any>();
 
-  // Handle user state changes
-  function handleAuthStateChanged(user: any) {
-    setUser(user);
-    if (initializing) setInitializing(false);
-  }
-
-  useEffect(() => {
-    const subscriber = onAuthStateChanged(getAuth(), handleAuthStateChanged);
-    
-    return subscriber; // unsubscribe on unmount
-  }, []);
-
-   // Hide splash screen when initializing becomes false
-  useEffect(() => {
-    if (!initializing) {
-      SplashScreen.hideAsync();
+    // Handle user state changes
+    function handleAuthStateChanged(user: any) {
+        setUser(user);
+        if (initializing) setInitializing(false);
     }
-  }, [initializing]);
-  
-  if (initializing) return null;
-  
+
+    useEffect(() => {
+        const subscriber = onAuthStateChanged(getAuth(), handleAuthStateChanged);
+
+        return subscriber; // unsubscribe on unmount
+    }, []);
+
+    // Hide splash screen when initializing becomes false
+    useEffect(() => {
+        if (!initializing) {
+            SplashScreen.hideAsync();
+        }
+    }, [initializing]);
+
+    if (initializing) return null;
+
     return (
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <Stack>
                 <Stack.Protected guard={user}>
-                    <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: "none" }} />
-                    <Stack.Screen name="(settings)/settings" />
-
+                    <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: "none", title: "" }} />
+                    <Stack.Screen name="(settings)/settings" options={{ animation: "default", title: "Asetukset" }} />
+                    <Stack.Screen name="(settings)/account-settings" options={{ animation: "default", title: "Tiliasetukset" }} />
+                    <Stack.Screen name="(settings)/profile-settings" options={{ animation: "default", title: "Profiiliasetukset" }} />
+                    <Stack.Screen name="(settings)/app-settings" options={{ animation: "default", title: "Sovellusasetukset" }} />
                 </Stack.Protected>
 
                 <Stack.Protected guard={!user}>

@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Text , View } from '@/src/components/Themed';
+import { Pressable, StyleSheet} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 export default function UserScreen() {
   return (
     <View style={styles.container}>
-      <Pressable style={styles.actionBtn} onPress={() => router.push('(settings)/settings')}>
+      <Pressable style={styles.actionBtn} onPress={() => router.push('/(settings)/settings')}>
           <MaterialIcons name="settings" size={20} color="#fff" />
         </Pressable>
 

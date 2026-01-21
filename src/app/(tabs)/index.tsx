@@ -1,28 +1,26 @@
-import { StatusBar } from 'expo-status-bar';
 import { Button, StyleSheet } from 'react-native';
 import { Text, View } from '@/src/components/Themed';
 import { handleSignOut } from '@/src/services/handleSignout';
-import { getUser } from '@/src/services/useUser';
+import { getUser } from '@/src/services/getUser';
 import React, { useEffect, useState } from 'react';
 export default function TabOneScreen() {
-const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
 
-useEffect(() => {
-  async function loadUser() {
-    const data = await getUser();
-    setUser(data);
-  }
-  loadUser();
-}, []);
+  useEffect(() => {
+    async function loadUser() {
+      const data = await getUser();
+      setUser(data);
+    }
+    loadUser();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Home</Text>
-      <Text 
-      style={{margin: 10}}>
+      <Text style={styles.title}>Kotisivu</Text>
+      <Text
+        style={{ margin: 10 }}>
         Tervetuloa {user?.first}!
-        </Text>
-      <Button title="Sign out" onPress={handleSignOut} />
+      </Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
     </View>
   );
