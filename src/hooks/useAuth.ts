@@ -17,20 +17,28 @@ export function useAuth() {
   const handleSignup = async () => {
     setError('');
     setLoading(true);
+
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError('Salasanat eivät täsmää.');
       setLoading(false);
       return;
     }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      
+
       await setUser(firstName, lastName);
       console.log('User created:', user.email);
       router.replace('/(tabs)');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (e: any) {
+      if (e.code === 'auth/email-already-in-use') {
+        setError('Sähköposti on jo käytössä!');
+      } else if (e.code === 'auth/invalid-email') {
+        setError('Sähköpostiosoite on virheellinen!');
+      } else {
+        setError(e.message || "Virhe kirjautumisessa.");
+      }
     } finally {
       setLoading(false);
     }
@@ -44,8 +52,8 @@ export function useAuth() {
       const user = userCredential.user;
       console.log('User signed in:', user.email);
       router.replace('/(tabs)');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (e: any) {
+      setError(e.message || "Virhe kirjautumisessa.");
     } finally {
       setLoading(false);
     }

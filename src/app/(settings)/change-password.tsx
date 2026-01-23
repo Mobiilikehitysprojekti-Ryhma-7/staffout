@@ -1,0 +1,82 @@
+import { View, TextInput, StyleSheet, Button, Alert } from 'react-native';
+import { useState } from 'react';
+import { updatePassword } from '@/src/services/updatePassword';
+import reauthenticateUser from '@/src/services/reauthenticateUser';
+import { Text } from '@/src/components/Themed';
+export default function ChangePasswordScreen() {
+    const [password, setPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmNewPassword, setConfirmNewPassword] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const isDisabled = loading || !password || !newPassword || !confirmNewPassword;
+
+    const PasswordChanged = () =>
+        Alert.alert('', 'Salasana päivitetty onnistuneesti', [
+          {text: 'OK', onPress: () => {}},
+        ]);
+    const handleChangePassword = async () => {
+        setError(null);
+        setLoading(true);
+        if (newPassword !== confirmNewPassword) {
+            setError("Uudet salasanat eivät täsmää.");
+            setLoading(false);
+            return;
+        }
+
+        if (newPassword.length < 6 ) {
+            setError("Salasanan tulee olla vähintään 6 merkkiä pitkä.");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            await reauthenticateUser(password);
+            await updatePassword(newPassword);
+            PasswordChanged();
+            setPassword('');
+            setNewPassword('');
+            setConfirmNewPassword('');
+        } catch (e: any) {
+            setError(e.message || "Virhe salasanan päivityksessä.");
+        } finally {
+        setLoading(false);
+        }
+    }
+    return (
+        <View style={styles.container}>
+            <TextInput placeholder="Nykyinen Salasana" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
+            <TextInput placeholder="Uusi Salasana" value={newPassword} onChangeText={setNewPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
+            <TextInput placeholder="Vahvista Uusi Salasana" value={confirmNewPassword} onChangeText={setConfirmNewPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
+            <Button onPress={handleChangePassword} title="Vaihda Salasana" disabled={isDisabled} />
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    input: {
+        height: 40,
+        margin: 12,
+        borderWidth: 1,
+        padding: 10,
+    },
+    separator: {
+        marginVertical: 30,
+        height: 1,
+        width: '80%',
+    },
+    error: {
+        color: 'red',
+        marginTop: 10,
+    }
+});

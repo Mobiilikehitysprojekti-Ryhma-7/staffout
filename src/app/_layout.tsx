@@ -61,6 +61,9 @@ function RootLayoutNav() {
                     <Stack.Screen name="(settings)/account-settings" options={{ animation: "default", title: "Tiliasetukset" }} />
                     <Stack.Screen name="(settings)/profile-settings" options={{ animation: "default", title: "Profiiliasetukset" }} />
                     <Stack.Screen name="(settings)/app-settings" options={{ animation: "default", title: "Sovellusasetukset" }} />
+                    <Stack.Screen name="(settings)/change-password" options={{ animation: "default", title: "Vaihda Salasana" }} />
+                    <Stack.Screen name="(settings)/change-email" options={{ animation: "default", title: "Vaihda Sähköposti" }} />
+                    <Stack.Screen name="(settings)/delete-user" options={{ animation: "default", title: "Poista Käyttäjä" }} />
                 </Stack.Protected>
 
                 <Stack.Protected guard={!user}>

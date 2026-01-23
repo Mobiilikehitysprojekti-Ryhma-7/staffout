@@ -41,26 +41,26 @@ export default function AuthForm({
 }: AuthFormProps) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Auth Screen</Text>
-      <TextInput placeholder="Email address" value={email} onChangeText={setEmail} style={styles.input} autoCorrect={false} autoCapitalize="none" keyboardType="email-address" />
+      <Text style={styles.title}>Kirjautuminen</Text>
+      <TextInput placeholder="Sähköpostiosoite" value={email} onChangeText={setEmail} style={styles.input} autoCorrect={false} autoCapitalize="none" keyboardType="email-address" />
       {
-        !signInScreen && <TextInput placeholder="First Name" value={firstName} onChangeText={setFirstName} style={styles.input} autoCorrect={false} />
+        !signInScreen && <TextInput placeholder="Etunimi" value={firstName} onChangeText={setFirstName} style={styles.input} autoCorrect={false} />
       }
       {
-        !signInScreen && <TextInput placeholder="Last Name" value={lastName} onChangeText={setLastName} style={styles.input} autoCorrect={false} />
+        !signInScreen && <TextInput placeholder="Sukunimi" value={lastName} onChangeText={setLastName} style={styles.input} autoCorrect={false} />
       }
-      <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
+      <TextInput placeholder="Salasana" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
       {
-        !signInScreen && <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
+        !signInScreen && <TextInput placeholder="Vahvista salasana" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
       }
       {
         error ? <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text> : null
       }
       <View style={styles.button}>
-        <Button onPress={signInScreen ? handleSignin : handleSignup} title={loading ? (signInScreen ? "Signing in..." : "Signing up...") : (signInScreen ? "Sign In" : "Sign Up")} disabled={loading} />
+        <Button onPress={signInScreen ? handleSignin : handleSignup} title={loading ? (signInScreen ? "Kirjaudutaan..." : "Luodaan tiliä...") : (signInScreen ? "Kirjaudu" : "Luo tili")} disabled={loading} />
       </View>
-      {signInScreen && <Text style={{ marginTop: 12 }} >Don't have an account? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Create an account</Text></Text>}
-      {!signInScreen && <Text style={{ marginTop: 12 }} >Have an account? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Login</Text></Text>}
+      {signInScreen && <Text style={{ marginTop: 12 }} >Eikö sinulla ole tiliä? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Luo tili</Text></Text>}
+      {!signInScreen && <Text style={{ marginTop: 12 }} >Onko sinulla tili? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Kirjaudu sisään</Text></Text>}
     </View>
   );
 }
