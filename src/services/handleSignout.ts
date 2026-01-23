@@ -1,10 +1,12 @@
 import { auth } from '@/src/config/firebaseConfig';
+import { clearUserCache } from '@/src/services/getUser';
 import { signOut } from 'firebase/auth';
 
-export const handleSignOut = async () => { signOut(auth).then(() => {
-  // Sign-out successful.
-}).catch((error) => {
-  // An error happened.
-  console.log(error);
-});
-}
+export const handleSignOut = async () => {
+  try {
+    await clearUserCache();
+    await signOut(auth);
+  } catch (error) {
+    console.log(error);
+  }
+};
