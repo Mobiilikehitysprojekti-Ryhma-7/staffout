@@ -1,10 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "../config/firebaseConfig";
+import { auth, db } from "../../config/firebaseConfig";
 
 export type UserProfile = {
   first?: string;
   last?: string;
+  photoURL?: string;
 };
 
 const USER_PROFILE_KEY = "user-profile";
