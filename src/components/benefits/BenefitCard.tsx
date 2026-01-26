@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, Dimensions } from "react-native";
-import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import { View, Text, StyleSheet, Image, Dimensions, Pressable } from "react-native";
+import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import type { Benefit } from "../../types/benefit";
 
 // Calculate a responsive card width based on screen size.
@@ -9,25 +9,47 @@ const { width } = Dimensions.get("window");
 const CARD_W = (width - 20 * 2 - 16) / 2;
 
 // Benefit card with image, title, description and an icon badge.
-export function BenefitCard({ item }: { item: Benefit }) {
+export function BenefitCard({
+  item,
+  onPress,
+}: {
+  item: Benefit;
+  onPress?: () => void;
+}) {
   return (
-    <View style={[styles.card, { width: CARD_W }]}>
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      style={({ pressed }) => [
+        styles.card,
+        { width: CARD_W },
+        pressed && styles.cardPressed,
+      ]}
+    >
       <Image source={item.image} style={styles.cardImage} />
 
       <View style={styles.cardBody}>
         <Text style={styles.cardTitle}>{item.title}</Text>
-        <Text style={styles.cardDescription}>{item.description}</Text>
+        <Text
+          style={styles.cardDescription}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {item.shortDescription ?? item.description}
+        </Text>
 
         {/* Badge */}
         <View style={styles.badge}>
           {item.badge.family === "fa" ? (
             <FontAwesome name={item.badge.name as any} size={14} color="#fff" />
-          ) : (
+          ) : item.badge.family === "mi" ? (
             <MaterialIcons name={item.badge.name as any} size={16} color="#fff" />
+          ) : (
+            <MaterialCommunityIcons name={item.badge.name as any} size={16} color="#fff" />
           )}
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -40,6 +62,10 @@ const styles = StyleSheet.create({
   cardImage: {
     width: "100%",
     height: 80
+  },
+  cardPressed: {
+    opacity: 0.92,
+    transform: [{ scale: 0.98 }],
   },
   cardBody: {
     backgroundColor: "#E97A7A",
