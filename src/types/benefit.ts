@@ -15,6 +15,11 @@ export type Benefit = {
   category: BenefitCategory;
   image: ImageRequireSource;
   badge: { family: "fa" | "mi" | "mci"; name: string };
+  validUntil: Date;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
 };
 
 // icons https://icons.expo.fyi/
@@ -32,6 +37,8 @@ export const BENEFITS: Benefit[] = [
     category: "sports",
     image: require("../../assets/benefitBG3.png"),
     badge: { family: "fa", name: "bicycle" },
+    validUntil: new Date("2026-12-31"),
+    location: { latitude: 60.1695, longitude: 24.9354 },
   },
   {
     id: "2",
@@ -44,6 +51,8 @@ export const BENEFITS: Benefit[] = [
     category: "meals",
     image: require("../../assets/benefitBG3.png"),
     badge: { family: "mi", name: "restaurant" },
+    validUntil: new Date("2026-06-30"),
+    location: { latitude: 60.17277065370272, longitude: 24.946639982895004 },
   },
   {
     id: "3",
@@ -56,6 +65,8 @@ export const BENEFITS: Benefit[] = [
     category: "meals",
     image: require("../../assets/benefitBG2.png"),
     badge: { family: "mi", name: "restaurant" },
+    validUntil: new Date("2026-05-31"),
+    location: { latitude: 60.159065642295886, longitude: 24.87808862421681 },
   },
   {
     id: "4",
@@ -68,6 +79,8 @@ export const BENEFITS: Benefit[] = [
     category: "culture",
     image: require("../../assets/benefitBG2.png"),
     badge: { family: "mi", name: "theater-comedy" },
+    validUntil: new Date("2026-06-30"),
+    location: { latitude: 60.21760026491501, longitude: 24.87589192834475 },
   },
   {
     id: "5",
@@ -80,6 +93,8 @@ export const BENEFITS: Benefit[] = [
     category: "health",
     image: require("../../assets/benefitBG.png"),
     badge: { family: "mci", name: "party-popper" },
+    validUntil: new Date("2026-09-30"),
+    location: { latitude: 60.22565001538297, longitude: 24.898007710414515 },
   },
   {
     id: "6",
@@ -92,6 +107,8 @@ export const BENEFITS: Benefit[] = [
     category: "other",
     image: require("../../assets/benefitBG2.png"),
     badge: { family: "fa", name: "money" },
+    validUntil: new Date("2026-12-31"),
+    location: { latitude: 60.19759784305875, longitude: 24.965642555536995 },
   },
   {
     id: "7",
@@ -104,6 +121,8 @@ export const BENEFITS: Benefit[] = [
     category: "other",
     image: require("../../assets/benefitBG3.png"),
     badge: { family: "mci", name: "shield-half-full" },
+    validUntil: new Date("2027-03-31"),
+    location: { latitude: 60.258965584260075, longitude: 25.009112735657123 },
   },
   {
     id: "8",
@@ -116,6 +135,8 @@ export const BENEFITS: Benefit[] = [
     category: "health",
     image: require("../../assets/benefitBG2.png"),
     badge: { family: "fa", name: "heartbeat" },
+    validUntil: new Date("2027-06-30"),
+    location: { latitude: 60.26272965936704, longitude: 24.846708131699952 },
   },
   {
     id: "9",
@@ -128,6 +149,8 @@ export const BENEFITS: Benefit[] = [
     category: "health",
     image: require("../../assets/benefitBG3.png"),
     badge: { family: "mci", name: "spa-outline" },
+    validUntil: new Date("2026-12-31"),
+    location: { latitude: 60.20664884949931, longitude: 24.891408446442377 },
   },
   {
     id: "10",
@@ -140,5 +163,7 @@ export const BENEFITS: Benefit[] = [
     category: "sports",
     image: require("../../assets/benefitBG.png"),
     badge: { family: "mci", name: "dumbbell" },
+    validUntil: new Date("2026-11-30"),
+    location: { latitude: 60.198718347220556, longitude: 24.878960426276418 },
   },
 ];

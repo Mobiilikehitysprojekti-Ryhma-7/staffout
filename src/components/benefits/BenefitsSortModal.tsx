@@ -2,12 +2,14 @@ import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { AppModal } from "../ui/AppModal";
 
-export type SortKey = "title-asc" | "title-desc" | "category";
+export type SortKey = "title-asc" | "title-desc" | "category" | "validUntil" | "location";
 
 const OPTIONS: { key: SortKey; label: string }[] = [
+  { key: "validUntil", label: "Voimassaoloaika (lähin ensin)" },
   { key: "title-asc", label: "Nimi (A → Z)" },
   { key: "title-desc", label: "Nimi (Z → A)" },
   { key: "category", label: "Kategoria" },
+  { key: "location", label: "Sijainti (lähin ensin)" },
 ];
 
 // Sort modal: single-choice selection.

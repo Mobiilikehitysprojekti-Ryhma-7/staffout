@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Image, Dimensions, Pressable } from "react-native";
 import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import type { Benefit } from "../../types/benefit";
+import { formatFiDate } from "../../utils/date";
 
 // Calculate a responsive card width based on screen size.
 // Assumes a 2-column layout with horizontal padding and a gap between cards.
@@ -37,6 +38,11 @@ export function BenefitCard({
         >
           {item.shortDescription ?? item.description}
         </Text>
+
+        {/* Valid date */}
+        <View style={styles.validDate}>
+          <Text style={styles.validDateText}>{formatFiDate(item.validUntil)}</Text>
+        </View>
 
         {/* Badge */}
         <View style={styles.badge}>
@@ -94,4 +100,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  validDate: {
+    position: "absolute",
+    left: 10,
+    bottom: 10,
+    width: 66,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#B32626",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  validDateText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "600",
+  }
 });

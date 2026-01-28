@@ -16,7 +16,7 @@ export default function Benefits() {
   const [sortOpen, setSortOpen] = useState(false);
 
   // List state
-  const ub = useBenefits(BENEFITS, "title-asc");
+  const ub = useBenefits(BENEFITS, "validUntil");
   // Details modal state
   const ubd = useBenefitDetails();
 

@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import type { Benefit, BenefitCategory } from "../types/benefit";
 
-export type SortKey = "title-asc" | "title-desc" | "category";
+export type SortKey = "title-asc" | "title-desc" | "category" | "validUntil" | "location";
 
 // Hook managing filtering and sorting of benefits list.
 // Maintains separate "applied" and "draft" states for both filter and sort,
 // so that modals can edit draft state without immediately affecting the list.
-export function useBenefits(all: Benefit[], defaultSort: SortKey = "title-asc") {
+export function useBenefits(all: Benefit[], defaultSort: SortKey = "validUntil") {
 
   // Applied values
   const [appliedCats, setAppliedCats] = useState<Set<BenefitCategory>>(new Set());
@@ -41,6 +41,15 @@ export function useBenefits(all: Benefit[], defaultSort: SortKey = "title-asc") 
     setAppliedSort(defaultSort);
   };
 
+  // Category labels for category sort using UI locale
+  const categoryLabel: Record<BenefitCategory, string> = {
+    sports: "Urheilu",
+    meals: "Ruokailu",
+    culture: "Kulttuuri",
+    health: "Terveys",
+    other: "Muu",
+  };
+
   // Compute filtered + sorted items
   const items = useMemo(() => {
     const base =
@@ -57,9 +66,17 @@ export function useBenefits(all: Benefit[], defaultSort: SortKey = "title-asc") 
     if (appliedSort === "category")
       copy.sort(
         (a, b) =>
-          a.category.localeCompare(b.category) ||
+          categoryLabel[a.category].localeCompare(categoryLabel[b.category]) ||
           a.title.localeCompare(b.title, "fi", { sensitivity: "base" })
       );
+    
+    if (appliedSort === "validUntil")
+      copy.sort((a, b) => a.validUntil.getTime() - b.validUntil.getTime());
+
+    // For location sort, we have to know the user's location.
+    // Placeholder for the implementation.
+    if (appliedSort === "location") {
+    }
 
     return copy;
   }, [all, appliedCats, appliedSort, defaultSort]);
