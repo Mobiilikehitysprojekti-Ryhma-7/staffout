@@ -1,7 +1,6 @@
 import { View, TextInput, StyleSheet, Button, Alert } from 'react-native';
 import { useState } from 'react';
-import { removeUser } from '@/src/services/removeUser';
-import reauthenticateUser from '@/src/services/reauthenticateUser';
+import { removeUser, reauthenticateUser } from '@/src/services/auth/auth.service';
 import { Text } from '@/src/components/Themed';
 
 export default function DeleteUserScreen() {

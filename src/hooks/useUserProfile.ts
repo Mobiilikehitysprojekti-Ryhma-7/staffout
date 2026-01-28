@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getUser, UserProfile } from '../services/firestore/getUser';
+import { getUser, UserProfile } from '../services/users.service';
 
 export function useUserProfile() {
   const [user, setUser] = useState<UserProfile | null>(null);

@@ -1,7 +1,6 @@
-import { auth } from '@/src/config/firebaseConfig';
-import { setUser } from '@/src/services/firestore/setUser';
+import { createUser, signInUser } from '@/src/services/auth/auth.service';
+import { updateUser } from '@/src/services/users.service';
 import { useRouter } from 'expo-router';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 export function useAuth() {
   const router = useRouter();
@@ -25,11 +24,9 @@ export function useAuth() {
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      await setUser(firstName, lastName);
-      console.log('User created:', user.email);
+      await createUser(email, password);
+      await updateUser({ first: firstName, last: lastName });
+      console.log('User created:', email);
       router.replace('/(tabs)');
     } catch (e: any) {
       if (e.code === 'auth/email-already-in-use') {
@@ -48,9 +45,8 @@ export function useAuth() {
     setError('');
     setLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      console.log('User signed in:', user.email);
+      await signInUser(email, password);
+      console.log('User signed in:', email);
       router.replace('/(tabs)');
     } catch (e: any) {
       setError(e.message || "Virhe kirjautumisessa.");

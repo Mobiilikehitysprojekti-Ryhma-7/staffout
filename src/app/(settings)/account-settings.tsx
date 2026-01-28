@@ -1,4 +1,4 @@
-import { Platform, Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { Text, View } from '@/src/components/Themed';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';

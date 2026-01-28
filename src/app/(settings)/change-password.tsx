@@ -1,7 +1,6 @@
 import { View, TextInput, StyleSheet, Button, Alert } from 'react-native';
 import { useState } from 'react';
-import { updatePassword } from '@/src/services/updatePassword';
-import reauthenticateUser from '@/src/services/reauthenticateUser';
+import { updatePassword, reauthenticateUser } from '@/src/services/auth/auth.service';
 import { Text } from '@/src/components/Themed';
 export default function ChangePasswordScreen() {
     const [password, setPassword] = useState('');

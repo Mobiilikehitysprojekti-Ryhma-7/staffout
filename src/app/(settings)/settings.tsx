@@ -1,7 +1,7 @@
 import { Alert, Pressable, StyleSheet } from 'react-native';
 import { Text, View } from '@/src/components/Themed';
 import { MaterialIcons } from '@expo/vector-icons';
-import { handleSignOut } from '@/src/services/handleSignout'
+import { handleSignOut } from '@/src/services/auth/auth.service'
 import { router } from 'expo-router';
 import { Platform } from 'react-native';
 export default function SettingsScreen() {

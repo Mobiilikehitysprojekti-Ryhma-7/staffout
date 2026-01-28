@@ -1,11 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "../../config/firebaseConfig";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, db } from "../config/firebaseConfig";
 
 export type UserProfile = {
   first?: string;
   last?: string;
   photoURL?: string;
+  organizationId?: string;
 };
 
 const USER_PROFILE_KEY = "user-profile";
@@ -51,12 +52,51 @@ export async function getUser(forceRefresh = false): Promise<UserProfile | null>
   try {
     const snap = await getDoc(doc(db, "users", current.uid));
     const data = snap.data();
-    const profile: UserProfile = { first: data?.first, last: data?.last };
+    const profile: UserProfile = { first: data?.first, last: data?.last, photoURL: data?.photoURL, organizationId: data?.organizationId };
 
     await writeCachedProfile(profile);
     return profile;
   } catch (error) {
     console.error("Error fetching user data:", error);
     return null;
+  }
+}
+
+export async function updateUser(first?: string, last?: string, photoURL?: string) {
+  const user = auth.currentUser;
+  if (!user) {
+    console.error("No authenticated user found.");
+    return;
+  }
+  try {
+    await setDoc(
+      doc(db, "users", user.uid),
+      {
+        first,
+        last,
+        photoURL,
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    console.error("Error setting user data: ", error);
+  }
+}
+
+export async function updateUserOrganization(organizationId: string) {
+  const user = auth.currentUser;
+  if (!user) {
+    return;
+  }
+  try {
+    await setDoc(
+      doc(db, "users", user.uid),
+      {
+        organizationId,
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    console.error("Error setting user organization: ", error);
   }
 }

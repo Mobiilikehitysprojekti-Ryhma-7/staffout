@@ -1,7 +1,6 @@
 import { View, TextInput, StyleSheet, Button, Alert } from 'react-native';
 import { useState } from 'react';
-import { updateEmail } from '@/src/services/updateEmail';
-import reauthenticateUser from '@/src/services/reauthenticateUser';
+import { updateEmail, reauthenticateUser } from '@/src/services/auth/auth.service';
 import { Text } from '@/src/components/Themed';
 import { auth } from '@/src/config/firebaseConfig';
 
