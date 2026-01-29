@@ -1,8 +1,17 @@
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
-export async function createOrganization(name: string, photoURL?: string) {
+
+type Organization = {
+    name: string;
+    description?: string;
+    photoURL?: string;
+    createdAt: Date;
+};
+
+export async function createOrganization(name: string, description?: string, photoURL?: string) {
     await addDoc(collection(db, "organizations"), {
         name,
+        description,
         photoURL,
         createdAt: new Date(),
     });

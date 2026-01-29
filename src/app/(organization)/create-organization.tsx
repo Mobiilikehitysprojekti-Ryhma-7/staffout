@@ -1,28 +1,57 @@
-import { StyleSheet } from 'react-native';
-import { Text, View } from '@/src/components/Themed';
-
+import { Button, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { TextInput, View, Text } from '@/src/components/Themed';
+import { useState } from 'react';
+import ImagePickerComponent from '@/src/components/ImagePicker';
 export default function CreateOrganizationScreen() {
+  const [organizationName, setOrganizationName] = useState("");
+  const [description, setDescription] = useState("")
+  const [isLoading, setIsLoading] = useState(false);
+  function handleCreateOrganization() {
+  }
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Luo organisaatio</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-    </View>
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <TextInput
+        style={styles.input}
+        value={organizationName}
+        onChangeText={setOrganizationName}
+        placeholder="Organisaation Nimi"
+        editable={!isLoading}
+      />
+      <TextInput
+        style={styles.input}
+        value={description}
+        onChangeText={setDescription}
+        multiline
+        numberOfLines={3}
+        maxLength={120}
+        placeholder="Kuvaus"
+        editable={!isLoading}
+      />
+
+      <ImagePickerComponent/>
+      <View style={{ height: 20 }} />
+      <Button onPress={handleCreateOrganization} disabled={isLoading} title="Luo Organisaatio" />
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    padding: 20,
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginBottom: 20,
+    width: '100%',
+    borderRadius: 5,
   },
 });

@@ -19,22 +19,21 @@ export default function JoinOrganizationScreen() {
 
         setIsLoading(true);
         try {
+            // update user's organizationId
             await updateUserOrganization(oid);
             // create user as a organization member
             await createMember("member", oid);
-            // update user's organizationId
+            router.replace('/');
         } catch (error) {
             console.error("Error joining organization:", error);
             Alert.alert("Virhe", "Organisaatioon liittyminen epäonnistui. Tarkista organisaation ID.");
         } finally { 
-            router.replace('/');
             setIsLoading(false);
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Liity organisaatioon</Text>
             <TextInput
                 style={styles.input}
                 value={organizationId}
@@ -56,6 +55,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        padding: 20,
     },
     title: {
         fontSize: 20,
@@ -67,12 +67,7 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         padding: 10,
         marginBottom: 20,
-        width: '80%',
+        width: '100%',
         borderRadius: 5,
-    },
-    separator: {
-        marginVertical: 30,
-        height: 1,
-        width: '80%',
     },
 });

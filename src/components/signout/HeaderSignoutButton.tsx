@@ -7,7 +7,7 @@ export default function HeaderLogoutButton() {
     return (
         <TouchableOpacity
             onPress={Platform.OS === 'web' ? handleSignOut : ConfirmSignout}
-            style={{ marginLeft: 10, padding: 12 }}
+            style={{ marginLeft: 7.5 }}
         >
             <MaterialIcons name="logout" size={24} color="red" />
         </TouchableOpacity>)

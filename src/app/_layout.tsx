@@ -68,7 +68,7 @@ function RootLayoutNav() {
 
                 <Stack.Protected guard={user && !isMember}>
                     <Stack.Screen name="(organization)/setup-organization" options={{
-                        animation: "default", title: "Liity Organisaatioon", headerRight: () => (
+                        animation: "default", title: "Organisaatio", headerRight: () => (
                             <HeaderLogoutButton />
                         )
                     }} />
