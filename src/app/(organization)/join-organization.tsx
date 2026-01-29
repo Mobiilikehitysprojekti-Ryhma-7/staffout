@@ -6,31 +6,38 @@ import { createMember } from '../../services/members.service';
 import { updateUserOrganization } from '../../services/users.service';
 import { router } from 'expo-router';
 
+export async function joinOrganization(oid: string, role: string) {
+    try {
+        await updateUserOrganization(oid);
+
+        await createMember(role, oid);
+        console.log("Joined organization:", oid);
+        router.replace('/');
+    } catch (error) {
+        console.error("Error joining organization:", error);
+        Alert.alert("Virhe", "Organisaatioon liittyminen epäonnistui. Tarkista organisaation ID.");
+    }
+}
+
 export default function JoinOrganizationScreen() {
     const [organizationId, setOrganizationId] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
     const handleJoinOrganization = async () => {
-        const oid=organizationId.trim();
+        setIsLoading(true);
+        const oid = organizationId.trim();
         if (!oid) {
             Alert.alert("Virhe", "Organisaation ID on pakollinen");
+            setIsLoading(false);
             return;
         }
-
-        setIsLoading(true);
         try {
-            // update user's organizationId
-            await updateUserOrganization(oid);
-            // create user as a organization member
-            await createMember("member", oid);
-            router.replace('/');
-        } catch (error) {
-            console.error("Error joining organization:", error);
-            Alert.alert("Virhe", "Organisaatioon liittyminen epäonnistui. Tarkista organisaation ID.");
-        } finally { 
+            await joinOrganization(oid, "member");
+        } finally {
             setIsLoading(false);
         }
-    };
+    }
+
 
     return (
         <View style={styles.container}>

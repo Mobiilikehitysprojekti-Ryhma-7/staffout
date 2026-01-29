@@ -8,13 +8,14 @@ type Organization = {
     createdAt: Date;
 };
 
-export async function createOrganization(name: string, description?: string, photoURL?: string) {
-    await addDoc(collection(db, "organizations"), {
+export async function createOrganization(name: string, description?: string, photoURL?: string): Promise<string> {
+    const docRef = await addDoc(collection(db, "organizations"), {
         name,
         description,
         photoURL,
         createdAt: new Date(),
     });
+    return docRef.id;
 }
 
     

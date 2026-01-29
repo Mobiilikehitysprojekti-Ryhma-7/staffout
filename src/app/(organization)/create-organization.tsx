@@ -1,15 +1,39 @@
-import { Button, StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { Button, StyleSheet, KeyboardAvoidingView, Alert } from 'react-native';
 import { TextInput, View, Text } from '@/src/components/Themed';
 import { useState } from 'react';
 import ImagePickerComponent from '@/src/components/ImagePicker';
+import { joinOrganization } from './join-organization';
+import { createOrganization } from '@/src/services/organizations.service';
 export default function CreateOrganizationScreen() {
   const [organizationName, setOrganizationName] = useState("");
   const [description, setDescription] = useState("")
+  const [photoURL, setPhotoURL] = useState("")
   const [isLoading, setIsLoading] = useState(false);
-  function handleCreateOrganization() {
-  }
+
+  const [error, setError] = useState("");
+
+  const handleSubmit = async () => {
+    if (organizationName.length < 3) {
+      setError("Organisaation nimen tulee olla vähintään 3 merkkiä pitkä.");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const oid = await createOrganization(organizationName, description, photoURL);
+      await joinOrganization(oid, "admin");
+      console.log("Organization created with ID:", oid);
+      setError("");
+    } catch (error) {
+      console.error("Error creating organization:", error);
+      Alert.alert("Virhe", "Organisaation luominen epäonnistui. Yritä uudelleen.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
+      {error && <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text>}
       <TextInput
         style={styles.input}
         value={organizationName}
@@ -28,9 +52,8 @@ export default function CreateOrganizationScreen() {
         editable={!isLoading}
       />
 
-      <ImagePickerComponent/>
-      <View style={{ height: 20 }} />
-      <Button onPress={handleCreateOrganization} disabled={isLoading} title="Luo Organisaatio" />
+      <ImagePickerComponent />
+      <Button onPress={handleSubmit} disabled={isLoading} title="Luo Organisaatio" />
     </KeyboardAvoidingView>
   );
 }
