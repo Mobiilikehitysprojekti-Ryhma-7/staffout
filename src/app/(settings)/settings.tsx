@@ -1,18 +1,11 @@
-import { Alert, Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { Text, View } from '@/src/components/Themed';
 import { MaterialIcons } from '@expo/vector-icons';
 import { handleSignOut } from '@/src/services/auth/auth.service'
 import { router } from 'expo-router';
 import { Platform } from 'react-native';
+import ConfirmSignout from '@/src/components/signout/ConfirmSignout';
 export default function SettingsScreen() {
-  const confirmSignout = () =>
-    Alert.alert('Kirjaudu ulos', 'Haluatko varmasti kirjautua ulos?', [
-      {
-        text: 'Peruuta',
-        style: 'cancel',
-      },
-      {text: 'OK', onPress: () => handleSignOut()},
-    ]);
 
   return (
     <View style={styles.container}>
@@ -46,7 +39,7 @@ export default function SettingsScreen() {
         </View></View>
       </Pressable>
 
-       <Pressable onPress={Platform.OS === 'web' ? handleSignOut : confirmSignout} style={styles.pressable}>
+       <Pressable onPress={Platform.OS === 'web' ? handleSignOut : ConfirmSignout} style={styles.pressable}>
         <View style={styles.content}>
         <MaterialIcons style={styles.icon} name="logout" size={20} color="red" />
         <View>

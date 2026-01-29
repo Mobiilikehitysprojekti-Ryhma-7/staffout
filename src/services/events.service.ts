@@ -11,6 +11,18 @@ type createEventParams = {
     location: string
 }
 
+type Event = {
+    id: string,
+    description: string,
+    title: string,
+    startDate: Date,
+    endDate: Date,
+    photoURL: string,
+    location: string,
+    createdAt: Date,
+    createdBy: string
+}
+
 export async function createEvent({organizationId, description, title, startDate, endDate, photoURL, location}: createEventParams) {
     const Ref = collection(db, "organizations", organizationId, "events");
     if (!auth.currentUser) return;
@@ -25,11 +37,12 @@ export async function createEvent({organizationId, description, title, startDate
         location
     });
 }
-export async function getAllEventsFromOrganization(organizationId: string) {
+export async function getAllEventsFromOrganization(organizationId: string): Promise<Event[]> {
     const eventsRef = collection(db, "organizations", organizationId, "events");
     const snap = await getDocs(eventsRef);
-    if (!snap.empty) {
-        return snap.docs.map(doc => doc.data());
-    }
+        return snap.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        } as Event));
 }
 

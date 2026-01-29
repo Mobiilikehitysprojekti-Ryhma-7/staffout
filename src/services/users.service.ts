@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../config/firebaseConfig";
 
 export type UserProfile = {
@@ -99,4 +99,33 @@ export async function updateUserOrganization(organizationId: string) {
   } catch (error) {
     console.error("Error setting user organization: ", error);
   }
+}
+
+export async function getUserOrganizationId(): Promise<string | null> {
+  const user = auth.currentUser;
+  if (!user) return null;
+  const userRef = doc(db, "users", user.uid);
+  const snap = await getDoc(userRef);
+  if (!snap.exists()) return null;
+  const data = snap.data();
+  return data?.organizationId || null;
+}
+
+// monitor user's organizationId in real-time
+export function subscribeToUserOrganization(
+  callback: (orgId: string | null) => void
+) {
+  const user = auth.currentUser
+  if (!user) return () => { }
+
+  const userRef = doc(db, 'users', user.uid)
+
+  return onSnapshot(userRef, snap => {
+    if (!snap.exists()) {
+      callback(null)
+      return
+    }
+
+    callback(snap.data()?.organizationId ?? null)
+  })
 }

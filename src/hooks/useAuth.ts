@@ -25,7 +25,7 @@ export function useAuth() {
 
     try {
       await createUser(email, password);
-      await updateUser({ first: firstName, last: lastName });
+      await updateUser(firstName, lastName);
       console.log('User created:', email);
       router.replace('/(tabs)');
     } catch (e: any) {

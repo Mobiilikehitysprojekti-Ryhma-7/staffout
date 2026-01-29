@@ -3,18 +3,28 @@ import { collection, addDoc, getDocs } from "firebase/firestore";
 
 type createBenefitParams = {
     organizationId: string,
-    badge: { family: string, name: string }
+    category: string,
     description: string,
     title: string,
     photoURL: string,
     validUntil: Date
 }
 
-export async function createBenefit({organizationId, badge, description, title, photoURL, validUntil}: createBenefitParams) {
-    const Ref = collection(db, "organizations", organizationId, "benefits");
-    await addDoc(Ref, {
+type Benefit = {
+    id: string,
+    category: string,
+    description: string,
+    title: string,
+    photoURL: string,
+    validUntil: Date,
+    createdAt: Date
+}
+
+export async function createBenefit({organizationId, category, description, title, photoURL, validUntil}: createBenefitParams) {
+    const benefitsRef = collection(db, "organizations", organizationId, "benefits");
+    await addDoc(benefitsRef, {
         createdAt: new Date(),
-        badge,
+        category,
         description,
         title,
         photoURL,
@@ -22,7 +32,11 @@ export async function createBenefit({organizationId, badge, description, title, 
     });
 }
 
-export async function readAllBenefitsFromOrganization(organizationId: string) {
-    const Ref = collection(db, "organizations", organizationId, "benefits");
-    return getDocs(Ref);
+export async function readAllBenefitsFromOrganization(organizationId: string): Promise<Benefit[]> {
+    const benefitsRef = collection(db, "organizations", organizationId, "benefits");
+    const snapshot = await getDocs(benefitsRef);
+    return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as Benefit));
 }
