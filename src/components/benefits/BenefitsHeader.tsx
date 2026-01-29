@@ -6,15 +6,26 @@ import { Feather, MaterialIcons } from "@expo/vector-icons";
 export function BenefitsHeader({
   onSortPress,
   onFilterPress,
+  onClearAll,
+  showClear,
 }: {
   onSortPress: () => void;
   onFilterPress: () => void;
+  onClearAll: () => void;
+  showClear: boolean;
 }) {
   return (
     <View style={styles.sectionRow}>
       <Text style={styles.sectionTitle}>Henkilöstöedut</Text>
 
       <View style={styles.actions}>
+        {/* clearAll button */}
+        {showClear && (
+          <Pressable style={styles.actionBtn} onPress={onClearAll}>
+            <MaterialIcons name="clear" size={22} color="#fff" />
+          </Pressable>
+        )}
+
         {/* Sort button */}
         <Pressable style={styles.actionBtn} onPress={onSortPress}>
           <MaterialIcons name="swap-vert" size={20} color="#fff" />
