@@ -1,5 +1,5 @@
 import { createUser, signInUser } from '@/src/services/auth/auth.service';
-import { updateUser } from '@/src/services/users.service';
+import { updateUserProfile } from '@/src/services/users.service';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 export function useAuth() {
@@ -25,7 +25,7 @@ export function useAuth() {
 
     try {
       await createUser(email, password);
-      await updateUser(firstName, lastName);
+      await updateUserProfile(firstName, lastName, undefined);
       console.log('User created:', email);
       router.replace('/(tabs)');
     } catch (e: any) {

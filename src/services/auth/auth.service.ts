@@ -21,10 +21,10 @@ export async function signInUser(email: string, password: string) {
 
 export async function handleSignOut() {
     try {
-        await clearUserCache();
         await signOut(auth);
+        await clearUserCache();
     } catch (error) {
-        console.error(error);
+        console.error('Error signing out:', error);
     }
 }
 

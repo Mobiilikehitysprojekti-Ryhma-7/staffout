@@ -1,22 +1,52 @@
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { Text, View, SafeAreaView } from '@/src/components/Themed';
 import { Pressable, StyleSheet, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useUserProfile } from '@/src/hooks/useUserProfile';
+import { useEffect, useState, useCallback } from 'react';
+import { getOrganizationById } from '@/src/services/organizations.service';
 
 export default function UserScreen() {
-  const { user } = useUserProfile();
-  const placeholderImage = 'https://images.pexels.com/photos/32623341/pexels-photo-32623341.jpeg';
+  const { user, reload } = useUserProfile();
+  const [firstName, setFirstName] = useState(user?.first || "");
+  const [lastName, setLastName] = useState(user?.last || "");
+  const [photoUrl, setPhotoUrl] = useState(user?.photoURL || "");
+  const [organizationName, setOrganizationName] = useState(user?.organizationId || "");
+  const defaultProfile = require('../../../assets/default-profile.png');
+
+  useFocusEffect(
+    useCallback(() => {
+      reload(true);
+    }, [reload])
+  );
+
+   useEffect(() => {
+      if (user) {
+        setFirstName(user.first || "");
+        setLastName(user.last || "");
+        setPhotoUrl(user.photoURL || "");
+        
+        if (user.organizationId) {
+          getOrganizationById(user.organizationId).then(org => {
+            if (org) {
+              setOrganizationName(org.name);
+            } else {
+              setOrganizationName("Tuntematon organisaatio");
+            }
+          })
+        }
+      }
+    }, [user]);
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
-        <Image source={{ uri: placeholderImage }}
+        <Image source={photoUrl ? { uri: photoUrl } : defaultProfile}
           style={{ width: 75, height: 75, borderRadius: 50 }} />
         <View style={{ flex: 1, marginHorizontal: 20 }}>
           <Text style={styles.nameText}>
-            {user ? `${user.first} ${user.last}` : 'Loading...'}
+            {user ? `${firstName} ${lastName}` : 'Loading...'}
           </Text>
-          <Text style={styles.organizationText}>nykyinen organisaatio</Text>
+          <Text style={styles.organizationText}>{organizationName}</Text>
         </View>
         <Pressable style={styles.actionBtn} onPress={() => router.push('/(settings)/settings')}>
           <MaterialIcons name="settings" size={20} color="#fff" />

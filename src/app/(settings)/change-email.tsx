@@ -1,4 +1,4 @@
-import { View, TextInput, StyleSheet, Button, Alert } from 'react-native';
+import { View, TextInput, StyleSheet, Button, Alert, KeyboardAvoidingView } from 'react-native';
 import { useState } from 'react';
 import { updateEmail, reauthenticateUser } from '@/src/services/auth/auth.service';
 import { Text } from '@/src/components/Themed';
@@ -33,12 +33,12 @@ export default function ChangeEmailScreen() {
         
     }
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container} behavior="padding">
             <TextInput placeholder="Sähköposti" value={email} onChangeText={setEmail} style={styles.input} autoCorrect={false} keyboardType="email-address" />
             <TextInput placeholder="Salasana" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
             <Button onPress={handleChangeEmail} title="Vaihda Sähköposti" disabled={isDisabled} />
             {error ? <Text style={styles.error}>{error}</Text> : null}
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 

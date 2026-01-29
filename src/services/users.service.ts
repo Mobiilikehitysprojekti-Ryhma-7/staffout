@@ -62,7 +62,7 @@ export async function getUser(forceRefresh = false): Promise<UserProfile | null>
   }
 }
 
-export async function updateUser(first?: string, last?: string, photoURL?: string) {
+export async function updateUserProfile(first?: string, last?: string, photoURL?: string) {
   const user = auth.currentUser;
   if (!user) {
     console.error("No authenticated user found.");

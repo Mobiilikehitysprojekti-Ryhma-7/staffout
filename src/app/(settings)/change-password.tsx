@@ -1,4 +1,4 @@
-import { View, TextInput, StyleSheet, Button, Alert } from 'react-native';
+import { View, TextInput, StyleSheet, Button, Alert, KeyboardAvoidingView } from 'react-native';
 import { useState } from 'react';
 import { updatePassword, reauthenticateUser } from '@/src/services/auth/auth.service';
 import { Text } from '@/src/components/Themed';
@@ -43,13 +43,13 @@ export default function ChangePasswordScreen() {
         }
     }
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container} behavior="padding">
             <TextInput placeholder="Nykyinen Salasana" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
             <TextInput placeholder="Uusi Salasana" value={newPassword} onChangeText={setNewPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
             <TextInput placeholder="Vahvista Uusi Salasana" value={confirmNewPassword} onChangeText={setConfirmNewPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
             <Button onPress={handleChangePassword} title="Vaihda Salasana" disabled={isDisabled} />
             {error ? <Text style={styles.error}>{error}</Text> : null}
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 
