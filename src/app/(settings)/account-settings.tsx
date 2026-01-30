@@ -1,4 +1,4 @@
-import { Platform, Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { Text, View } from '@/src/components/Themed';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -6,9 +6,7 @@ import { router } from 'expo-router';
 export default function AccountSettingsScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tiliasetukset</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-
+      <View style={{alignItems: 'flex-start'}}>
       <Pressable onPress={() => router.push('/(settings)/change-password')} style={styles.pressable}>
         <View style={styles.content}>
         <MaterialIcons style={styles.icon} name="lock" size={20} color="black" />
@@ -32,7 +30,7 @@ export default function AccountSettingsScreen() {
         <Text style={styles.label}>Poista käyttäjä</Text>
         </View></View>
       </Pressable>
-
+</View>
 
     </View>
   );
@@ -42,20 +40,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+    padding: 20,
   },
     label: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '800',
   },
   pressable: {
     marginTop: 10,

@@ -1,25 +1,24 @@
-import { Button, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Text, View } from '@/src/components/Themed';
-import { handleSignOut } from '@/src/services/handleSignout';
-import { getUser } from '@/src/services/getUser';
-import React, { useEffect, useState } from 'react';
+import { useUserProfile } from '@/src/hooks/useUserProfile';
+import React, { useCallback} from 'react';
+import { useFocusEffect } from 'expo-router';
+
 export default function TabOneScreen() {
-  const [user, setUser] = useState<any>(null);
+  const { user, reload } = useUserProfile();
+  const first = user?.first || "";
 
-  useEffect(() => {
-    async function loadUser() {
-      const data = await getUser();
-      setUser(data);
-    }
-    loadUser();
-  }, []);
-
+   useFocusEffect(
+      useCallback(() => {
+        reload(true);
+      }, [reload])
+    );
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Kotisivu</Text>
       <Text
-        style={{ margin: 10 }}>
-        Tervetuloa {user?.first}!
+        style={styles.regularText}>
+       Tervetuloa {first}!
       </Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
     </View>
@@ -31,10 +30,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  regularText: {
+    fontSize: 14,
+    fontWeight: '400',
   },
   separator: {
     marginVertical: 30,

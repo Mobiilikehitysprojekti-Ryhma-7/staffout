@@ -1,7 +1,6 @@
-import { View, TextInput, StyleSheet, Button, Alert } from 'react-native';
+import { View, TextInput, StyleSheet, Button, Alert, KeyboardAvoidingView } from 'react-native';
 import { useState } from 'react';
-import { updatePassword } from '@/src/services/updatePassword';
-import reauthenticateUser from '@/src/services/reauthenticateUser';
+import { updatePassword, reauthenticateUser } from '@/src/services/auth/auth.service';
 import { Text } from '@/src/components/Themed';
 export default function ChangePasswordScreen() {
     const [password, setPassword] = useState('');
@@ -44,13 +43,13 @@ export default function ChangePasswordScreen() {
         }
     }
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView style={styles.container} behavior="padding">
             <TextInput placeholder="Nykyinen Salasana" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
             <TextInput placeholder="Uusi Salasana" value={newPassword} onChangeText={setNewPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
             <TextInput placeholder="Vahvista Uusi Salasana" value={confirmNewPassword} onChangeText={setConfirmNewPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
             <Button onPress={handleChangePassword} title="Vaihda Salasana" disabled={isDisabled} />
             {error ? <Text style={styles.error}>{error}</Text> : null}
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -59,17 +58,20 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        padding: 20,
     },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
     },
     input: {
-        height: 40,
-        margin: 12,
-        borderWidth: 1,
-        padding: 10,
-    },
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginBottom: 20,
+    width: '100%',
+    borderRadius: 5,
+  },
     separator: {
         marginVertical: 30,
         height: 1,

@@ -1,6 +1,6 @@
-import { Text, View, TextInput } from '@/src/components/Themed';
+import { Text, TextInput } from '@/src/components/Themed';
 import React from 'react';
-import { Button, StyleSheet } from 'react-native';
+import { Button, KeyboardAvoidingView, StyleSheet, View } from 'react-native';
 
 interface AuthFormProps {
   email: string;
@@ -40,8 +40,7 @@ export default function AuthForm({
   handleSignin,
 }: AuthFormProps) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Kirjautuminen</Text>
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
       <TextInput placeholder="Sähköpostiosoite" value={email} onChangeText={setEmail} style={styles.input} autoCorrect={false} autoCapitalize="none" keyboardType="email-address" />
       {
         !signInScreen && <TextInput placeholder="Etunimi" value={firstName} onChangeText={setFirstName} style={styles.input} autoCorrect={false} />
@@ -60,8 +59,8 @@ export default function AuthForm({
         <Button onPress={signInScreen ? handleSignin : handleSignup} title={loading ? (signInScreen ? "Kirjaudutaan..." : "Luodaan tiliä...") : (signInScreen ? "Kirjaudu" : "Luo tili")} disabled={loading} />
       </View>
       {signInScreen && <Text style={{ marginTop: 12 }} >Eikö sinulla ole tiliä? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Luo tili</Text></Text>}
-      {!signInScreen && <Text style={{ marginTop: 12 }} >Onko sinulla tili? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Kirjaudu sisään</Text></Text>}
-    </View>
+      {!signInScreen && <Text style={styles.regularText} >Onko sinulla tili? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Kirjaudu sisään</Text></Text>}
+    </KeyboardAvoidingView>
   );
 }
 
@@ -70,21 +69,29 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 20,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
   },
   input: {
-    height: 40,
-    margin: 12,
     borderWidth: 1,
+    borderColor: '#ccc',
     padding: 10,
+    marginBottom: 20,
+    width: '100%',
+    borderRadius: 5,
   },
   button: {
     marginTop: 12,
   },
+  regularText: {
+    fontSize: 14,
+    fontWeight: '400',
+  },
   boldText: {
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '800',
   },
 });
