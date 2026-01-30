@@ -9,8 +9,7 @@ export default function SettingsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text>Settings</Text>
-      
+  
       <Pressable onPress={() => router.push('/(settings)/profile-settings')} style={styles.pressable}>
         <View style={styles.content}>
         <MaterialIcons style={styles.icon} name="person" size={20} color="#000" />
@@ -60,11 +59,11 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '800',
   },
   description: {
     marginTop: 5,
-    fontSize: 12,
+    fontSize: 14,
     color: 'gray',
   },
   pressable: {

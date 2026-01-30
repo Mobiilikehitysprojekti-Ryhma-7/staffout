@@ -69,13 +69,14 @@ export async function updateUserProfile(first?: string, last?: string, photoURL?
     return;
   }
   try {
+    const updateData: any = {};
+    if (first !== undefined) updateData.first = first;
+    if (last !== undefined) updateData.last = last;
+    if (photoURL !== undefined) updateData.photoURL = photoURL;
+
     await setDoc(
       doc(db, "users", user.uid),
-      {
-        first,
-        last,
-        photoURL,
-      },
+      updateData,
       { merge: true }
     );
   } catch (error) {

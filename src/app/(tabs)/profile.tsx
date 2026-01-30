@@ -39,10 +39,10 @@ export default function UserScreen() {
     }, [user]);
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20, backgroundColor: '#E3F1FF', padding: 10, borderRadius: 10, width: '100%' }}>
         <Image source={photoUrl ? { uri: photoUrl } : defaultProfile}
-          style={{ width: 75, height: 75, borderRadius: 50 }} />
-        <View style={{ flex: 1, marginHorizontal: 20 }}>
+          style={{ width: 50, height: 50, borderRadius: 25 }} />
+        <View style={{ flex: 1, marginHorizontal: 20, backgroundColor: 'transparent' }}>
           <Text style={styles.nameText}>
             {user ? `${firstName} ${lastName}` : 'Loading...'}
           </Text>
@@ -55,8 +55,8 @@ export default function UserScreen() {
 
 
 
-      <Text style={{ fontSize: 20, marginBottom: 5 }}>Analytiikka</Text>
-       <Text style={{ fontSize: 20, marginBottom: 5 }}>Viime kuukauden tapahtumat</Text>
+      <Text style={styles.subheader}>Analytiikka</Text>
+       <Text style={styles.subheader}>Viime kuukauden tapahtumat</Text>
 
 
     </SafeAreaView>
@@ -78,11 +78,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   nameText: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 18,
+    fontWeight: "800",
   },
   organizationText: {
-    fontSize: 24,
+    fontSize: 14,
+    fontWeight: "400",
     color: "#666",
   },
+  subheader: {
+    fontSize: 18,
+    fontWeight: '800',
+    marginBottom: 20,
+  }
 });

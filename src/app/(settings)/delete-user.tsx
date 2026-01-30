@@ -50,10 +50,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 20,
     },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
     input: {
         borderWidth: 1,
         borderColor: '#ccc',
@@ -61,11 +57,6 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         width: '100%',
         borderRadius: 5,
-    },
-    separator: {
-        marginVertical: 30,
-        height: 1,
-        width: '80%',
     },
     error: {
         color: 'red',

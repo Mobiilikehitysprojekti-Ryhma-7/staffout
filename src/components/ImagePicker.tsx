@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Alert, Button, Image, View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+const defaultProfile = require('../../assets/default-profile.png');
 
 export default function ImagePickerComponent() {
   const [image, setImage] = useState<string | null>(null);
@@ -28,6 +29,10 @@ export default function ImagePickerComponent() {
   };
 
   return (
+    <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+     <Image source={image ? { uri: image } : defaultProfile}
+          style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
       <Button title="Valitse profiilikuva" onPress={pickImage} />
+    </View>
   );
 }
