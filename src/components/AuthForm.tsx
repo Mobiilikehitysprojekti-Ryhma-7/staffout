@@ -1,10 +1,14 @@
-import { Text, View, TextInput } from '@/src/components/Themed';
+import { Text, TextInput } from '@/src/components/Themed';
 import React from 'react';
-import { Button, StyleSheet } from 'react-native';
+import { Button, KeyboardAvoidingView, StyleSheet, View } from 'react-native';
 
 interface AuthFormProps {
   email: string;
   setEmail: (email: string) => void;
+  firstName: string;
+  setFirstName: (firstName: string) => void;
+  lastName: string;
+  setLastName: (lastName: string) => void;
   password: string;
   setPassword: (password: string) => void;
   confirmPassword: string;
@@ -20,6 +24,10 @@ interface AuthFormProps {
 export default function AuthForm({
   email,
   setEmail,
+  firstName,
+  setFirstName,
+  lastName,
+  setLastName,
   password,
   setPassword,
   confirmPassword,
@@ -32,20 +40,27 @@ export default function AuthForm({
   handleSignin,
 }: AuthFormProps) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Auth Screen</Text>
-      <TextInput placeholder="Email address" value={email} onChangeText={setEmail} style={styles.input} autoCorrect={false} autoCapitalize="none" keyboardType="email-address"/>
-      <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
-      {signInScreen ? null :
-        <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <TextInput placeholder="Sähköpostiosoite" value={email} onChangeText={setEmail} style={styles.input} autoCorrect={false} autoCapitalize="none" keyboardType="email-address" />
+      {
+        !signInScreen && <TextInput placeholder="Etunimi" value={firstName} onChangeText={setFirstName} style={styles.input} autoCorrect={false} />
       }
-      {error ? <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text> : null}
+      {
+        !signInScreen && <TextInput placeholder="Sukunimi" value={lastName} onChangeText={setLastName} style={styles.input} autoCorrect={false} />
+      }
+      <TextInput placeholder="Salasana" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
+      {
+        !signInScreen && <TextInput placeholder="Vahvista salasana" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
+      }
+      {
+        error ? <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text> : null
+      }
       <View style={styles.button}>
-        <Button onPress={signInScreen ? handleSignin : handleSignup} title={loading ? (signInScreen ? "Signing in..." : "Signing up...") : (signInScreen ? "Sign In" : "Sign Up")} disabled={loading} />
+        <Button onPress={signInScreen ? handleSignin : handleSignup} title={loading ? (signInScreen ? "Kirjaudutaan..." : "Luodaan tiliä...") : (signInScreen ? "Kirjaudu" : "Luo tili")} disabled={loading} />
       </View>
-      {signInScreen && <Text style={{marginTop:12}} >Don't have an account? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Create an account</Text></Text>}
-      {!signInScreen && <Text style={{marginTop:12}} >Have an account? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Login</Text></Text>}
-    </View>
+      {signInScreen && <Text style={{ marginTop: 12 }} >Eikö sinulla ole tiliä? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Luo tili</Text></Text>}
+      {!signInScreen && <Text style={styles.regularText} >Onko sinulla tili? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Kirjaudu sisään</Text></Text>}
+    </KeyboardAvoidingView>
   );
 }
 
@@ -54,21 +69,29 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 20,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
   },
   input: {
-    height: 40,
-    margin: 12,
     borderWidth: 1,
+    borderColor: '#ccc',
     padding: 10,
+    marginBottom: 20,
+    width: '100%',
+    borderRadius: 5,
   },
   button: {
     marginTop: 12,
   },
+  regularText: {
+    fontSize: 14,
+    fontWeight: '400',
+  },
   boldText: {
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: '800',
   },
 });

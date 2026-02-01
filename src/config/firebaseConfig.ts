@@ -18,6 +18,8 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+const db = getFirestore(app);
+
 let auth: Auth;
 if (Platform.OS === 'web') {
   auth = getAuth(app);
@@ -26,8 +28,6 @@ if (Platform.OS === 'web') {
     persistence: getReactNativePersistence(ReactNativeAsyncStorage),
   });
 }
-
-const db = getFirestore(app);
 
 export { auth, db };
 export default app;

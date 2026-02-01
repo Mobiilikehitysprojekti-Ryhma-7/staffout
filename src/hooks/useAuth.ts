@@ -1,13 +1,14 @@
+import { createUser, signInUser } from '@/src/services/auth/auth.service';
+import { updateUserProfile } from '@/src/services/users.service';
 import { useRouter } from 'expo-router';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/src/config/firebaseConfig';
 import { useState } from 'react';
-
 export function useAuth() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [signInScreen, setSignInScreen] = useState(true);
@@ -15,18 +16,26 @@ export function useAuth() {
   const handleSignup = async () => {
     setError('');
     setLoading(true);
+
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError('Salasanat eivät täsmää.');
       setLoading(false);
       return;
     }
+
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      console.log('User created:', user.email);
+      await createUser(email, password);
+      await updateUserProfile(firstName, lastName, undefined);
+      console.log('User created:', email);
       router.replace('/(tabs)');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (e: any) {
+      if (e.code === 'auth/email-already-in-use') {
+        setError('Sähköposti on jo käytössä!');
+      } else if (e.code === 'auth/invalid-email') {
+        setError('Sähköpostiosoite on virheellinen!');
+      } else {
+        setError(e.message || "Virhe kirjautumisessa.");
+      }
     } finally {
       setLoading(false);
     }
@@ -36,12 +45,11 @@ export function useAuth() {
     setError('');
     setLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      console.log('User signed in:', user.email);
+      await signInUser(email, password);
+      console.log('User signed in:', email);
       router.replace('/(tabs)');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (e: any) {
+      setError(e.message || "Virhe kirjautumisessa.");
     } finally {
       setLoading(false);
     }
@@ -50,6 +58,10 @@ export function useAuth() {
   return {
     email,
     setEmail,
+    firstName,
+    setFirstName,
+    lastName,
+    setLastName,
     password,
     setPassword,
     confirmPassword,

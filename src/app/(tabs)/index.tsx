@@ -1,25 +1,25 @@
+import { StyleSheet } from 'react-native';
 import { Text, View } from '@/src/components/Themed';
-import { auth } from '@/src/config/firebaseConfig';
-import { signOut } from 'firebase/auth';
-import { Button, StyleSheet } from 'react-native';
+import { useUserProfile } from '@/src/hooks/useUserProfile';
+import React, { useCallback} from 'react';
+import { useFocusEffect } from 'expo-router';
+
 export default function TabOneScreen() {
+  const { user, reload } = useUserProfile();
+  const first = user?.first || "";
 
-
-  const handleSignOut = async () => { signOut(auth).then(() => {
-  // Sign-out successful.
-}).catch((error) => {
-  // An error happened.
-  console.log(error);
-});
-  }
+   useFocusEffect(
+      useCallback(() => {
+        reload(true);
+      }, [reload])
+    );
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      <Text 
-      style={{margin: 10}}>
-        Welcome {auth.currentUser?.email}!
-        </Text>
-      <Button title="Sign out" onPress={handleSignOut} />
+      <Text style={styles.title}>Kotisivu</Text>
+      <Text
+        style={styles.regularText}>
+       Tervetuloa {first}!
+      </Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
     </View>
   );
@@ -30,10 +30,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    padding: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  regularText: {
+    fontSize: 14,
+    fontWeight: '400',
   },
   separator: {
     marginVertical: 30,
