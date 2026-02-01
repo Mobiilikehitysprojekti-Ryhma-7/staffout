@@ -48,7 +48,7 @@ export default function UserScreen() {
           </Text>
           <Text style={styles.organizationText}>{organizationName}</Text>
         </View>
-        <Pressable style={styles.actionBtn} onPress={() => router.push('/(settings)/settings')}>
+        <Pressable style={styles.actionBtn} onPress={() => router.push('../(settings)/settings')}>
           <MaterialIcons name="settings" size={20} color="#fff" />
         </Pressable>
       </View>

@@ -10,7 +10,7 @@ export default function SettingsScreen() {
   return (
     <View style={styles.container}>
   
-      <Pressable onPress={() => router.push('/(settings)/profile-settings')} style={styles.pressable}>
+      <Pressable onPress={() => router.push('../(settings)/profile-settings')} style={styles.pressable}>
         <View style={styles.content}>
         <MaterialIcons style={styles.icon} name="person" size={20} color="#000" />
         <View>
@@ -20,7 +20,7 @@ export default function SettingsScreen() {
         </View>
       </Pressable>
 
-       <Pressable onPress={() => router.push('/(settings)/account-settings')} style={styles.pressable}>
+       <Pressable onPress={() => router.push('../(settings)/account-settings')} style={styles.pressable}>
         <View style={styles.content}>
         <MaterialIcons style={styles.icon} name="manage-accounts" size={20} color="#000" />
         <View>
@@ -29,7 +29,7 @@ export default function SettingsScreen() {
         </View></View>
       </Pressable>
 
-       <Pressable onPress={() => router.push('/(settings)/app-settings')} style={styles.pressable}>
+       <Pressable onPress={() => router.push('../(settings)/app-settings')} style={styles.pressable}>
         <View style={styles.content}>
         <MaterialIcons style={styles.icon} name="settings" size={20} color="#000" />
         <View>

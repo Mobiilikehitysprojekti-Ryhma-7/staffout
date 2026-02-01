@@ -7,7 +7,7 @@ export default function AccountSettingsScreen() {
   return (
     <View style={styles.container}>
       <View style={{alignItems: 'flex-start'}}>
-      <Pressable onPress={() => router.push('/(settings)/change-password')} style={styles.pressable}>
+      <Pressable onPress={() => router.push('../(settings)/change-password')} style={styles.pressable}>
         <View style={styles.content}>
         <MaterialIcons style={styles.icon} name="lock" size={20} color="black" />
         <View>
@@ -15,7 +15,7 @@ export default function AccountSettingsScreen() {
         </View></View>
       </Pressable> 
 
-       <Pressable onPress={() => router.push('/(settings)/change-email')} style={styles.pressable}>
+       <Pressable onPress={() => router.push('../(settings)/change-email')} style={styles.pressable}>
         <View style={styles.content}>
         <MaterialIcons style={styles.icon} name="mail" size={20} color="black" />
         <View>
@@ -23,7 +23,7 @@ export default function AccountSettingsScreen() {
         </View></View>
       </Pressable>
 
-       <Pressable onPress={() => router.push('/(settings)/delete-user')} style={styles.pressable}>
+       <Pressable onPress={() => router.push('../(settings)/delete-user')} style={styles.pressable}>
         <View style={styles.content}>
         <MaterialIcons style={styles.icon} name="account-circle" size={20} color="black" />
         <View>
