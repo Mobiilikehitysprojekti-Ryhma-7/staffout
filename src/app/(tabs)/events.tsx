@@ -1,4 +1,36 @@
-import {
+import { View } from "react-native";
+import { useEffect, useState } from "react";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../../config/firebaseConfig";
+
+import EventForm from "../../components/events/EventForm";
+import EventList from "../../components/events/EventList";
+
+export default function EventsScreen() {
+  const [events, setEvents] = useState<any[]>([]);
+
+  useEffect(() => {
+    const unsub = onSnapshot(collection(db, "events"), snap => {
+      setEvents(
+        snap.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+      );
+    });
+
+    return unsub;
+  }, []);
+
+  return (
+    <View style={{ flex: 1, padding: 16 }}>
+      <EventForm />
+      <EventList events={events} />
+    </View>
+  );
+}
+
+/*import {
   FlatList,
   Pressable,
   TextInput,
@@ -92,8 +124,8 @@ export default function EventsScreen() {
 
   return (
     <View style={{ flex: 1, padding: 16 }}>
-      {/* CREATE EVENT */}
-      <Text style={{ fontSize: 20, marginBottom: 8 }}>
+      {/* CREATE EVENT */
+     /* <Text style={{ fontSize: 20, marginBottom: 8 }}>
         Create Event
       </Text>
 
@@ -121,8 +153,8 @@ export default function EventsScreen() {
 
       <Button title="Create Event" onPress={createEvent} />
 
-      {/* EVENT LIST */}
-      <FlatList
+      {/* EVENT LIST */
+    /* <FlatList
         data={events}
         keyExtractor={item => item.id}
         contentContainerStyle={{ marginTop: 20 }}
@@ -176,47 +208,6 @@ export default function EventsScreen() {
       />
     </View>
   );
-}
-
-/*import { FlatList, Pressable } from "react-native";
-import { Text, View } from '@/src/components/Themed';
-import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../../config/firebaseConfig";
-import { useEffect, useState } from "react";
-import { router } from "expo-router";
-
-export default function EventsScreen() {
-  const [events, setEvents] = useState<any[]>([]);
-
-  useEffect(() => {
-    const unsub = onSnapshot(collection(db, "events"), (snap) => {
-      setEvents(
-        snap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-      );
-    });
-
-    return unsub;
-  }, []);
-
-  return (
-    <FlatList
-      data={events}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <Pressable
-          onPress={() =>
-            router.push({
-              pathname: "/(tabs)/events",
-              params: { id: item.id }
-            })
-          }
-        >
-          <View style={{ padding: 16 }}>
-            <Text style={{ fontSize: 18 }}>{item.title}</Text>
-            <Text>{item.participants?.length || 0} participants</Text>
-          </View>
-        </Pressable>
-      )}
-    />
-  );
 }*/
+
+
