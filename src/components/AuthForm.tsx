@@ -58,7 +58,7 @@ export default function AuthForm({
       <View style={styles.button}>
         <Button onPress={signInScreen ? handleSignin : handleSignup} title={loading ? (signInScreen ? "Kirjaudutaan..." : "Luodaan tiliä...") : (signInScreen ? "Kirjaudu" : "Luo tili")} disabled={loading} />
       </View>
-      {signInScreen && <Text style={{ marginTop: 12 }} >Eikö sinulla ole tiliä? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Luo tili</Text></Text>}
+      {signInScreen && <Text style={styles.regularText} >Eikö sinulla ole tiliä? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Luo tili</Text></Text>}
       {!signInScreen && <Text style={styles.regularText} >Onko sinulla tili? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Kirjaudu sisään</Text></Text>}
     </KeyboardAvoidingView>
   );
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   button: {
-    marginTop: 12,
+    marginBottom: 20
   },
   regularText: {
     fontSize: 14,

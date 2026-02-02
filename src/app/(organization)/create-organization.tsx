@@ -52,7 +52,7 @@ export default function CreateOrganizationScreen() {
         editable={!isLoading}
       />
 
-      <ImagePickerComponent />
+      <ImagePickerComponent title="Valitse organisaation kuva" />
       <Button onPress={handleSubmit} disabled={isLoading} title="Luo Organisaatio" />
     </KeyboardAvoidingView>
   );
