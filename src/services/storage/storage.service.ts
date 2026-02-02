@@ -22,5 +22,5 @@ export const getAvatarURL = async (path: string) => {
   .storage
   .from('avatars')
   .getPublicUrl(path)
-  return data.publicUrl
+  return data.publicUrl+'?t='+Date.now(); 
 }
