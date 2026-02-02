@@ -10,9 +10,8 @@ export default function UserScreen() {
   const { user, reload } = useUserProfile();
   const [firstName, setFirstName] = useState(user?.first || "");
   const [lastName, setLastName] = useState(user?.last || "");
-  const [photoUrl, setPhotoUrl] = useState(user?.photoURL || "");
+  const [photoURL, setPhotoURL] = useState(user?.photoURL || "");
   const [organizationName, setOrganizationName] = useState(user?.organizationId || "");
-  const defaultProfile = require('../../../assets/default-profile.png');
 
   useFocusEffect(
     useCallback(() => {
@@ -24,7 +23,7 @@ export default function UserScreen() {
       if (user) {
         setFirstName(user.first || "");
         setLastName(user.last || "");
-        setPhotoUrl(user.photoURL || "");
+        setPhotoURL(user.photoURL || "");
         
         if (user.organizationId) {
           getOrganizationById(user.organizationId).then(org => {
@@ -40,8 +39,15 @@ export default function UserScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20, backgroundColor: '#E3F1FF', padding: 10, borderRadius: 10, width: '100%' }}>
-        <Image source={photoUrl ? { uri: photoUrl } : defaultProfile}
-          style={{ width: 50, height: 50, borderRadius: 25 }} />
+
+        {photoURL ? (
+          <Image source={{ uri: photoURL }}
+          style={{ width: 50, height: 50, borderRadius: 25 }} 
+          />
+          ) : (
+            <MaterialIcons name="account-circle" size={50} color="#E97A7A" />
+          )}
+
         <View style={{ flex: 1, marginHorizontal: 20, backgroundColor: 'transparent' }}>
           <Text style={styles.nameText}>
             {user ? `${firstName} ${lastName}` : 'Loading...'}

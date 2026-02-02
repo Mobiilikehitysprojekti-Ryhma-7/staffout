@@ -5,18 +5,21 @@ import { useUserProfile } from '@/src/hooks/useUserProfile';
 import { useState, useEffect } from 'react';
 import ImagePickerComponent from '@/src/components/ImagePicker';
 import { updateUserProfile } from '@/src/services/users.service';
+import { uploadAvatar, getAvatarURL } from '@/src/services/storage/storage.service';
+
 export default function ProfileSettingsScreen() {
   const { user, reload } = useUserProfile()
   const [firstName, setFirstName] = useState(user?.first || "");
   const [lastName, setLastName] = useState(user?.last || "");
-  const [photoUrl, setPhotoUrl] = useState(user?.photoURL);
+  const [photoURL, setPhotoURL] = useState(user?.photoURL || undefined);
   const [loading, setLoading] = useState(false);
+  const [base64Image, setBase64Image] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
       setFirstName(user.first || "");
       setLastName(user.last || "");
-      setPhotoUrl(user.photoURL);
+      setPhotoURL(user.photoURL || undefined);
     }
   }, [user]);
 
@@ -34,16 +37,33 @@ export default function ProfileSettingsScreen() {
       return
     }
     setLoading(true);
+
     try {
-      await updateUserProfile(firstName.trim(), lastName.trim(), photoUrl?.trim());
+      let URL = photoURL;
+      if (base64Image) {
+        const data = await uploadAvatar(base64Image);
+        if (data) {
+          console.log(data)
+          URL = await getAvatarURL(data.path);
+          console.log(URL)
+        }
+      }
+
+      setPhotoURL(URL);
+
+      await updateUserProfile(firstName.trim(), lastName.trim(), URL);
+
       await reload(true);
+
       alert("Profiili päivitetty onnistuneesti");
+
     } catch (error) {
       alert("Profiilin päivitys epäonnistui, error: " + error);
     } finally {
       setLoading(false);
     }
   }
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <Text style={styles.label}>Etunimi</Text>
@@ -61,10 +81,10 @@ export default function ProfileSettingsScreen() {
         placeholder="Sukunimi"
       />
       <Text style={styles.label}>Profiilikuva</Text>
-      <ImagePickerComponent />
+      <ImagePickerComponent title="Valitse profiilikuva" onImageSelected={setBase64Image} photoURL={photoURL} />
       <View style={{ height: 20 }}></View>
-       <Button title="Tallenna muutokset" disabled={loading} onPress={handleSubmit} /> 
-      
+      <Button title="Tallenna muutokset" disabled={loading} onPress={handleSubmit} />
+
     </KeyboardAvoidingView>
   );
 }
