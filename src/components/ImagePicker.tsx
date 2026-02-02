@@ -48,7 +48,7 @@ export default function ImagePickerComponent({ title, onImageSelected, photoURL 
           style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }}
         />
       ) : (
-        <MaterialIcons name="account-circle" size={50} color="#E97A7A" />
+        <MaterialIcons name="account-circle" size={50} color="#E97A7A" style={{ marginRight: 10 }} />
       )}
 
       <Button title={title} onPress={pickImage} />
