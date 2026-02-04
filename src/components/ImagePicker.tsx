@@ -7,7 +7,7 @@ import { AvatarPlaceholder, OrganizationAvatarPlaceholder } from './ui/AvatarPla
 type Props = {
   title: string;
   onImageSelected?: (base64: any) => void;
-  photoURL? : string;
+  photoURL?: string;
   avatar?: string
 };
 
@@ -49,8 +49,8 @@ export default function ImagePickerComponent({ title, onImageSelected, photoURL,
           style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }}
         />
       ) : (
-        <View style={{marginRight: 10}}>
-        {avatar === 'organization' ? <OrganizationAvatarPlaceholder /> : <AvatarPlaceholder />}
+        <View style={{ marginRight: 10 }}>
+          {avatar === 'organization' ? <OrganizationAvatarPlaceholder /> : <AvatarPlaceholder />}
         </View>
       )}
 

@@ -6,31 +6,31 @@ import { router } from 'expo-router';
 export default function AccountSettingsScreen() {
   return (
     <View style={styles.container}>
-      <View style={{alignItems: 'flex-start'}}>
-      <Pressable onPress={() => router.push('/(settings)/change-password')} style={styles.pressable}>
-        <View style={styles.content}>
-        <MaterialIcons style={styles.icon} name="lock" size={20} color="black" />
-        <View>
-        <Text style={styles.label}>Vaihda Salasana</Text>
-        </View></View>
-      </Pressable> 
+      <View style={{ alignItems: 'flex-start' }}>
+        <Pressable onPress={() => router.push('/(settings)/change-password')} style={styles.pressable}>
+          <View style={styles.content}>
+            <MaterialIcons style={styles.icon} name="lock" size={20} color="black" />
+            <View>
+              <Text style={styles.label}>Vaihda Salasana</Text>
+            </View></View>
+        </Pressable>
 
-       <Pressable onPress={() => router.push('/(settings)/change-email')} style={styles.pressable}>
-        <View style={styles.content}>
-        <MaterialIcons style={styles.icon} name="mail" size={20} color="black" />
-        <View>
-        <Text style={styles.label}>Vaihda Sähköposti</Text>
-        </View></View>
-      </Pressable>
+        <Pressable onPress={() => router.push('/(settings)/change-email')} style={styles.pressable}>
+          <View style={styles.content}>
+            <MaterialIcons style={styles.icon} name="mail" size={20} color="black" />
+            <View>
+              <Text style={styles.label}>Vaihda Sähköposti</Text>
+            </View></View>
+        </Pressable>
 
-       <Pressable onPress={() => router.push('/(settings)/delete-user')} style={styles.pressable}>
-        <View style={styles.content}>
-        <MaterialIcons style={styles.icon} name="account-circle" size={20} color="black" />
-        <View>
-        <Text style={styles.label}>Poista käyttäjä</Text>
-        </View></View>
-      </Pressable>
-</View>
+        <Pressable onPress={() => router.push('/(settings)/delete-user')} style={styles.pressable}>
+          <View style={styles.content}>
+            <MaterialIcons style={styles.icon} name="account-circle" size={20} color="black" />
+            <View>
+              <Text style={styles.label}>Poista käyttäjä</Text>
+            </View></View>
+        </Pressable>
+      </View>
 
     </View>
   );
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-    label: {
+  label: {
     fontSize: 18,
     fontWeight: '800',
   },

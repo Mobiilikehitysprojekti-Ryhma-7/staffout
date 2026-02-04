@@ -15,7 +15,7 @@ export default function ChangeEmailScreen() {
         Alert.alert('', 'Sähköposti päivitetty onnistuneesti', [
             { text: 'OK', onPress: () => { } },
         ]);
-        
+
     const handleChangeEmail = async () => {
         setError(null);
         setLoading(true);
@@ -28,9 +28,9 @@ export default function ChangeEmailScreen() {
         } catch (e: any) {
             setError(e.message || "Virhe sähköpostin päivityksessä.");
         } finally {
-           setLoading(false); 
+            setLoading(false);
         }
-        
+
     }
     return (
         <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -54,13 +54,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 20,
-    width: '100%',
-    borderRadius: 5,
-  },
+        borderWidth: 1,
+        borderColor: '#ccc',
+        padding: 10,
+        marginBottom: 20,
+        width: '100%',
+        borderRadius: 5,
+    },
     separator: {
         marginVertical: 30,
         height: 1,
