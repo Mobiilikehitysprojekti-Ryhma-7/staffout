@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Alert, Button, Image, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
-import { MaterialIcons } from '@expo/vector-icons';
+import { AvatarPlaceholder } from './ui/AvatarPlaceholder';
 
 type Props = {
   title: string;
@@ -33,7 +33,7 @@ export default function ImagePickerComponent({ title, onImageSelected, photoURL 
     const resized = await manipulateAsync(
       renderedImage,
       [{ resize: { width: 400, height: 400 } }],
-      { compress: 1, format: SaveFormat.JPEG, base64: true }
+      { compress: 0.8, format: SaveFormat.JPEG, base64: true }
     );
 
     setImage(resized.uri);
@@ -48,7 +48,9 @@ export default function ImagePickerComponent({ title, onImageSelected, photoURL 
           style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }}
         />
       ) : (
-        <MaterialIcons name="account-circle" size={50} color="#E97A7A" style={{ marginRight: 10 }} />
+        <View style={{marginRight: 10}}>
+        <AvatarPlaceholder />
+        </View>
       )}
 
       <Button title={title} onPress={pickImage} />

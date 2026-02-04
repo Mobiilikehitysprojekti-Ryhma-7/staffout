@@ -1,17 +1,21 @@
 import { router, useFocusEffect } from 'expo-router';
 import { Text, View, SafeAreaView } from '@/src/components/Themed';
 import { Pressable, StyleSheet, Image } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { useUserProfile } from '@/src/hooks/useUserProfile';
 import { useEffect, useState, useCallback } from 'react';
 import { getOrganizationById } from '@/src/services/organizations.service';
+import {AvatarPlaceholder, OrganizationAvatarPlaceholder} from '@/src/components/ui/AvatarPlaceholder';
 
-export default function UserScreen() {
+export default function ProfileScreen() {
   const { user, reload } = useUserProfile();
   const [firstName, setFirstName] = useState(user?.first || "");
   const [lastName, setLastName] = useState(user?.last || "");
   const [photoURL, setPhotoURL] = useState(user?.photoURL || "");
-  const [organizationName, setOrganizationName] = useState(user?.organizationId || "");
+  const [organizationName, setOrganizationName] = useState("");
+  const [organizationAvatar, setOrganizationAvatar] = useState("");
+  const [organizationDescription, setOrganizationDescription] = useState("");
+
 
   useFocusEffect(
     useCallback(() => {
@@ -19,40 +23,40 @@ export default function UserScreen() {
     }, [reload])
   );
 
-   useEffect(() => {
-      if (user) {
-        setFirstName(user.first || "");
-        setLastName(user.last || "");
-        setPhotoURL(user.photoURL || "");
-        
-        if (user.organizationId) {
-          getOrganizationById(user.organizationId).then(org => {
-            if (org) {
-              setOrganizationName(org.name);
-            } else {
-              setOrganizationName("Tuntematon organisaatio");
-            }
-          })
-        }
+  useEffect(() => {
+    if (user) {
+      setFirstName(user.first || "");
+      setLastName(user.last || "");
+      setPhotoURL(user.photoURL || "");
+
+      if (user.organizationId) {
+        getOrganizationById(user.organizationId).then(o => {
+          if (o) {
+            setOrganizationName(o.name);
+            setOrganizationAvatar(o.photoURL || "");
+            setOrganizationDescription(o.description || "");
+          } else {
+            setOrganizationName("Tuntematon organisaatio");
+          }
+        })
       }
-    }, [user]);
+    }
+  }, [user]);
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20, backgroundColor: '#E3F1FF', padding: 10, borderRadius: 10, width: '100%' }}>
 
+
+      <View style={styles.card}>
         {photoURL ? (
           <Image source={{ uri: photoURL }}
-          style={{ width: 50, height: 50, borderRadius: 25 }} 
-          />
-          ) : (
-            <MaterialIcons name="account-circle" size={50} color="#E97A7A" />
-          )}
-
+            style={styles.avatar} />
+        ) : (
+          <AvatarPlaceholder />
+        )}
         <View style={{ flex: 1, marginHorizontal: 20, backgroundColor: 'transparent' }}>
           <Text style={styles.nameText}>
             {user ? `${firstName} ${lastName}` : 'Loading...'}
           </Text>
-          <Text style={styles.organizationText}>{organizationName}</Text>
         </View>
         <Pressable style={styles.actionBtn} onPress={() => router.push('/(settings)/settings')}>
           <MaterialIcons name="settings" size={20} color="#fff" />
@@ -60,9 +64,23 @@ export default function UserScreen() {
       </View>
 
 
+      {user?.organizationId && (
+        <View style={[styles.card, { marginBottom: 20 }]}>
+          {organizationAvatar ? (
+            <Image source={{ uri: organizationAvatar }} style={styles.avatar} />
+          ) : (
+            <OrganizationAvatarPlaceholder />
+          )}
+          <View style={{ flex: 1, marginHorizontal: 20, backgroundColor: 'transparent' }}>
+            <Text style={styles.subheader2}>{organizationName}</Text>
+            <Text style={styles.description}>{organizationDescription}</Text>
+          </View>
+        </View>
+      )}
+
 
       <Text style={styles.subheader}>Analytiikka</Text>
-       <Text style={styles.subheader}>Viime kuukauden tapahtumat</Text>
+      <Text style={styles.subheader}>Viime kuukauden tapahtumat</Text>
 
 
     </SafeAreaView>
@@ -74,6 +92,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     padding: 20,
+  },
+  avatar: {
+    width: 50, height: 50, borderRadius: 25
+  },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    backgroundColor: '#F5F5F5',
+    padding: 10,
+    borderRadius: 10,
+    width: '100%'
   },
   actionBtn: {
     width: 40,
@@ -87,7 +117,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "800",
   },
-  organizationText: {
+  subheader2: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#666",
+  },
+  description: {
     fontSize: 14,
     fontWeight: "400",
     color: "#666",
