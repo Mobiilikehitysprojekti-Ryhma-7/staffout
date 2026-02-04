@@ -12,7 +12,7 @@ export default function ChangePasswordScreen() {
 
     const PasswordChanged = () =>
         Alert.alert('', 'Salasana päivitetty onnistuneesti', [
-          {text: 'OK', onPress: () => {}},
+            { text: 'OK', onPress: () => { } },
         ]);
     const handleChangePassword = async () => {
         setError(null);
@@ -23,7 +23,7 @@ export default function ChangePasswordScreen() {
             return;
         }
 
-        if (newPassword.length < 6 ) {
+        if (newPassword.length < 6) {
             setError("Salasanan tulee olla vähintään 6 merkkiä pitkä.");
             setLoading(false);
             return;
@@ -39,7 +39,7 @@ export default function ChangePasswordScreen() {
         } catch (e: any) {
             setError(e.message || "Virhe salasanan päivityksessä.");
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     }
     return (
@@ -65,13 +65,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 20,
-    width: '100%',
-    borderRadius: 5,
-  },
+        borderWidth: 1,
+        borderColor: '#ccc',
+        padding: 10,
+        marginBottom: 20,
+        width: '100%',
+        borderRadius: 5,
+    },
     separator: {
         marginVertical: 30,
         height: 1,

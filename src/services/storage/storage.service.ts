@@ -4,14 +4,14 @@ import { decode } from 'base64-arraybuffer';
 
 export const uploadAvatar = async (base64: any) => {
   const uid = auth.currentUser?.uid;
-    const avatar = decode(base64);
+  const avatar = decode(base64);
   const { data, error } = await supabase
     .storage
     .from('avatars')
     .upload(`${uid}.jpg`, avatar, {
-        contentType: 'image/jpeg',
-        cacheControl: '3600',
-        upsert: true,
+      contentType: 'image/jpeg',
+      cacheControl: '3600',
+      upsert: true,
     });
   if (error) throw new Error(error.message);
   return data;
@@ -19,8 +19,31 @@ export const uploadAvatar = async (base64: any) => {
 
 export const getAvatarURL = async (path: string) => {
   const { data } = supabase
-  .storage
-  .from('avatars')
-  .getPublicUrl(path)
-  return data.publicUrl+'?t='+Date.now(); 
+    .storage
+    .from('avatars')
+    .getPublicUrl(path)
+  return data.publicUrl + '?t=' + Date.now();
 }
+
+export const uploadOrganizationAvatar = async (base64: any, oid: string) => {
+  const avatar = decode(base64);
+  const { data, error } = await supabase
+    .storage
+    .from('organizations')
+    .upload(`${oid}.jpg`, avatar, {
+      contentType: 'image/jpeg',
+      cacheControl: '3600',
+      upsert: true,
+    });
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+export const getOrganizationAvatarURL = async (path: string) => {
+  const { data } = supabase
+    .storage
+    .from('organizations')
+    .getPublicUrl(path)
+  return data.publicUrl + '?t=' + Date.now();
+}
+
