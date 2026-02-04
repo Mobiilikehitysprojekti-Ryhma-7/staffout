@@ -67,7 +67,7 @@ export default function CreateOrganizationScreen() {
         editable={!isLoading}
       />
 
-      <ImagePickerComponent title="Valitse organisaation kuva" onImageSelected={setBase64Image} />
+      <ImagePickerComponent title="Valitse organisaation kuva" onImageSelected={setBase64Image} avatar="organization" />
       <Button onPress={handleSubmit} disabled={isLoading} title="Luo Organisaatio" />
     </KeyboardAvoidingView>
   );

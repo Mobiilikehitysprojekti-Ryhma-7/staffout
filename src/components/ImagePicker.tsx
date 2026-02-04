@@ -2,15 +2,16 @@ import { useState } from 'react';
 import { Alert, Button, Image, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
-import { AvatarPlaceholder } from './ui/AvatarPlaceholder';
+import { AvatarPlaceholder, OrganizationAvatarPlaceholder } from './ui/AvatarPlaceholder';
 
 type Props = {
   title: string;
   onImageSelected?: (base64: any) => void;
   photoURL? : string;
+  avatar?: string
 };
 
-export default function ImagePickerComponent({ title, onImageSelected, photoURL }: Props) {
+export default function ImagePickerComponent({ title, onImageSelected, photoURL, avatar }: Props) {
   const [image, setImage] = useState<string | null>(null);
 
   const pickImage = async () => {
@@ -49,7 +50,7 @@ export default function ImagePickerComponent({ title, onImageSelected, photoURL 
         />
       ) : (
         <View style={{marginRight: 10}}>
-        <AvatarPlaceholder />
+        {avatar === 'organization' ? <OrganizationAvatarPlaceholder /> : <AvatarPlaceholder />}
         </View>
       )}
 
