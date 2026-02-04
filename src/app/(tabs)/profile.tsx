@@ -1,11 +1,11 @@
-import { router, useFocusEffect } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
 import { Text, View, SafeAreaView } from '@/src/components/Themed';
-import { Pressable, StyleSheet, Image } from 'react-native';
-import { MaterialIcons, Feather } from '@expo/vector-icons';
+import { StyleSheet, Image } from 'react-native';
 import { useUserProfile } from '@/src/hooks/useUserProfile';
 import { useEffect, useState, useCallback } from 'react';
 import { getOrganizationById } from '@/src/services/organizations.service';
-import {AvatarPlaceholder, OrganizationAvatarPlaceholder} from '@/src/components/ui/AvatarPlaceholder';
+import { AvatarPlaceholder, OrganizationAvatarPlaceholder } from '@/src/components/ui/AvatarPlaceholder';
+import SettingsButton from '@/src/components/ui/SettingsButton';
 
 export default function ProfileScreen() {
   const { user, reload } = useUserProfile();
@@ -58,9 +58,7 @@ export default function ProfileScreen() {
             {user ? `${firstName} ${lastName}` : 'Loading...'}
           </Text>
         </View>
-        <Pressable style={styles.actionBtn} onPress={() => router.push('/(settings)/settings')}>
-          <MaterialIcons name="settings" size={20} color="#fff" />
-        </Pressable>
+        <SettingsButton />
       </View>
 
 
@@ -72,8 +70,8 @@ export default function ProfileScreen() {
             <OrganizationAvatarPlaceholder />
           )}
           <View style={{ flex: 1, marginHorizontal: 20, backgroundColor: 'transparent' }}>
-            <Text style={styles.subheader2}>{organizationName}</Text>
-            <Text style={styles.description}>{organizationDescription}</Text>
+            {organizationName && <Text style={styles.subheader2}>{organizationName}</Text>}
+            {organizationDescription && <Text style={styles.description}>{organizationDescription}</Text>}
           </View>
         </View>
       )}
