@@ -3,6 +3,7 @@ import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../config/firebaseConfig";
 
 export type UserProfile = {
+  uid?: string;
   first?: string;
   last?: string;
   photoURL?: string;
@@ -58,6 +59,19 @@ export async function getUser(forceRefresh = false): Promise<UserProfile | null>
     return profile;
   } catch (error) {
     console.error("Error fetching user data:", error);
+    return null;
+  }
+}
+
+export async function getUserById(uid: string): Promise<UserProfile | null> {
+  try {
+    const snap = await getDoc(doc(db, "users", uid));
+    const data = snap.data();
+    if (!data) return null;
+    const profile: UserProfile = { uid: uid, first: data?.first, last: data?.last, photoURL: data?.photoURL, organizationId: data?.organizationId };
+    return profile;
+  } catch (error) {
+    console.error("Error fetching user data by ID:", error);
     return null;
   }
 }

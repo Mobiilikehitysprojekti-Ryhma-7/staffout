@@ -29,7 +29,7 @@ function RootLayoutNav() {
     const colorScheme = useColorScheme();
     const [initializing, setInitializing] = useState(true);
     const [user, setUser] = useState<any>();
-    const isMember = useOrganizationMembership(user);
+    const role = useOrganizationMembership();
 
     // Handle user state changes
     function handleAuthStateChanged(user: any) {
@@ -55,7 +55,7 @@ function RootLayoutNav() {
     return (
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <Stack>
-                <Stack.Protected guard={user && isMember}>
+                <Stack.Protected guard={user && role}>
                     <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: "none", title: "" }} />
                     <Stack.Screen name="(settings)/settings" options={{ animation: "default", title: "Asetukset" }} />
                     <Stack.Screen name="(settings)/account-settings" options={{ animation: "default", title: "Tiliasetukset" }} />
@@ -66,7 +66,7 @@ function RootLayoutNav() {
                     <Stack.Screen name="(settings)/delete-user" options={{ animation: "default", title: "Poista Käyttäjä" }} />
                 </Stack.Protected>
 
-                <Stack.Protected guard={user && !isMember}>
+                <Stack.Protected guard={user && !role}>
                     <Stack.Screen name="(organization)/setup-organization" options={{
                         animation: "default", title: "Organisaatio", headerRight: () => (
                             <HeaderLogoutButton />
@@ -74,6 +74,12 @@ function RootLayoutNav() {
                     }} />
                     <Stack.Screen name="(organization)/join-organization" options={{ animation: "default", title: "Liity Organisaatioon" }} />
                     <Stack.Screen name="(organization)/create-organization" options={{ animation: "default", title: "Luo Organisaatio" }} />
+                </Stack.Protected>
+
+                <Stack.Protected guard={user && role === "admin"}>
+                    <Stack.Screen name="(admin)/admin-settings" options={{ animation: "default", title: "Ylläpitäjän Asetukset" }} />
+                    <Stack.Screen name="(admin)/manage-members" options={{ animation: "default", title: "Hallitse Jäseniä" }} />
+                    <Stack.Screen name="(admin)/member-modal" options={{ presentation: 'modal', animation: "slide_from_bottom", title: "Jäsenen hallinta" }} />
                 </Stack.Protected>
 
                 <Stack.Protected guard={!user}>

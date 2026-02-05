@@ -5,6 +5,7 @@ import { useUserProfile } from '@/src/hooks/useUserProfile';
 import { useEffect, useState, useCallback } from 'react';
 import { getOrganizationById } from '@/src/services/organizations.service';
 import { AvatarPlaceholder, OrganizationAvatarPlaceholder } from '@/src/components/ui/AvatarPlaceholder';
+import OrganizationSettingsButton from '@/src/components/ui/OrganizationSettingsButton';
 import SettingsButton from '@/src/components/ui/SettingsButton';
 
 export default function ProfileScreen() {
@@ -63,16 +64,19 @@ export default function ProfileScreen() {
 
 
       {user?.organizationId && (
-        <View style={[styles.card, { marginBottom: 20 }]}>
-          {organizationAvatar ? (
-            <Image source={{ uri: organizationAvatar }} style={styles.avatar} />
-          ) : (
-            <OrganizationAvatarPlaceholder />
-          )}
-          <View style={{ flex: 1, marginHorizontal: 20, backgroundColor: 'transparent' }}>
-            {organizationName && <Text style={styles.subheader2}>{organizationName}</Text>}
-            {organizationDescription && <Text style={styles.description}>{organizationDescription}</Text>}
+        <View style={[styles.card, { flexDirection: 'column', marginBottom: 20 }]}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%', backgroundColor: 'transparent' }}>
+            {organizationAvatar ? (
+              <Image source={{ uri: organizationAvatar }} style={styles.avatar} />
+            ) : (
+              <OrganizationAvatarPlaceholder />
+            )}
+            <View style={{ flex: 1, marginHorizontal: 20, backgroundColor: 'transparent' }}>
+              {organizationName && <Text style={styles.subheader2}>{organizationName}</Text>}
+              {organizationDescription && <Text style={styles.description}>{organizationDescription}</Text>}
+            </View>
           </View>
+          <OrganizationSettingsButton />
         </View>
       )}
 
@@ -113,7 +117,7 @@ const styles = StyleSheet.create({
   },
   nameText: {
     fontSize: 18,
-    fontWeight: "800",
+    fontWeight: "600",
   },
   subheader2: {
     fontSize: 14,
@@ -127,7 +131,7 @@ const styles = StyleSheet.create({
   },
   subheader: {
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: '600',
     marginBottom: 20,
   }
 });
