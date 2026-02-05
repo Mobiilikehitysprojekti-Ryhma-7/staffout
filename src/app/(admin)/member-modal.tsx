@@ -1,45 +1,71 @@
 import { Text, Button, StyleSheet, Pressable } from 'react-native'
 import { View } from '@/src/components/Themed'
-import { router } from 'expo-router'
+import { useLocalSearchParams, router } from 'expo-router'
 import React from 'react'
 import { Image } from 'react-native';
 import { AvatarPlaceholder } from '@/src/components/ui/AvatarPlaceholder';
 import { Feather } from '@expo/vector-icons';
-type Props = {
-    first: string;
-    last: string;
-    photoURL?: string;
-    uid: string;
-    role: string;
-    oid: string
-}
-export default function MemberModal({ first, last, photoURL, uid, role, oid }: Props) {
+import { updateMemberRole, removeMemberFromOrganization } from '@/src/services/members.service';
+import { updateUserOrganization } from '@/src/services/users.service';
+import { useState } from 'react';
+
+export default function MemberModal() {
+  const params = useLocalSearchParams<{ first: string, last: string, photoURL?: string, uid: string, role: string, oid: string }>();
+  const { first, last, photoURL, uid, oid } = params;
+  const [role, setRole] = useState(params.role);
+
+  async function promoteToAdmin() {
+    if (oid) {
+      try {
+        await updateMemberRole(oid, uid, 'admin');
+        alert(`${first} ${last} on nyt organisaation admin!`);
+        setRole('admin');
+      }
+      catch (error) {
+        console.error("Error promoting member to admin:", error);
+      }
+    }
+  }
+
+  async function removeFromOrganization() {
+    if (oid) {
+      try {
+        await removeMemberFromOrganization(oid, uid);
+        await updateUserOrganization('', uid);
+        alert(`${first} ${last} on nyt poistettu organisaatiosta!`);
+        router.back();
+      } catch (error) {
+        console.error("Error removing member from organization:", error);
+      }
+    }
+  }
   return (
     <View style={styles.container}>
-         <View style={styles.card}>
-                {photoURL ? (
-                  <Image source={{ uri: photoURL }}
-                    style={styles.avatar} />
-                ) : (
-                  <AvatarPlaceholder />
-                )}
-                
-                  <View style={{ marginHorizontal: 20, backgroundColor: 'transparent', justifyContent: 'center', flex: 1 }}>
-                    <Text style={styles.nameText}>
-                      {first || "undefined"} {last || "undefined"}
-                    </Text>
-                    <Text style={styles.text}>
-                      uid: {uid || "Deleted User"}
-                    </Text>
-                    {role && <Text style={styles.text}>role: {role}</Text>}
-                  </View>
-            
-                <Pressable style={styles.actionBtn} onPress={() => {router.push('/(admin)/member-modal')}}>
-                    <Feather name="minimize" size={20} color="#fff" />
-                  </Pressable>
-              </View>
-        <Button title="Ylennä käyttäjä admin-rooliin"></Button>
-        <Button title="Poista käyttäjä organisaatiosta"></Button>
+      <View style={styles.card}>
+        {photoURL ? (
+          <Image source={{ uri: photoURL }}
+            style={styles.avatar} />
+        ) : (
+          <AvatarPlaceholder />
+        )}
+
+        <View style={{ marginHorizontal: 20, backgroundColor: 'transparent', justifyContent: 'center', flex: 1 }}>
+          <Text style={styles.nameText}>
+            {first || "undefined"} {last || "undefined"}
+          </Text>
+          <Text style={styles.text}>
+            uid: {uid || "uid not found"}
+          </Text>
+          {role && <Text style={styles.text}>role: {role}</Text>}
+        </View>
+
+        <Pressable style={styles.actionBtn} onPress={() => { router.back() }}>
+          <Feather name="minimize" size={20} color="#fff" />
+        </Pressable>
+      </View>
+      <Button title="Ylennä käyttäjä admin-rooliin" onPress={promoteToAdmin}></Button>
+      <View style={{ height: 10 }}></View>
+      <Button title="Poista käyttäjä organisaatiosta" onPress={removeFromOrganization}></Button>
     </View>
   )
 }

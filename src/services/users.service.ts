@@ -98,14 +98,19 @@ export async function updateUserProfile(first?: string, last?: string, photoURL?
   }
 }
 
-export async function updateUserOrganization(organizationId: string) {
+export async function updateUserOrganization(organizationId: string, uid: string = "") {
   const user = auth.currentUser;
-  if (!user) {
-    return;
+  if (!user) return
+  let userId
+
+  if (!uid) {
+    userId = user.uid;
+  } else {
+    userId = uid;
   }
   try {
     await setDoc(
-      doc(db, "users", user.uid),
+      doc(db, "users", userId),
       {
         organizationId,
       },

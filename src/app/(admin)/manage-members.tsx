@@ -14,7 +14,6 @@ export default function ManageMembersScreen() {
   const [members, setMembers] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<any[]>([]);
   const [loading, setLoading] = useState<Boolean>(true);
-  const [modalVisible, setModalVisible] = useState(false);
 
   async function getMembers() {
     if (oid) {
@@ -56,7 +55,7 @@ export default function ManageMembersScreen() {
   if (!loading)
     return (
       <View style={styles.container}>
-       
+
         <FlatList style={{ width: "100%" }}
           data={userProfile}
           renderItem={({ item }) => {
@@ -68,20 +67,20 @@ export default function ManageMembersScreen() {
                 ) : (
                   <AvatarPlaceholder />
                 )}
-                
-                  <View style={{ marginHorizontal: 20, backgroundColor: 'transparent', justifyContent: 'center', flex: 1 }}>
-                    <Text style={styles.nameText}>
-                      {item.first || "undefined"} {item.last || "undefined"}
-                    </Text>
-                    <Text style={styles.text}>
-                      uid: {item.uid || "Deleted User"}
-                    </Text>
-                    {item.role && <Text style={styles.text}>role: {item.role}</Text>}
-                  </View>
-            
-                <Pressable style={styles.actionBtn} onPress={() => {router.push('/(admin)/member-modal')}}>
-                    <Feather name="more-vertical" size={20} color="#fff" />
-                  </Pressable>
+
+                <View style={{ marginHorizontal: 20, backgroundColor: 'transparent', justifyContent: 'center', flex: 1 }}>
+                  <Text style={styles.nameText}>
+                    {item.first || "undefined"} {item.last || "undefined"}
+                  </Text>
+                  <Text style={styles.text}>
+                    uid: {item.uid || "uid not found"}
+                  </Text>
+                  {item.role && <Text style={styles.text}>role: {item.role}</Text>}
+                </View>
+
+                <Pressable style={styles.actionBtn} onPress={() => { router.push({ pathname: '/(admin)/member-modal', params: { first: item.first, last: item.last, photoURL: item.photoURL, uid: item.uid, role: item.role, oid } }) }}>
+                  <Feather name="more-vertical" size={20} color="#fff" />
+                </Pressable>
               </View>
             );
           }}
