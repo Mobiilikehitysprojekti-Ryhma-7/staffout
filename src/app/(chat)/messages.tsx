@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TextInput, Pressable, FlatList, KeyboardAvoidingView, Platform } from 'react-native'
-import { useLocalSearchParams, router, Stack } from 'expo-router'
+import { useLocalSearchParams, Stack } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import SendButton from '@/src/components/ui/MessageButtons';
 import { AvatarPlaceholder } from '@/src/components/ui/AvatarPlaceholder';
@@ -7,6 +7,7 @@ import { Image } from 'react-native';
 import { getMessages, createMessage } from '@/src/services/chat/messages.service';
 import { useUserProfile } from '@/src/hooks/useUserProfile';
 import { getUserById } from '@/src/services/users.service';
+import { useHeaderHeight } from '@react-navigation/elements';
 
 export default function MessagesModal() {
   const { user } = useUserProfile();
@@ -17,7 +18,7 @@ export default function MessagesModal() {
   const [attachments, setAttachments] = useState<string[]>([]);
   const [merged, setMerged] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
-
+  const headerHeight = useHeaderHeight();
   useEffect(() => {
     fetchMessages();
 
@@ -51,7 +52,9 @@ export default function MessagesModal() {
     fetchMessages();
   }
   return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+    <KeyboardAvoidingView style={styles.container} 
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    keyboardVerticalOffset={Platform.OS === "ios" ? headerHeight : 0}>
       <Stack.Screen
         options={{
           title: name,
@@ -59,8 +62,8 @@ export default function MessagesModal() {
       />
       <FlatList style={{ width: "100%" }}
         data={merged}
+        keyboardShouldPersistTaps="handled"
         renderItem={({ item }) => {
-          item.createdAt.toDate()
           return (
             <View style={styles.card}>
               {item.photoURL ? (
@@ -87,7 +90,7 @@ export default function MessagesModal() {
         }}
       />
 
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row', paddingTop: 10, width: "auto" }}>
         <TextInput style={styles.input} placeholder="Kirjoita viesti..." value={newMessage} onChangeText={setNewMessage} />
         <Pressable onPress={sendMessage} disabled={!newMessage.trim()}>
           <SendButton disabled={!newMessage.trim()} />
@@ -113,7 +116,8 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 20,
     borderRadius: 5,
-    width: '100%'
+    width: 'auto',
+     flex: 1
   },
   card: {
     alignItems: 'center',
