@@ -1,4 +1,4 @@
-import { Button, StyleSheet, FlatList, Image, Text, ActivityIndicator, Pressable, Modal } from 'react-native';
+import { StyleSheet, FlatList, Image, Text, ActivityIndicator, Pressable} from 'react-native';
 import { View } from '@/src/components/Themed';
 import { getAllMembersFromOrganization } from '@/src/services/members.service';
 import { useUserProfile } from '@/src/hooks/useUserProfile';
@@ -13,7 +13,7 @@ export default function ManageMembersScreen() {
   const oid = user?.organizationId;
   const [members, setMembers] = useState<any[]>([]);
   const [userProfile, setUserProfile] = useState<any[]>([]);
-  const [loading, setLoading] = useState<Boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   async function getMembers() {
     if (oid) {
@@ -38,9 +38,8 @@ export default function ManageMembersScreen() {
     }
     if (members.length > 0) {
       getUserProfile();
-    } else {
+    } 
       setLoading(false);
-    }
   }, [oid, members])
 
 

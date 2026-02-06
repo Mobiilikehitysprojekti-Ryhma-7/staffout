@@ -2,16 +2,19 @@ import { db } from "../../config/firebaseConfig";
 import { collection, addDoc, setDoc, getDoc, getDocs, doc } from "firebase/firestore";
 import { auth } from "../../config/firebaseConfig";
 
-function createChannel(currentOrg: string) {
-    const Ref = collection(db, "organizations", currentOrg, "channels");
-    addDoc(Ref, {
+export async function createChannel(oid: string) {
+    if (!auth.currentUser) return
+    const channelRef = collection(db, "organizations", oid, "channels");
+    const docRef = await addDoc(channelRef, {
         createdAt: new Date(),
-        createBy: auth.currentUser?.uid || "unknown",
         name: "test-channel",
     });
+    return docRef
 }
 
-function readAllChannelsFromOrg(currentOrg: string) {
-    const Ref = collection(db, "organizations", currentOrg, "channels");
-    return getDocs(Ref);
+export async function getChannels(oid: string) {
+    if (!auth.currentUser) return
+    const channelRef = collection(db, "organizations", oid, "channels");
+    const querySnapshot = await getDocs(channelRef);
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 }

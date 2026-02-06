@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   subheader2: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: "600",
     color: "#666",
   },

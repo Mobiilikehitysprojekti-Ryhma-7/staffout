@@ -64,6 +64,7 @@ function RootLayoutNav() {
                     <Stack.Screen name="(settings)/change-password" options={{ animation: "default", title: "Vaihda Salasana" }} />
                     <Stack.Screen name="(settings)/change-email" options={{ animation: "default", title: "Vaihda Sähköposti" }} />
                     <Stack.Screen name="(settings)/delete-user" options={{ animation: "default", title: "Poista Käyttäjä" }} />
+                    <Stack.Screen name="(chat)/messages" options={{ animation: "default", title: "" }} />
                 </Stack.Protected>
 
                 <Stack.Protected guard={user && !role}>

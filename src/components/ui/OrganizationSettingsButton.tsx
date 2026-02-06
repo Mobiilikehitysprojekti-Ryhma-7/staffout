@@ -9,7 +9,7 @@ export default function OrganizationSettingsButton() {
     if (role !== 'admin') return null;
   return (
        <Pressable style={styles.actionBtn} onPress={() => router.push('/(admin)/admin-settings')}>
-        <Text style={{ color: "#ffffff", fontWeight: "600" }}>Ylläpitäjän asetukset</Text>
+        <Text style={{ color: "#ffffff", fontWeight: "600", fontSize: 16 }}>Ylläpitäjän asetukset</Text>
           <Feather name="settings" size={20} color="#ffffff" />
         </Pressable>
   )

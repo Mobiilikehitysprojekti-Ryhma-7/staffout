@@ -63,7 +63,7 @@ export default function MemberModal() {
           <Feather name="minimize" size={20} color="#fff" />
         </Pressable>
       </View>
-      <Button title="Ylennä käyttäjä admin-rooliin" onPress={promoteToAdmin}></Button>
+      {role !== 'admin' && <Button title="Ylennä käyttäjä admin-rooliin" onPress={promoteToAdmin}></Button>}
       <View style={{ height: 10 }}></View>
       <Button title="Poista käyttäjä organisaatiosta" onPress={removeFromOrganization}></Button>
     </View>
