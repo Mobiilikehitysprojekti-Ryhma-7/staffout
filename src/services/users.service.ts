@@ -4,6 +4,7 @@ import { auth, db } from "../config/firebaseConfig";
 import { cleanCity } from "../utils/cleanCity";
 
 export type UserProfile = {
+  uid?: string;
   first?: string;
   last?: string;
   photoURL?: string;
@@ -64,16 +65,15 @@ export async function getUser(forceRefresh = false): Promise<UserProfile | null>
   }
 }
 
-export async function getUserById(userId: string) {
-  
+export async function getUserById(uid: string): Promise<UserProfile | null> {
   try {
-    const userSnap = await getDoc(doc(db, "users", userId));
-    if (userSnap.exists()) {
-      const user = { id: userSnap.id, ...userSnap.data() };
-      return user;
-    }
+    const snap = await getDoc(doc(db, "users", uid));
+    const data = snap.data();
+    if (!data) return null;
+    const profile: UserProfile = { uid: uid, first: data?.first, last: data?.last, photoURL: data?.photoURL, organizationId: data?.organizationId };
+    return profile;
   } catch (error) {
-    console.error("Error fetching user data:", error);
+    console.error("Error fetching user data by ID:", error);
     return null;
   }
 }
@@ -105,14 +105,19 @@ export async function updateUserProfile(first?: string, last?: string, photoURL?
   }
 }
 
-export async function updateUserOrganization(organizationId: string) {
+export async function updateUserOrganization(organizationId: string, uid: string = "") {
   const user = auth.currentUser;
-  if (!user) {
-    return;
+  if (!user) return
+  let userId
+
+  if (!uid) {
+    userId = user.uid;
+  } else {
+    userId = uid;
   }
   try {
     await setDoc(
-      doc(db, "users", user.uid),
+      doc(db, "users", userId),
       {
         organizationId,
       },
