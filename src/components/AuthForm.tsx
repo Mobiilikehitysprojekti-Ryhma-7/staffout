@@ -1,6 +1,7 @@
 import { Text, TextInput } from '@/src/components/Themed';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Button, KeyboardAvoidingView, StyleSheet, View } from 'react-native';
+import { cleanCity } from '../utils/cleanCity';
 
 interface AuthFormProps {
   email: string;
@@ -9,6 +10,8 @@ interface AuthFormProps {
   setFirstName: (firstName: string) => void;
   lastName: string;
   setLastName: (lastName: string) => void;
+  city: string;
+  setCity: (city: string) => void;
   password: string;
   setPassword: (password: string) => void;
   confirmPassword: string;
@@ -28,6 +31,8 @@ export default function AuthForm({
   setFirstName,
   lastName,
   setLastName,
+  city,
+  setCity,
   password,
   setPassword,
   confirmPassword,
@@ -39,6 +44,14 @@ export default function AuthForm({
   handleSignup,
   handleSignin,
 }: AuthFormProps) {
+
+  const cleaned = useMemo(() => cleanCity(city), [city]);
+
+  const cityError = useMemo(() => {
+    if (!city.trim()) return null;
+    return cleaned ? null : "Syötä oikea kaupunki (esim. Helsinki).";
+  }, [city, cleaned]);
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <TextInput placeholder="Sähköpostiosoite" value={email} onChangeText={setEmail} style={styles.input} autoCorrect={false} autoCapitalize="none" keyboardType="email-address" />
@@ -48,6 +61,12 @@ export default function AuthForm({
       {
         !signInScreen && <TextInput placeholder="Sukunimi" value={lastName} onChangeText={setLastName} style={styles.input} autoCorrect={false} />
       }
+      {
+        !signInScreen && <TextInput placeholder="Asuinkaupunki" value={city} onChangeText={setCity} style={styles.input} autoCorrect={false} maxLength={40} autoCapitalize="words" onBlur={() => setCity(cleanCity(city) ?? city)} />
+      }
+      {
+        cityError ? <Text style={{ color: 'red', marginBottom: 10 }}>{cityError}</Text> : null
+      }
       <TextInput placeholder="Salasana" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
       {
         !signInScreen && <TextInput placeholder="Vahvista salasana" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
@@ -56,7 +75,7 @@ export default function AuthForm({
         error ? <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text> : null
       }
       <View style={styles.button}>
-        <Button onPress={signInScreen ? handleSignin : handleSignup} title={loading ? (signInScreen ? "Kirjaudutaan..." : "Luodaan tiliä...") : (signInScreen ? "Kirjaudu" : "Luo tili")} disabled={loading} />
+        <Button onPress={signInScreen ? handleSignin : handleSignup} title={loading ? (signInScreen ? "Kirjaudutaan..." : "Luodaan tiliä...") : (signInScreen ? "Kirjaudu" : "Luo tili")} disabled={loading || !!cityError} />
       </View>
       {signInScreen && <Text style={styles.regularText} >Eikö sinulla ole tiliä? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Luo tili</Text></Text>}
       {!signInScreen && <Text style={styles.regularText} >Onko sinulla tili? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Kirjaudu sisään</Text></Text>}

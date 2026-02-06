@@ -47,7 +47,10 @@ export async function getAllMembersFromOrganization(organizationId: string) {
     const membersRef = collection(db, "organizations", organizationId, "members");
     const snap = await getDocs(membersRef);
     if (!snap.empty) {
-        return snap.docs.map(doc => doc.data());
+        return snap.docs.map((d) => ({
+            id: d.id,
+            ...d.data(),
+        }));
     }
 }
 
