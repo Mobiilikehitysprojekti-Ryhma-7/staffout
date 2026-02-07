@@ -28,8 +28,13 @@ export default function EventItem({ event }: any) {
       {
         text: "Delete",
         style: "destructive",
-        onPress: async () =>
-          deleteDoc(doc(db, "events", event.id))
+        onPress: async () => {
+          try {
+            await deleteDoc(doc(db, "organizations", event.organizationId, "events", event.id));
+          } catch (error) {
+            console.error("Error deleting event: ", error);
+          }
+        }
       }
     ]);
   };

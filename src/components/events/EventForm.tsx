@@ -1,4 +1,5 @@
 import { View, Text, TextInput, Button } from "react-native";
+import { StyleSheet } from "react-native";
 import { useState } from "react";
 import {
   addDoc,
@@ -9,7 +10,8 @@ import {
 import { db, auth } from "../../config/firebaseConfig";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-export default function EventForm() {
+
+export default function EventForm({ onEventCreated }: { onEventCreated?: (event: any) => void } = {}) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [eventDate, setEventDate] = useState(new Date());
@@ -18,7 +20,7 @@ export default function EventForm() {
   const createEvent = async () => {
     if (!title.trim()) return;
 
-    await addDoc(collection(db, "events"), {
+    const docRef = await addDoc(collection(db, "events"), {
       title,
       description,
       eventDate: Timestamp.fromDate(eventDate),
@@ -27,13 +29,25 @@ export default function EventForm() {
       createdAt: serverTimestamp()
     });
 
+    // Optionally fetch the created event data (with id)
+    const newEvent = {
+      id: docRef.id,
+      title,
+      description,
+      eventDate,
+      participants: [],
+      createdBy: auth.currentUser?.uid,
+      createdAt: new Date(), // serverTimestamp is not available immediately, so use local time for now
+    };
+    if (onEventCreated) onEventCreated(newEvent);
+
     setTitle("");
     setDescription("");
     setEventDate(new Date());
   };
 
   return (
-    <View style={{ marginBottom: 24 }}>
+    <View style={{marginBottom: 24}}>
       <Text style={{ fontSize: 20 }}>Create Event</Text>
 
       <TextInput
@@ -73,3 +87,12 @@ export default function EventForm() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  createEvent: {
+    backgroundColor: "#E97A7A",
+    padding: 12,
+    minHeight: 110,
+    position: "relative",
+  },
+});
