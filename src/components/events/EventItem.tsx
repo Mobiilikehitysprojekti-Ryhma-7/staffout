@@ -50,7 +50,11 @@ export default function EventItem({ event, onPress }: any) {
     >
       <Pressable onPress={onPress}>
         <Text style={{ fontSize: 18 }}>{event.title}</Text>
-        <Text>{event.description}</Text>
+        <Text>
+          {event.description && event.description.length > 60
+            ? event.description.slice(0, 60) + '...'
+            : event.description}
+        </Text>
 
         <Text>
           📅 {event.eventDate?.toDate().toLocaleString()}
