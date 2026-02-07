@@ -1,5 +1,4 @@
 import { View, Text, TextInput, Button } from "react-native";
-import { StyleSheet } from "react-native";
 import { useState } from "react";
 import {
   addDoc,
@@ -48,17 +47,17 @@ export default function EventForm({ onEventCreated }: { onEventCreated?: (event:
 
   return (
     <View style={{marginBottom: 24}}>
-      <Text style={{ fontSize: 20 }}>Create Event</Text>
+      <Text style={{ fontSize: 20, fontWeight: "bold" }}>Tapahtumat</Text>
 
       <TextInput
-        placeholder="Title"
+        placeholder="Otsikko"
         value={title}
         onChangeText={setTitle}
         style={{ borderWidth: 1, padding: 8, marginVertical: 6 }}
       />
 
       <TextInput
-        placeholder="Description"
+        placeholder="Tapahtuman kuvaus"
         value={description}
         onChangeText={setDescription}
         style={{ borderWidth: 1, padding: 8, marginBottom: 6 }}
@@ -83,16 +82,8 @@ export default function EventForm({ onEventCreated }: { onEventCreated?: (event:
     />
 )}
 
-      <Button title="Create Event" onPress={createEvent} />
+      <Button title="Luo tapahtuma" onPress={createEvent} />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  createEvent: {
-    backgroundColor: "#E97A7A",
-    padding: 12,
-    minHeight: 110,
-    position: "relative",
-  },
-});

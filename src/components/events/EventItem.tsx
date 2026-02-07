@@ -1,4 +1,4 @@
-import { View, Text, Button, Alert } from "react-native";
+import { View, Text, Button, Alert, Pressable } from "react-native";
 import {
   doc,
   updateDoc,
@@ -8,7 +8,7 @@ import {
 } from "firebase/firestore";
 import { db, auth } from "../../config/firebaseConfig";
 
-export default function EventItem({ event }: any) {
+export default function EventItem({ event, onPress }: any) {
   const userId = auth.currentUser?.uid;
   const isParticipant = event.participants?.includes(userId);
 
@@ -23,10 +23,10 @@ export default function EventItem({ event }: any) {
   };
 
   const deleteEvent = async () => {
-    Alert.alert("Delete event?", "This cannot be undone", [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert("Poista tapahtuma?", "Toimintoa ei voi peruuttaa", [
+      { text: "Peruuta", style: "cancel" },
       {
-        text: "Delete",
+        text: "Poista",
         style: "destructive",
         onPress: async () => {
           try {
@@ -48,23 +48,25 @@ export default function EventItem({ event }: any) {
         marginBottom: 12
       }}
     >
-      <Text style={{ fontSize: 18 }}>{event.title}</Text>
-      <Text>{event.description}</Text>
+      <Pressable onPress={onPress}>
+        <Text style={{ fontSize: 18 }}>{event.title}</Text>
+        <Text>{event.description}</Text>
 
-      <Text>
-        📅 {event.eventDate?.toDate().toLocaleString()}
-      </Text>
+        <Text>
+          📅 {event.eventDate?.toDate().toLocaleString()}
+        </Text>
 
-      <Text>
-        👥 {event.participants?.length || 0}
-      </Text>
+        <Text>
+          👥 {event.participants?.length || 0}
+        </Text>
+      </Pressable>
 
       <Button
-        title={isParticipant ? "Leave" : "Join"}
+        title={isParticipant ? "Poistu" : "Liity"}
         onPress={toggleParticipation}
       />
 
-      <Button title="Delete" color="red" onPress={deleteEvent} />
+      <Button title="Poista tapahtuma" color="red" onPress={deleteEvent} />
     </View>
   );
 }

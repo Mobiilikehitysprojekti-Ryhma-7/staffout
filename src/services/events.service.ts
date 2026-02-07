@@ -8,7 +8,8 @@ type createEventParams = {
     startDate: Date, 
     endDate: Date, 
     photoURL: string, 
-    location: string
+    location: string,
+    id: string
 }
 
 type Event = {
@@ -23,8 +24,8 @@ type Event = {
     createdBy: string
 }
 
-export async function createEvent({organizationId, description, title, startDate, endDate, photoURL, location}: createEventParams) {
-    const Ref = collection(db, "organizations", organizationId, "events");
+export async function createEvent({organizationId, description, title, startDate, endDate, photoURL, location, id}: createEventParams) {
+    const Ref = collection(db, "organizations", organizationId, "events", id);
     if (!auth.currentUser) return;
     await addDoc(Ref, {
         createdAt: new Date(),
@@ -34,7 +35,8 @@ export async function createEvent({organizationId, description, title, startDate
         startDate,
         endDate,
         photoURL,
-        location
+        location,
+        id
     });
 }
 export async function getAllEventsFromOrganization(organizationId: string): Promise<Event[]> {
