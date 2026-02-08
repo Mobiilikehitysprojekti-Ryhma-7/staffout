@@ -7,7 +7,7 @@ import {
   arrayRemove
 } from "firebase/firestore";
 import { db, auth } from "../../config/firebaseConfig";
-// import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 
 export default function EventItem({ event, onPress, showActions = true }: any) {
   const userId = auth.currentUser?.uid;
@@ -66,6 +66,19 @@ export default function EventItem({ event, onPress, showActions = true }: any) {
           👥 {event.participants?.length || 0}
         </Text>
       </Pressable>
+
+       <MapView
+        style={{ height: 150, marginVertical: 8 }}
+        region={{
+        latitude: event.latitude,
+        longitude: event.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }}
+      >
+        <Marker coordinate={{ latitude: event.latitude, longitude: event.longitude }} />
+      </MapView>
+
 
       {showActions && (
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 8 }}>

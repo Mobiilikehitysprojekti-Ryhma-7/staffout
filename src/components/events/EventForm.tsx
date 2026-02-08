@@ -8,7 +8,7 @@ import {
 } from "firebase/firestore";
 import { db, auth } from "../../config/firebaseConfig";
 import DateTimePicker from "@react-native-community/datetimepicker";
-// import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 
 
 export default function EventForm({ onEventCreated }: { onEventCreated?: (event: any) => void } = {}) {
@@ -16,11 +16,11 @@ export default function EventForm({ onEventCreated }: { onEventCreated?: (event:
   const [description, setDescription] = useState("");
   const [eventDate, setEventDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
-  // const [location, setLocation] = useState<{ latitude: number, longitude: number } | null>(null);
+  const [location, setLocation] = useState<{ latitude: number, longitude: number } | null>(null);
 
   const createEvent = async () => {
     if (!title.trim()) return;
-    // if (!location) return; // Require location
+    if (!location) return; // Require location
 
     const docRef = await addDoc(collection(db, "events"), {
       title,
@@ -29,8 +29,8 @@ export default function EventForm({ onEventCreated }: { onEventCreated?: (event:
       participants: [],
       createdBy: auth.currentUser?.uid,
       createdAt: serverTimestamp(),
-      //latitude: location.latitude,
-      //longitude: location.longitude,
+      latitude: location.latitude,
+      longitude: location.longitude,
     });
 
     // Optionally fetch the created event data (with id)
@@ -88,6 +88,22 @@ export default function EventForm({ onEventCreated }: { onEventCreated?: (event:
           />
         )}
       </View>
+
+       <MapView
+        style={{ height: 200, marginVertical: 12 }}
+        initialRegion={{
+          latitude: 60.1699, // Default Helsinki
+          longitude: 24.9384,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+      }}
+        onPress={e => setLocation(e.nativeEvent.coordinate)}
+      >
+        {location && (
+      <Marker coordinate={location} />
+      )}
+      </MapView>
+
 
       <View style={{ marginBottom: 8 }}>
         <Button title="Luo tapahtuma" onPress={createEvent} color="#888" />
