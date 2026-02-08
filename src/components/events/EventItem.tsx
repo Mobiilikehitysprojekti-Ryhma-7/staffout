@@ -9,7 +9,7 @@ import {
 import { db, auth } from "../../config/firebaseConfig";
 // import MapView, { Marker } from 'react-native-maps';
 
-export default function EventItem({ event, onPress }: any) {
+export default function EventItem({ event, onPress, showActions = true }: any) {
   const userId = auth.currentUser?.uid;
   const isParticipant = event.participants?.includes(userId);
 
@@ -67,15 +67,17 @@ export default function EventItem({ event, onPress }: any) {
         </Text>
       </Pressable>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 8 }}>
-        <Button
-          title={isParticipant ? "Poistu" : "Liity"}
-          onPress={toggleParticipation}
-          color="#888"
-        />
-        <View style={{ width: 12 }} />
-        <Button title="Poista tapahtuma" color="#B32626" onPress={deleteEvent} />
-      </View>
+      {showActions && (
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 8 }}>
+          <Button
+            title={isParticipant ? "Poistu" : "Liity"}
+            onPress={toggleParticipation}
+            color="#888"
+          />
+          <View style={{ width: 12 }} />
+          <Button title="Poista tapahtuma" color="#B32626" onPress={deleteEvent} />
+        </View>
+      )}
     </View>
   );
 }

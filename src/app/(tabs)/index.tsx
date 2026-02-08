@@ -8,6 +8,8 @@ import { LatestBenefits } from "../../components/benefits/LatestBenefits";
 import { BenefitDetailsModal } from "../../components/benefits/BenefitDetailsModal";
 import { useBenefitDetails } from "../../hooks/useBenefitDetails";
 import { useOrganizationBenefits } from '@/src/hooks/useOrganizationBenefits';
+import { useOrganizationEvents } from '@/src/hooks/useOrganizationEvents';
+import HomeEventPreview from "../../components/events/HomeEventPreview";
 
 export default function TabOneScreen() {
   const router = useRouter();
@@ -17,6 +19,7 @@ export default function TabOneScreen() {
   const first = user?.first || "";
   
   const { items: benefits } = useOrganizationBenefits(user?.organizationId);
+  const { items: events } = useOrganizationEvents(user?.organizationId);
 
    useFocusEffect(
       useCallback(() => {
@@ -51,6 +54,10 @@ export default function TabOneScreen() {
           benefit={ubd.selectedBenefit}
           onClose={ubd.closeBenefit}
         />
+        <HomeEventPreview
+          events={events}
+          onNavigate={() => router.push("/events")}
+          />
       </View>
     </SafeAreaView>
   );

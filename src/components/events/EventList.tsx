@@ -12,7 +12,11 @@ export default function EventList({ events }: { events: any[] }) {
   return (
     <>
       <FlatList
-        data={events}
+        data={[...events].sort((a, b) => {
+          const dateA = a.eventDate?.toDate ? a.eventDate.toDate() : new Date(a.eventDate);
+          const dateB = b.eventDate?.toDate ? b.eventDate.toDate() : new Date(b.eventDate);
+          return dateB.getTime() - dateA.getTime();
+        })}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <EventItem event={item} onPress={() => handleOpenModal(item)} />
