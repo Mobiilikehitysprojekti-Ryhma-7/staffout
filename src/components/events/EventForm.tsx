@@ -8,7 +8,7 @@ import {
 } from "firebase/firestore";
 import { db, auth } from "../../config/firebaseConfig";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import MapView, { Marker } from 'react-native-maps';
+// import MapView, { Marker } from 'react-native-maps';
 
 
 export default function EventForm({ onEventCreated }: { onEventCreated?: (event: any) => void } = {}) {
