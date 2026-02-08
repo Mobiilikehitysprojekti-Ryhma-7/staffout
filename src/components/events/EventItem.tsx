@@ -7,6 +7,7 @@ import {
   arrayRemove
 } from "firebase/firestore";
 import { db, auth } from "../../config/firebaseConfig";
+// import MapView, { Marker } from 'react-native-maps';
 
 export default function EventItem({ event, onPress }: any) {
   const userId = auth.currentUser?.uid;
@@ -45,7 +46,8 @@ export default function EventItem({ event, onPress }: any) {
         borderWidth: 1,
         borderRadius: 8,
         padding: 12,
-        marginBottom: 12
+        marginBottom: 12,
+        backgroundColor: "#E97A7Af0"
       }}
     >
       <Pressable onPress={onPress}>
@@ -65,12 +67,15 @@ export default function EventItem({ event, onPress }: any) {
         </Text>
       </Pressable>
 
-      <Button
-        title={isParticipant ? "Poistu" : "Liity"}
-        onPress={toggleParticipation}
-      />
-
-      <Button title="Poista tapahtuma" color="red" onPress={deleteEvent} />
+      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 8 }}>
+        <Button
+          title={isParticipant ? "Poistu" : "Liity"}
+          onPress={toggleParticipation}
+          color="#888"
+        />
+        <View style={{ width: 12 }} />
+        <Button title="Poista tapahtuma" color="#B32626" onPress={deleteEvent} />
+      </View>
     </View>
   );
 }

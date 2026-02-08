@@ -8,6 +8,7 @@ import {
 } from "firebase/firestore";
 import { db, auth } from "../../config/firebaseConfig";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import MapView, { Marker } from 'react-native-maps';
 
 
 export default function EventForm({ onEventCreated }: { onEventCreated?: (event: any) => void } = {}) {
@@ -15,9 +16,11 @@ export default function EventForm({ onEventCreated }: { onEventCreated?: (event:
   const [description, setDescription] = useState("");
   const [eventDate, setEventDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
+  // const [location, setLocation] = useState<{ latitude: number, longitude: number } | null>(null);
 
   const createEvent = async () => {
     if (!title.trim()) return;
+    // if (!location) return; // Require location
 
     const docRef = await addDoc(collection(db, "events"), {
       title,
@@ -25,7 +28,9 @@ export default function EventForm({ onEventCreated }: { onEventCreated?: (event:
       eventDate: Timestamp.fromDate(eventDate),
       participants: [],
       createdBy: auth.currentUser?.uid,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
+      //latitude: location.latitude,
+      //longitude: location.longitude,
     });
 
     // Optionally fetch the created event data (with id)
@@ -63,26 +68,30 @@ export default function EventForm({ onEventCreated }: { onEventCreated?: (event:
         style={{ borderWidth: 1, padding: 8, marginBottom: 6 }}
       />
 
-      <Button
-        title={`📅 ${eventDate.toLocaleString()}`}
-        onPress={() => setShowPicker(true)}
-      />
-
-      {showPicker && (
-        <DateTimePicker
-          value={eventDate}
-          mode="datetime"
-          display="default"
-          onChange={(_, selectedDate) => {
-            setShowPicker(false);
-            if (selectedDate) {
+      <View style={{ marginBottom: 16 }}>
+        <Button
+          title={`📅 ${eventDate.toLocaleString()}`}
+          onPress={() => setShowPicker(true)}
+          color="#888"
+        />
+        {showPicker && (
+          <DateTimePicker
+            value={eventDate}
+            mode="datetime"
+            display="default"
+            onChange={(_, selectedDate) => {
+              setShowPicker(false);
+              if (selectedDate) {
                 setEventDate(selectedDate);
-          }}
-        }
-    />
-)}
+              }
+            }}
+          />
+        )}
+      </View>
 
-      <Button title="Luo tapahtuma" onPress={createEvent} />
+      <View style={{ marginBottom: 8 }}>
+        <Button title="Luo tapahtuma" onPress={createEvent} color="#888" />
+      </View>
     </View>
   );
 }
