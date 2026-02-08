@@ -1,4 +1,4 @@
-import { FontAwesome, EvilIcons, Feather } from "@expo/vector-icons";
+import { FontAwesome, EvilIcons, Feather, MaterialIcons } from "@expo/vector-icons";
 
 export const tabConfig = {
   index: { title: "", Icon: FontAwesome, name: "home" as const },
