@@ -1,5 +1,5 @@
 import { db } from "../config/firebaseConfig";
-import { collection, addDoc, setDoc, getDoc, getDocs, doc, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, setDoc, getDoc, getDocs, doc, onSnapshot, deleteDoc } from "firebase/firestore";
 import { auth } from "../config/firebaseConfig";
 
 export async function createMember(role: string, organizationId: string) {
@@ -33,36 +33,19 @@ export async function updateMemberRole(organizationId: string, uid: string, newR
 
 export async function removeMemberFromOrganization(organizationId: string, uid: string) {
     const memberRef = doc(db, "organizations", organizationId, "members", uid);
-    await setDoc(memberRef, {}, { merge: true });
-}
-
-export async function isMemberOfOrganization(organizationId: string): Promise<boolean> {
-    if (!auth.currentUser) return false;
-    const memberRef = doc(db, "organizations", organizationId, "members", auth.currentUser?.uid);
-    const snap = await getDoc(memberRef);
-    return snap.exists();
+    await deleteDoc(memberRef);
 }
 
 export async function getAllMembersFromOrganization(organizationId: string) {
-    const membersRef = collection(db, "organizations", organizationId, "members");
-    const snap = await getDocs(membersRef);
-    if (!snap.empty) {
-        return snap.docs.map(doc => doc.data());
-    }
-}
-
-export async function getMemberRole(organizationId: string, uid: string) {
-    const memberRef = doc(db, "organizations", organizationId, "members", uid);
-    const snap = await getDoc(memberRef);
-    if (snap.exists()) {
-        return snap.data().role;
-    }
+    const memberRef = collection(db, "organizations", organizationId, "members");
+    const querySnapshot = await getDocs(memberRef);
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 }
 
 // monitor membership status in real-time
 export function subscribeToOrganizationMembership(
     organizationId: string,
-    callback: (isMember: boolean) => void
+    callback: (role: string | false) => void
 ) {
     const user = auth.currentUser
     if (!user) return () => { }
@@ -76,6 +59,10 @@ export function subscribeToOrganizationMembership(
     )
 
     return onSnapshot(memberRef, snap => {
-        callback(snap.exists())
+        if (!snap.exists()) {
+            callback(false)
+            return
+        }
+        callback(snap.data().role)
     })
 }

@@ -1,15 +1,22 @@
 import { useState } from 'react';
-import { Alert, Button, Image, View, StyleSheet } from 'react-native';
+import { Alert, Button, Image, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-const defaultProfile = require('../../assets/default-profile.png');
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import { AvatarPlaceholder, OrganizationAvatarPlaceholder } from './ui/AvatarPlaceholder';
 
-export default function ImagePickerComponent() {
+type Props = {
+  title: string;
+  onImageSelected?: (base64: any) => void;
+  photoURL?: string;
+  avatar?: string
+};
+
+export default function ImagePickerComponent({ title, onImageSelected, photoURL, avatar }: Props) {
   const [image, setImage] = useState<string | null>(null);
 
   const pickImage = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (!permissionResult.granted) {
+    const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!granted) {
       Alert.alert('Permission required', 'Permission to access the media library is required.');
       return;
     }
@@ -17,22 +24,37 @@ export default function ImagePickerComponent() {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [1, 1],
       quality: 1,
     });
 
-    console.log(result);
+    if (result.canceled) return;
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-    }
+    const renderedImage = result.assets[0].uri;
+    const resized = await manipulateAsync(
+      renderedImage,
+      [{ resize: { width: 400, height: 400 } }],
+      { compress: 0.8, format: SaveFormat.JPEG, base64: true }
+    );
+
+    setImage(resized.uri);
+    onImageSelected?.(resized.base64);
   };
 
   return (
     <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-     <Image source={image ? { uri: image } : defaultProfile}
-          style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }} />
-      <Button title="Valitse profiilikuva" onPress={pickImage} />
+      {image || photoURL ? (
+        <Image
+          source={image ? { uri: image } : photoURL ? { uri: photoURL } : undefined}
+          style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }}
+        />
+      ) : (
+        <View style={{ marginRight: 10 }}>
+          {avatar === 'organization' ? <OrganizationAvatarPlaceholder /> : <AvatarPlaceholder />}
+        </View>
+      )}
+
+      <Button title={title} onPress={pickImage} />
     </View>
   );
 }

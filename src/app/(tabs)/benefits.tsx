@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BENEFITS } from "../../types/benefit";
 import { BenefitsHeader } from "../../components/benefits/BenefitsHeader";
 import { BenefitsFilterModal } from "../../components/benefits/BenefitsFilterModal";
 import { BenefitsSortModal } from "../../components/benefits/BenefitsSortModal";
@@ -9,14 +8,19 @@ import { BenefitDetailsModal } from "../../components/benefits/BenefitDetailsMod
 import { BenefitsList } from "../../components/benefits/BenefitsList";
 import { useBenefits } from "../../hooks/useBenefits";
 import { useBenefitDetails } from "../../hooks/useBenefitDetails";
+import { useOrganizationBenefits } from "@/src/hooks/useOrganizationBenefits";
+import { useUserProfile } from "@/src/hooks/useUserProfile";
 
 export default function Benefits() {
   // Modal visibility UI-only state
   const [filterOpen, setFilterOpen] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
 
+  const { user } = useUserProfile();
+  const { items: benefits } = useOrganizationBenefits(user?.organizationId);
+
   // List state
-  const ub = useBenefits(BENEFITS, "validUntil");
+  const ub = useBenefits(benefits, "validUntil");
   // Details modal state
   const ubd = useBenefitDetails();
 

@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 
 type Organization = {
@@ -8,14 +8,30 @@ type Organization = {
     createdAt: Date;
 };
 
-export async function createOrganization(name: string, description?: string, photoURL?: string): Promise<string> {
+export async function createOrganization(name: string, description?: string): Promise<string> {
     const docRef = await addDoc(collection(db, "organizations"), {
         name,
         description,
-        photoURL,
         createdAt: new Date(),
     });
     return docRef.id;
+}
+
+export async function updateOrganization(oid: string, name?: string, description?: string, photoURL?: string) {
+    try {
+        const updateData: any = {}
+        if (name !== undefined) updateData.name = name;
+        if (description !== undefined) updateData.description = description;
+        if (photoURL !== undefined) updateData.photoURL = photoURL;
+
+        await setDoc(
+            doc(db, "organizations", oid),
+            updateData,
+            { merge: true });
+    } catch (error) {
+        console.error("Error updating organization: ", error);
+
+    }
 }
 
 export async function getOrganizationById(orgId: string): Promise<Organization | null> {
@@ -27,4 +43,4 @@ export async function getOrganizationById(orgId: string): Promise<Organization |
         return null;
     }
 }
-    
+

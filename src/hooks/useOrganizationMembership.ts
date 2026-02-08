@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { subscribeToUserOrganization } from '../services/users.service';
 import { subscribeToOrganizationMembership } from '../services/members.service';
-
-export function useOrganizationMembership(user: any) {
-    const [isMember, setIsMember] = useState(false);
+import { auth } from '../config/firebaseConfig'
+export function useOrganizationMembership() {
+    const user = auth.currentUser
+    const [role, setRole] = useState<string | false>(false);
 
     useEffect(() => {
         if (!user) {
-            setIsMember(false);
+            setRole(false);
             return;
         }
 
@@ -16,7 +17,7 @@ export function useOrganizationMembership(user: any) {
 
         unsubscribeOrg = subscribeToUserOrganization(orgId => {
             if (!orgId) {
-                setIsMember(false);
+                setRole(false);
                 if (unsubscribeMember) unsubscribeMember();
                 return;
             }
@@ -25,7 +26,7 @@ export function useOrganizationMembership(user: any) {
 
             unsubscribeMember = subscribeToOrganizationMembership(
                 orgId,
-                isMember => setIsMember(isMember)
+                role => setRole(role)
             );
         });
 
@@ -35,5 +36,5 @@ export function useOrganizationMembership(user: any) {
         };
     }, [user]);
 
-    return isMember;
+    return role;
 }
