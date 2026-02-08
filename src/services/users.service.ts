@@ -70,7 +70,7 @@ export async function getUserById(uid: string): Promise<UserProfile | null> {
     const snap = await getDoc(doc(db, "users", uid));
     const data = snap.data();
     if (!data) return null;
-    const profile: UserProfile = { uid: uid, first: data?.first, last: data?.last, photoURL: data?.photoURL, organizationId: data?.organizationId };
+    const profile: UserProfile = { uid: uid, first: data?.first, last: data?.last, photoURL: data?.photoURL, organizationId: data?.organizationId, city: data?.city };
     return profile;
   } catch (error) {
     console.error("Error fetching user data by ID:", error);

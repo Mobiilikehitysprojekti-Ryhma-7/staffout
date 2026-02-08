@@ -1,7 +1,8 @@
 import { Text, TextInput } from '@/src/components/Themed';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Button, KeyboardAvoidingView, StyleSheet, View } from 'react-native';
-import { cleanCity } from '../utils/cleanCity';
+import { PRESET_CITIES } from '@/src/constants/cities'
+import { CitySelect } from '@/src/components/ui/CitySelect'
 
 interface AuthFormProps {
   email: string;
@@ -45,13 +46,6 @@ export default function AuthForm({
   handleSignin,
 }: AuthFormProps) {
 
-  const cleaned = useMemo(() => cleanCity(city), [city]);
-
-  const cityError = useMemo(() => {
-    if (!city.trim()) return null;
-    return cleaned ? null : "Syötä oikea kaupunki (esim. Helsinki).";
-  }, [city, cleaned]);
-
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <TextInput placeholder="Sähköpostiosoite" value={email} onChangeText={setEmail} style={styles.input} autoCorrect={false} autoCapitalize="none" keyboardType="email-address" />
@@ -62,10 +56,7 @@ export default function AuthForm({
         !signInScreen && <TextInput placeholder="Sukunimi" value={lastName} onChangeText={setLastName} style={styles.input} autoCorrect={false} />
       }
       {
-        !signInScreen && <TextInput placeholder="Asuinkaupunki" value={city} onChangeText={setCity} style={styles.input} autoCorrect={false} maxLength={40} autoCapitalize="words" onBlur={() => setCity(cleanCity(city) ?? city)} />
-      }
-      {
-        cityError ? <Text style={{ color: 'red', marginBottom: 10 }}>{cityError}</Text> : null
+        !signInScreen && <CitySelect value={city} onChange={setCity} options={PRESET_CITIES}/>
       }
       <TextInput placeholder="Salasana" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
       {
@@ -75,7 +66,7 @@ export default function AuthForm({
         error ? <Text style={{ color: 'red', marginBottom: 10 }}>{error}</Text> : null
       }
       <View style={styles.button}>
-        <Button onPress={signInScreen ? handleSignin : handleSignup} title={loading ? (signInScreen ? "Kirjaudutaan..." : "Luodaan tiliä...") : (signInScreen ? "Kirjaudu" : "Luo tili")} disabled={loading || !!cityError} />
+        <Button onPress={signInScreen ? handleSignin : handleSignup} title={loading ? (signInScreen ? "Kirjaudutaan..." : "Luodaan tiliä...") : (signInScreen ? "Kirjaudu" : "Luo tili")} disabled={loading} />
       </View>
       {signInScreen && <Text style={styles.regularText} >Eikö sinulla ole tiliä? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Luo tili</Text></Text>}
       {!signInScreen && <Text style={styles.regularText} >Onko sinulla tili? <Text onPress={() => setSignInScreen(!signInScreen)} style={styles.boldText}>Kirjaudu sisään</Text></Text>}

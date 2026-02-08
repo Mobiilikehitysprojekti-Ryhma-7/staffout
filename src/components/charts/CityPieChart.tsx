@@ -6,7 +6,8 @@ import { useOrganizationUsers } from "@/src/hooks/useOrganizationUsers";
 import { CHART_PALETTE } from "@/src/constants/chartColors";
 import type { CityStat } from "@/src/types/cityStats";
 import { CityPieLegend } from "./cityPieChartLegend/CityPieLegend";
-import { cleanCity } from "@/src/utils/cleanCity";
+import { PRESET_CITIES } from "@/src/constants/cities";
+import { buildPresetCityMap, cityToBucket } from "@/src/utils/cityBucket";
 
 export default function CityPieChart() {
 
@@ -26,28 +27,41 @@ export default function CityPieChart() {
     const { users, loading } = useOrganizationUsers(orgId);
     const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
+    const presetMap = useMemo(() => buildPresetCityMap(PRESET_CITIES), []);
+
     const { stats, total } = useMemo(() => {
-        // Count users by city, using cleaned city names. Empty/invalid cities become "Muu".
         const counts: Record<string, number> = {};
+
         (users ?? []).forEach((u: any) => {
-            const city = cleanCity(u?.city) ?? "Muu";
-            counts[city] = (counts[city] ?? 0) + 1;
+            const bucket = cityToBucket(u?.city, presetMap);
+            counts[bucket] = (counts[bucket] ?? 0) + 1;
         });
 
-        // Sort by count desc
-        const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-        const total = entries.reduce((sum, [, n]) => sum + n, 0);
+        const missingCount = counts["Ei asetettu"] ?? 0;
+        const customOtherCount = counts["Muu"] ?? 0;
 
-        // Keep legend readable: top N + "Muu"
-        // If there are many cities, show top N and combine the rest into "Muu"
+        // Only sort real preset cities (exclude fixed buckets)
+        const cityEntries = Object.entries(counts).filter(
+            ([city]) => city !== "Muu" && city !== "Ei asetettu"
+        );
+
+        cityEntries.sort((a, b) => b[1] - a[1]);
+
+        const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
+
+        // Keep legend readable: top N preset cities + merge the rest into "Muu"
         const MAX = 6;
-        const top = entries.slice(0, MAX);
-        const rest = entries.slice(MAX);
-        const restTotal = rest.reduce((sum, [, n]) => sum + n, 0);
-        if (restTotal > 0) top.push(["Muu", restTotal]);
+        const topPresets = cityEntries.slice(0, MAX);
+        const restPresets = cityEntries.slice(MAX);
+        const restTotal = restPresets.reduce((sum, [, n]) => sum + n, 0);
 
-        // Map to stats with percentage and assigned color
-        const stats: CityStat[] = top.map(([city, count], idx) => ({
+        const finalEntries: Array<[string, number]> = [...topPresets];
+
+        const muuTotal = customOtherCount + restTotal;
+        if (muuTotal > 0) finalEntries.push(["Muu", muuTotal]);
+        if (missingCount > 0) finalEntries.push(["Ei asetettu", missingCount]);
+
+        const stats: CityStat[] = finalEntries.map(([city, count], idx) => ({
             city,
             count,
             percent: total > 0 ? Math.round((count / total) * 100) : 0,
@@ -55,7 +69,8 @@ export default function CityPieChart() {
         }));
 
         return { stats, total };
-    }, [users]);
+    }, [users, presetMap]);
+
 
     // Pick a default selection when data arrives
     useEffect(() => {
