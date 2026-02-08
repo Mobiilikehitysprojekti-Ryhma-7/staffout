@@ -8,6 +8,7 @@ import { getMessages, createMessage } from '@/src/services/chat/messages.service
 import { useUserProfile } from '@/src/hooks/useUserProfile';
 import { getUserById } from '@/src/services/users.service';
 import { useHeaderHeight } from '@react-navigation/elements';
+import MoreButton from '@/src/components/ui/MoreButton';
 
 export default function MessagesModal() {
   const { user } = useUserProfile();
@@ -85,6 +86,7 @@ export default function MessagesModal() {
                   {item.text}
                 </Text>
               </View>
+              <MoreButton></MoreButton>
             </View>
           );
         }}

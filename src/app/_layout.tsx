@@ -7,6 +7,8 @@ import 'react-native-reanimated';
 import { getAuth, onAuthStateChanged } from '@firebase/auth';
 import HeaderLogoutButton from '../components/signout/HeaderSignoutButton';
 import { useOrganizationMembership } from '../hooks/useOrganizationMembership';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -46,6 +48,7 @@ function RootLayoutNav() {
     // Hide splash screen when initializing becomes false
     useEffect(() => {
         if (!initializing) {
+            if(SplashScreen)
             SplashScreen.hideAsync();
         }
     }, [initializing]);
@@ -53,6 +56,8 @@ function RootLayoutNav() {
     if (initializing) return null;
 
     return (
+        <GestureHandlerRootView>
+            <BottomSheetModalProvider>
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <Stack>
                 <Stack.Protected guard={user && role}>
@@ -88,5 +93,7 @@ function RootLayoutNav() {
                 </Stack.Protected>
             </Stack>
         </ThemeProvider>
+        </BottomSheetModalProvider>
+        </GestureHandlerRootView>
     );
 }

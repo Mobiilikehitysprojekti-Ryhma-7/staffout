@@ -5,8 +5,8 @@ import { useUserProfile } from '@/src/hooks/useUserProfile';
 import { useEffect, useState } from 'react';
 import { getUserById } from '@/src/services/users.service';
 import { AvatarPlaceholder } from '@/src/components/ui/AvatarPlaceholder';
-import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import MoreButton from '@/src/components/ui/MoreButton';
 
 export default function ManageMembersScreen() {
   const { user } = useUserProfile();
@@ -77,8 +77,8 @@ export default function ManageMembersScreen() {
                   {item.role && <Text style={styles.text}>role: {item.role}</Text>}
                 </View>
 
-                <Pressable style={styles.actionBtn} onPress={() => { router.push({ pathname: '/(admin)/member-modal', params: { first: item.first, last: item.last, photoURL: item.photoURL, uid: item.uid, role: item.role, oid } }) }}>
-                  <Feather name="more-vertical" size={20} color="#fff" />
+                <Pressable onPress={() => { router.push({ pathname: '/(admin)/member-modal', params: { first: item.first, last: item.last, photoURL: item.photoURL, uid: item.uid, role: item.role, oid } }) }}>
+                  <MoreButton></MoreButton>
                 </Pressable>
               </View>
             );
