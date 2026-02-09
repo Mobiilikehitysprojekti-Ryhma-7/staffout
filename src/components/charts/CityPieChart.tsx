@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { View, Text, StyleSheet, useWindowDimensions } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
@@ -24,10 +25,16 @@ export default function CityPieChart() {
     const innerRadius = Math.floor(radius * 0.6);
     const centerLabelFontSize = Math.max(10, Math.floor(radius * 0.22));
 
-    const { users, loading } = useOrganizationUsers(orgId);
+    const { users, loading, reload } = useOrganizationUsers(orgId);
     const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
     const presetMap = useMemo(() => buildPresetCityMap(PRESET_CITIES), []);
+
+    useFocusEffect(
+        useCallback(() => {
+            reload();
+        }, [reload])
+    );
 
     const { stats, total } = useMemo(() => {
         const counts: Record<string, number> = {};
