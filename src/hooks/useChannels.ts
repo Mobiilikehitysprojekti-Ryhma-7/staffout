@@ -6,7 +6,7 @@ import { createChannel, deleteChannel, getChannels, updateChannel } from '@/src/
 export default function useChannels() {
     const { user } = useUserProfile();
     const oid = user?.organizationId;
-    const role = useOrganizationMembership();
+    const {role} = useOrganizationMembership();
     const [channels, setChannels] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [channelName, setChannelName] = useState<string>('');

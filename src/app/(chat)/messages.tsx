@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, TextInput, Pressable, FlatList, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Pressable, FlatList, KeyboardAvoidingView, Platform, Alert, Button } from 'react-native'
 import { useLocalSearchParams, Stack } from 'expo-router'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useRef, useMemo, useEffect, useState } from 'react'
 import SendButton from '@/src/components/ui/MessageButtons';
 import { AvatarPlaceholder } from '@/src/components/ui/AvatarPlaceholder';
 import { Image } from 'react-native';
@@ -9,17 +9,46 @@ import { useUserProfile } from '@/src/hooks/useUserProfile';
 import { getUserById } from '@/src/services/users.service';
 import { useHeaderHeight } from '@react-navigation/elements';
 import MoreButton from '@/src/components/ui/MoreButton';
+import { BottomSheetView, BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 
 export default function MessagesModal() {
   const { user } = useUserProfile();
+  const { channelId, name } = useLocalSearchParams<{ channelId: string; name: string }>();
   const oid = user?.organizationId;
-  const params = useLocalSearchParams<{ channelId: string, name: string }>();
-  const { channelId, name } = params;
   const [messages, setMessages] = useState<any[]>([]);
   const [attachments, setAttachments] = useState<string[]>([]);
   const [merged, setMerged] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
+  const [selectedMessage, setSelectedMessage] = useState<{ messageId: string; text: string; photoURL: string } | null>(null);
+  const [editMessage, setEditMessage] = useState('');
   const headerHeight = useHeaderHeight();
+
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ['25%'], []);
+  const renderBackdrop = useCallback(
+    (props: any) => <BottomSheetBackdrop {...props} appearsOnIndex={1} disappearsOnIndex={-1} pressBehavior="close" />,
+    []
+  );
+
+  const confirmDelete = () => {
+    if (!selectedMessage) return;
+    Alert.alert(
+      'Poista viesti',
+      'Haluatko varmasti poistaa viestin? Tätä toimintoa ei voi perua.',
+      [
+        { text: 'Peruuta', style: 'cancel' },
+        {
+          text: 'Poista',
+          style: 'destructive',
+          onPress: async () => {
+            //const deleted = await handleDelete(selectedMessage.messageId);
+            //if (deleted) handleClose();
+          },
+        },
+      ]
+    );
+  };
+
   useEffect(() => {
     fetchMessages();
 
@@ -52,15 +81,26 @@ export default function MessagesModal() {
     setNewMessage('');
     fetchMessages();
   }
+
+  const openEditForm = (messageId: string, text: string, photoURL: string) => {
+    setSelectedMessage({ messageId, text, photoURL });
+    bottomSheetModalRef.current?.present();
+  };
+
+  const handleClose = () => {
+    setSelectedMessage(null);
+    setEditMessage('');
+    bottomSheetModalRef.current?.dismiss();
+  };
+
   return (
-    <KeyboardAvoidingView style={styles.container} 
-    behavior={Platform.OS === "ios" ? "padding" : "height"}
-    keyboardVerticalOffset={Platform.OS === "ios" ? headerHeight : 0}>
+    <><KeyboardAvoidingView style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? headerHeight : 0}>
       <Stack.Screen
         options={{
           title: name,
-        }}
-      />
+        }} />
       <FlatList style={{ width: "100%" }}
         data={merged}
         keyboardShouldPersistTaps="handled"
@@ -86,11 +126,12 @@ export default function MessagesModal() {
                   {item.text}
                 </Text>
               </View>
-              <MoreButton></MoreButton>
+              <Pressable onPress={() => openEditForm(item.id, item.text, item.photoURL)}>
+                <MoreButton></MoreButton>
+              </Pressable>
             </View>
           );
-        }}
-      />
+        }} />
 
       <View style={{ flexDirection: 'row', paddingTop: 10, width: "auto" }}>
         <TextInput style={styles.input} placeholder="Kirjoita viesti..." value={newMessage} onChangeText={setNewMessage} />
@@ -100,8 +141,44 @@ export default function MessagesModal() {
       </View>
     </KeyboardAvoidingView>
 
+      {selectedMessage && (
+        <BottomSheetModal
+          ref={bottomSheetModalRef}
+          snapPoints={snapPoints}
+          backdropComponent={renderBackdrop}
+          keyboardBehavior="interactive"
+          keyboardBlurBehavior="restore"
+          enablePanDownToClose
+          onDismiss={() => setSelectedMessage(null)}
+        >
+          <BottomSheetView style={{ padding: 16 }}>
+            <View style={styles.card}>
+              {selectedMessage.photoURL ? (
+                <Image source={{ uri: selectedMessage.photoURL }}
+                  style={styles.avatar} />
+              ) : (
+                <AvatarPlaceholder />
+              )}
+
+              <View style={{ marginHorizontal: 20, backgroundColor: 'transparent', justifyContent: 'center', flex: 1 }}>
+                <Text style={styles.text}>
+                  {selectedMessage.text}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button title="Peruuta" onPress={() => (handleClose())} />
+              <Button title="Päivitä viesti" onPress={() => ({/* Add update logic here */ })}></Button>
+              <Button title="Poista viesti" onPress={confirmDelete}></Button>
+            </View>
+          </BottomSheetView>
+        </BottomSheetModal>
+      )}
+    </>
   )
 }
+
+
 
 const styles = StyleSheet.create({
 
@@ -112,6 +189,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'center',
+    marginTop: 20,
+  },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -119,7 +202,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 5,
     width: 'auto',
-     flex: 1
+    flex: 1
   },
   card: {
     alignItems: 'center',

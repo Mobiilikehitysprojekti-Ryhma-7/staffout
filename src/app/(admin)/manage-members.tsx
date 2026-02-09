@@ -7,6 +7,7 @@ import { getUserById } from '@/src/services/users.service';
 import { AvatarPlaceholder } from '@/src/components/ui/AvatarPlaceholder';
 import { router } from 'expo-router';
 import MoreButton from '@/src/components/ui/MoreButton';
+import LoadingScreen from '@/src/components/LoadingScreen';
 
 export default function ManageMembersScreen() {
   const { user } = useUserProfile();
@@ -38,16 +39,14 @@ export default function ManageMembersScreen() {
     }
     if (members.length > 0) {
       getUserProfile();
-    } 
       setLoading(false);
+    } 
   }, [oid, members])
 
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" />
-      </View>
+     <LoadingScreen />
     );
   }
 
