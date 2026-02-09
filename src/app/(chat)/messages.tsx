@@ -9,7 +9,8 @@ import { useUserProfile } from '@/src/hooks/useUserProfile';
 import { getUserById } from '@/src/services/users.service';
 import { useHeaderHeight } from '@react-navigation/elements';
 import MoreButton from '@/src/components/ui/MoreButton';
-import { BottomSheetView, BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { BottomSheetView, BottomSheetModal, BottomSheetBackdrop, BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { deleteMessage, updateMessage } from '@/src/services/chat/messages.service';
 
 export default function MessagesModal() {
   const { user } = useUserProfile();
@@ -24,11 +25,12 @@ export default function MessagesModal() {
   const headerHeight = useHeaderHeight();
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ['25%'], []);
   const renderBackdrop = useCallback(
     (props: any) => <BottomSheetBackdrop {...props} appearsOnIndex={1} disappearsOnIndex={-1} pressBehavior="close" />,
     []
   );
+
+  const Input = Platform.OS === 'web' ? TextInput : BottomSheetTextInput
 
   const confirmDelete = () => {
     if (!selectedMessage) return;
@@ -41,8 +43,11 @@ export default function MessagesModal() {
           text: 'Poista',
           style: 'destructive',
           onPress: async () => {
-            //const deleted = await handleDelete(selectedMessage.messageId);
-            //if (deleted) handleClose();
+            if (selectedMessage) {
+              await handleDeleteMessage();
+              setSelectedMessage(null);
+              handleClose();
+            }
           },
         },
       ]
@@ -51,9 +56,16 @@ export default function MessagesModal() {
 
   useEffect(() => {
     fetchMessages();
+  }, [oid, channelId]);
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      setMerged([]);
+      return;
+    }
 
     mergeUserProfile();
-  }, [oid, messages]);
+  }, [messages]);
 
   async function fetchMessages() {
     if (!oid || !channelId) return;
@@ -91,6 +103,31 @@ export default function MessagesModal() {
     setSelectedMessage(null);
     setEditMessage('');
     bottomSheetModalRef.current?.dismiss();
+  };
+
+  const handleUpdateMessage = async () => {
+    if (!selectedMessage || !oid || !channelId) return console.error("Missing required parameters for editing message.");
+    try {
+      await updateMessage(oid!, channelId!, selectedMessage.messageId, editMessage);
+      alert("Viesti päivitetty onnistuneesti.");
+      setEditMessage('');
+      handleClose();
+      fetchMessages();
+    } catch (error) {
+      console.error("Error updating message:", error);
+    }
+  };
+
+  const handleDeleteMessage = async () => {
+    if (!selectedMessage || !oid || !channelId) return console.error("Missing required parameters for deleting message.");
+    try {
+      await deleteMessage(oid, channelId, selectedMessage.messageId);
+      alert("Viesti poistettu onnistuneesti.");
+      handleClose();
+      fetchMessages();
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
   };
 
   return (
@@ -144,11 +181,10 @@ export default function MessagesModal() {
       {selectedMessage && (
         <BottomSheetModal
           ref={bottomSheetModalRef}
-          snapPoints={snapPoints}
           backdropComponent={renderBackdrop}
           keyboardBehavior="interactive"
           keyboardBlurBehavior="restore"
-          enablePanDownToClose
+          enableDynamicSizing={true}
           onDismiss={() => setSelectedMessage(null)}
         >
           <BottomSheetView style={{ padding: 16 }}>
@@ -166,9 +202,16 @@ export default function MessagesModal() {
                 </Text>
               </View>
             </View>
+            <Text style={styles.label}>Päivitä viesti</Text>
+            <Input
+              placeholder="Päivitä viesti"
+              style={styles.input}
+              value={editMessage}
+              onChangeText={setEditMessage}
+            ></Input>
             <View style={styles.buttonContainer}>
               <Button title="Peruuta" onPress={() => (handleClose())} />
-              <Button title="Päivitä viesti" onPress={() => ({/* Add update logic here */ })}></Button>
+              <Button title="Päivitä viesti" onPress={() => handleUpdateMessage()}></Button>
               <Button title="Poista viesti" onPress={confirmDelete}></Button>
             </View>
           </BottomSheetView>
@@ -188,6 +231,13 @@ const styles = StyleSheet.create({
     padding: 20,
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '400',
+    marginBottom: 5,
+    textAlign: 'left',
+    width: '100%',
   },
   buttonContainer: {
     flexDirection: 'row',

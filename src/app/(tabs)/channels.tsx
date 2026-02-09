@@ -16,13 +16,12 @@ export default function Channels() {
     role,
     channelName,
     setChannelName,
-    handleCreate,
-    handleEdit,
-    handleDelete,
+    handleCreateChannel,
+    handleUpdateChannel,
+    handleDeleteChannel,
   } = useChannels();
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ['25%'], []);
   const renderBackdrop = useCallback(
     (props: any) => <BottomSheetBackdrop {...props} appearsOnIndex={1} disappearsOnIndex={-1} pressBehavior="close" />,
     []
@@ -62,7 +61,7 @@ export default function Channels() {
           text: 'Poista',
           style: 'destructive',
           onPress: async () => {
-            const deleted = await handleDelete(selectedChannelId);
+            const deleted = await handleDeleteChannel(selectedChannelId);
             if (deleted) handleClose();
           },
         },
@@ -77,7 +76,7 @@ export default function Channels() {
   return (
     <SafeAreaView style={styles.container}>
       {channels.length > 0 ?
-        <FlatList style={{ width: '100%'}}
+        <FlatList style={{ width: '100%' }}
           data={channels}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
@@ -86,10 +85,10 @@ export default function Channels() {
                 <Feather name="hash" size={20} color="#ffffff" />
                 <Text style={styles.title}>{item.name}</Text>
               </Pressable>
-               {role === 'admin' &&
-              <Pressable onPress={() => openEditForm(item.id, item.name)}>  
+              {role === 'admin' &&
+                <Pressable onPress={() => openEditForm(item.id, item.name)}>
                   <MoreButton></MoreButton>
-              </Pressable>}
+                </Pressable>}
             </View>
           )}
         />
@@ -101,7 +100,6 @@ export default function Channels() {
           <Button title="Luo kanava" onPress={openCreateForm} />
           <BottomSheetModal
             ref={bottomSheetModalRef}
-            snapPoints={snapPoints}
             backdropComponent={renderBackdrop}
             keyboardBehavior="interactive"
             keyboardBlurBehavior="restore"
@@ -113,7 +111,7 @@ export default function Channels() {
                 channelName={channelName}
                 setChannelName={setChannelName}
                 handleCreate={async () => {
-                  const created = await handleCreate();
+                  const created = await handleCreateChannel();
                   if (created) handleClose();
                 }}
                 handleCancel={handleClose}
@@ -123,12 +121,12 @@ export default function Channels() {
               <ChannelEdit
                 channelName={channelName}
                 setChannelName={setChannelName}
-                handleEdit={async () => {
+                handleUpdateChannel={async () => {
                   if (!selectedChannelId) return;
-                  const updated = await handleEdit(selectedChannelId);
+                  const updated = await handleUpdateChannel(selectedChannelId);
                   if (updated) handleClose();
                 }}
-                handleDelete={confirmDelete}
+                handleDeleteChannel={confirmDelete}
                 handleCancel={handleClose}
               />
             )}

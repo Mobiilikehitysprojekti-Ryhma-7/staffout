@@ -1,21 +1,21 @@
 import { View, Text, StyleSheet, Button, TextInput, Platform } from 'react-native'
 import { BottomSheetTextInput, BottomSheetView } from '@gorhom/bottom-sheet';
 
-type ChannelFormProps = {
+type ChannelEditProps = {
     channelName: string;
     setChannelName: (value: string) => void;
-    handleEdit: () => void;
-    handleDelete: () => void;
+    handleUpdateChannel: () => void;
+    handleDeleteChannel: () => void;
     handleCancel: () => void;
 };
 
-export default function ChannelForm({
+export default function ChannelEdit({
     channelName,
     setChannelName,
-    handleEdit,
-    handleDelete,
+    handleUpdateChannel,
+    handleDeleteChannel,
     handleCancel,
-}: ChannelFormProps) {
+}: ChannelEditProps) {
 
     const Input = Platform.OS === 'web' ? TextInput : BottomSheetTextInput
 
@@ -30,8 +30,8 @@ export default function ChannelForm({
             ></Input>
             <View style={styles.buttonContainer}>
                 <Button title="Peruuta" onPress={handleCancel} />
-                <Button title="Päivitä kanava" onPress={handleEdit}></Button>
-                <Button title="Poista kanava" onPress={handleDelete}></Button>
+                <Button title="Päivitä kanava" onPress={handleUpdateChannel}></Button>
+                <Button title="Poista kanava" onPress={handleDeleteChannel}></Button>
             </View>
         </BottomSheetView>
     )

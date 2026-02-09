@@ -23,7 +23,7 @@ export default function useChannels() {
         setLoading(false);
     }
 
-    const handleCreate = async () => {
+    const handleCreateChannel = async () => {
         if (channelName.trim().length === 0) {
             alert("Kanavan nimi ei voi olla tyhjä.");
             return false;
@@ -43,7 +43,7 @@ export default function useChannels() {
         return false;
     }
 
-    const handleEdit = async (channelId: string) => {
+    const handleUpdateChannel = async (channelId: string) => {
         if (channelName.trim().length === 0) {
             alert("Kanavan nimi ei voi olla tyhjä.");
             return false;
@@ -63,14 +63,16 @@ export default function useChannels() {
         return false;
     }
 
-    const handleDelete = async (channelId: string) => {
+    const handleDeleteChannel = async (channelId: string) => {
         if(!oid) return false;
         try {
             await deleteChannel(oid, channelId);
             alert("Kanava poistettu onnistuneesti.");
             await fetchChannels();
+            return true;
         } catch (error) {
             console.error("Failed to delete channel:", error);
+            return false
         }
     }
 
@@ -78,11 +80,11 @@ export default function useChannels() {
         channels,
         loading,
         role,
-        handleCreate,
+        handleCreateChannel,
         channelName,
         setChannelName,
-        handleEdit,
-        handleDelete,
+        handleUpdateChannel,
+        handleDeleteChannel,
     }
 }
 
