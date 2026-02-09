@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../config/firebaseConfig";
+import { cleanCity } from "../utils/cleanCity";
 
 export type UserProfile = {
   uid?: string;
@@ -8,6 +9,7 @@ export type UserProfile = {
   last?: string;
   photoURL?: string;
   organizationId?: string;
+  city?: string;
 };
 
 const USER_PROFILE_KEY = "user-profile";
@@ -53,7 +55,7 @@ export async function getUser(forceRefresh = false): Promise<UserProfile | null>
   try {
     const snap = await getDoc(doc(db, "users", current.uid));
     const data = snap.data();
-    const profile: UserProfile = { first: data?.first, last: data?.last, photoURL: data?.photoURL, organizationId: data?.organizationId };
+    const profile: UserProfile = { first: data?.first, last: data?.last, photoURL: data?.photoURL, organizationId: data?.organizationId, city: data?.city };
 
     await writeCachedProfile(profile);
     return profile;
@@ -68,7 +70,7 @@ export async function getUserById(uid: string): Promise<UserProfile | null> {
     const snap = await getDoc(doc(db, "users", uid));
     const data = snap.data();
     if (!data) return null;
-    const profile: UserProfile = { uid: uid, first: data?.first, last: data?.last, photoURL: data?.photoURL, organizationId: data?.organizationId };
+    const profile: UserProfile = { uid: uid, first: data?.first, last: data?.last, photoURL: data?.photoURL, organizationId: data?.organizationId, city: data?.city };
     return profile;
   } catch (error) {
     console.error("Error fetching user data by ID:", error);
@@ -76,8 +78,9 @@ export async function getUserById(uid: string): Promise<UserProfile | null> {
   }
 }
 
-export async function updateUserProfile(first?: string, last?: string, photoURL?: string) {
+export async function updateUserProfile(first?: string, last?: string, photoURL?: string, city?: string) {
   const user = auth.currentUser;
+  const cityClean = cleanCity(city) || undefined;
   if (!user) {
     console.error("No authenticated user found.");
     return;
@@ -87,6 +90,10 @@ export async function updateUserProfile(first?: string, last?: string, photoURL?
     if (first !== undefined) updateData.first = first;
     if (last !== undefined) updateData.last = last;
     if (photoURL !== undefined) updateData.photoURL = photoURL;
+    if (city !== undefined) {
+      const cityClean = cleanCity(city);
+      updateData.city = cityClean ? cityClean : {};
+    }
 
     await setDoc(
       doc(db, "users", user.uid),
