@@ -27,8 +27,8 @@ export default function ChannelForm({
                 onChangeText={setChannelName}
             ></Input>
             <View style={styles.buttonContainer}>
-                <Button title="Peruuta" onPress={handleCancel} />
                 <Button title="Luo kanava" onPress={handleCreate}></Button>
+                <Button title="Peruuta" onPress={handleCancel}></Button>
             </View>
         </BottomSheetView>
     )
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     buttonContainer: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         gap: 10,
     },
     label: {

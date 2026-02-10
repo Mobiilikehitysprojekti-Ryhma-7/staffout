@@ -1,5 +1,5 @@
 import { Alert, Text, Button, FlatList, StyleSheet, Pressable, View } from 'react-native'
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';

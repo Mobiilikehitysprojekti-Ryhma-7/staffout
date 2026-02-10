@@ -29,9 +29,9 @@ export default function ChannelEdit({
                 onChangeText={setChannelName}
             ></Input>
             <View style={styles.buttonContainer}>
-                <Button title="Peruuta" onPress={handleCancel} />
                 <Button title="Päivitä kanava" onPress={handleUpdateChannel}></Button>
                 <Button title="Poista kanava" onPress={handleDeleteChannel}></Button>
+                <Button title="Peruuta" onPress={handleCancel} />
             </View>
         </BottomSheetView>
     )
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     buttonContainer: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         gap: 10,
     },
     label: {

@@ -1,106 +1,48 @@
-import { View, Text, StyleSheet, TextInput, Pressable, FlatList, KeyboardAvoidingView, Platform, Alert} from 'react-native'
+import { View, Text, StyleSheet, TextInput, Pressable, FlatList, KeyboardAvoidingView, Platform, Alert } from 'react-native'
 import { useLocalSearchParams, Stack } from 'expo-router'
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect } from 'react'
 import SendButton from '@/src/components/ui/MessageButtons';
 import { AvatarPlaceholder } from '@/src/components/ui/AvatarPlaceholder';
 import { Image } from 'react-native';
-import { getMessages, createMessage } from '@/src/services/chat/messages.service';
-import { useUserProfile } from '@/src/hooks/useUserProfile';
-import { getUserById } from '@/src/services/users.service';
 import { useHeaderHeight } from '@react-navigation/elements';
 import MoreButton from '@/src/components/ui/MoreButton';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { deleteMessage, updateMessage } from '@/src/services/chat/messages.service';
-import { useOrganizationMembership } from '@/src/hooks/useOrganizationMembership';
-import { auth } from '@/src/config/firebaseConfig';
 import MessageOptions from '@/src/components/chat/MessageUpdate';
+import useMessages from '@/src/hooks/useMessages';
 
 export default function MessagesModal() {
 
-  const uid = auth.currentUser?.uid;
-  const { user } = useUserProfile();
-  const { role } = useOrganizationMembership();
   const { channelId, name } = useLocalSearchParams<{ channelId: string; name: string }>();
-  const oid = user?.organizationId;
-  const [messages, setMessages] = useState<any[]>([]);
-  const [attachments, setAttachments] = useState<string[]>([]);
-  const [merged, setMerged] = useState<any[]>([]);
-  const [newMessage, setNewMessage] = useState('');
-  const [selectedMessage, setSelectedMessage] = useState<{ messageId: string; text: string; } | null>(null);
-  const [editMessage, setEditMessage] = useState('');
+  const {
+    merged,
+    role,
+    uid,
+    newMessage,
+    setNewMessage,
+    selectedMessage,
+    setSelectedMessage,
+    editMessage,
+    setEditMessage,
+    sendMessage,
+    handleUpdateMessage,
+    handleDeleteMessage,
+    startEditMessage,
+    clearSelection,
+  } = useMessages(channelId);
   const headerHeight = useHeaderHeight();
 
   // Ref
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   useEffect(() => {
-    fetchMessages();
-  }, [oid, channelId]);
-
-  useEffect(() => {
-    if (messages.length === 0) {
-      setMerged([]);
-      return;
-    }
-    mergeUserProfile();
-  }, [messages]);
-
-  async function fetchMessages() {
-    if (!oid || !channelId) return;
-    const messages = await getMessages(oid, channelId);
-    setMessages(messages);
-  }
-
-  async function mergeUserProfile() {
-    if (messages.length > 0) {
-      const mergedData = await Promise.all(messages.map(async (message) => {
-        const userProfile = await getUserById(message.createdBy);
-        return { ...message, ...userProfile };
-      }));
-      setMerged(mergedData);
-    }
-  }
-
-  async function sendMessage() {
-    if (!oid || !channelId) return;
-    try {
-      await createMessage(oid, channelId, newMessage, attachments);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-    setNewMessage('');
-    fetchMessages();
-  }
-
-  useEffect(() => {
     if (selectedMessage) {
       bottomSheetModalRef.current?.present();
-      setEditMessage(selectedMessage.text);
     }
   }, [selectedMessage]);
 
-  const openEditForm = (messageId: string, text: string) => {
-    setSelectedMessage({ messageId, text });
-    bottomSheetModalRef.current?.present();
-  };
-
   const handleClose = () => {
-    setSelectedMessage(null);
-    setEditMessage('');
+    clearSelection();
     bottomSheetModalRef.current?.dismiss();
-  };
-
-  const handleUpdateMessage = async () => {
-    if (!selectedMessage || !oid || !channelId) return console.error("Missing required parameters for editing message.");
-    try {
-      await updateMessage(oid!, channelId!, selectedMessage.messageId, editMessage);
-      alert("Viesti päivitetty onnistuneesti.");
-      setEditMessage('');
-      handleClose();
-      fetchMessages();
-    } catch (error) {
-      console.error("Error updating message:", error);
-    }
   };
 
   const confirmDeleteMessage = () => {
@@ -115,26 +57,16 @@ export default function MessagesModal() {
           style: 'destructive',
           onPress: async () => {
             if (selectedMessage) {
-              await handleDeleteMessage();
-              setSelectedMessage(null);
-              handleClose();
+              const deleted = await handleDeleteMessage();
+              if (deleted) {
+                alert("Viesti poistettu onnistuneesti.");
+                handleClose();
+              }
             }
           },
         },
       ]
     );
-  };
-
-  const handleDeleteMessage = async () => {
-    if (!selectedMessage || !oid || !channelId) return console.error("Missing required parameters for deleting message.");
-    try {
-      await deleteMessage(oid, channelId, selectedMessage.messageId);
-      alert("Viesti poistettu onnistuneesti.");
-      handleClose();
-      fetchMessages();
-    } catch (error) {
-      console.error("Error deleting message:", error);
-    }
   };
 
   return (
@@ -159,7 +91,7 @@ export default function MessagesModal() {
               )}
 
               <View style={{ marginHorizontal: 20, backgroundColor: 'transparent', justifyContent: 'center', flex: 1 }}>
-                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                   <Text style={styles.nameText}>
                     {item.first || "undefined"} {item.last || "undefined"}
                   </Text>
@@ -171,7 +103,7 @@ export default function MessagesModal() {
                 </Text>
               </View>
               {(role === 'admin' || item.createdBy === uid) &&
-                <Pressable onPress={() => openEditForm(item.id, item.text)}>
+                <Pressable onPress={() => startEditMessage(item.id, item.text, item.createdBy)}>
                   <MoreButton></MoreButton>
                 </Pressable>
               }
@@ -187,17 +119,29 @@ export default function MessagesModal() {
       </View>
     </KeyboardAvoidingView>
 
-  <MessageOptions
-    selectedMessage={selectedMessage}
-    setSelectedMessage={setSelectedMessage}
-    editMessage={editMessage}
-    setEditMessage={setEditMessage}
-    handleClose={handleClose}
-    handleUpdateMessage={handleUpdateMessage}
-    handleDeleteMessage={handleDeleteMessage}
-    confirmDeleteMessage={confirmDeleteMessage}
-    bottomSheetModalRef={bottomSheetModalRef as React.RefObject<BottomSheetModal>}
-  />
+      <MessageOptions
+        selectedMessage={selectedMessage}
+        setSelectedMessage={setSelectedMessage}
+        editMessage={editMessage}
+        setEditMessage={setEditMessage}
+        handleClose={handleClose}
+        handleUpdateMessage={async () => {
+          const updated = await handleUpdateMessage();
+          if (updated) {
+            alert("Viesti päivitetty onnistuneesti.");
+            handleClose();
+          }
+        }}
+        handleDeleteMessage={async () => {
+          const deleted = await handleDeleteMessage();
+          if (deleted) {
+            alert("Viesti poistettu onnistuneesti.");
+            handleClose();
+          } 
+        }}
+        confirmDeleteMessage={confirmDeleteMessage}
+        bottomSheetModalRef={bottomSheetModalRef as React.RefObject<BottomSheetModal>}
+      />
     </>
   )
 }
