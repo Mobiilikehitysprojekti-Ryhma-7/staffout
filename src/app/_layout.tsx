@@ -10,6 +10,7 @@ import { useOrganizationMembership } from '../hooks/useOrganizationMembership';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import HeaderSignoutButton from '../components/signout/HeaderSignoutButton';
+import { KeyboardProvider } from "react-native-keyboard-controller";
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -61,36 +62,38 @@ function RootLayoutNav() {
         <GestureHandlerRootView>
             <BottomSheetModalProvider>
                 <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-                    <Stack>
-                        <Stack.Protected guard={user && role}>
-                            <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: "none", title: "" }} />
-                            <Stack.Screen name="(settings)/settings" options={{ animation: "default", title: "Asetukset" }} />
-                            <Stack.Screen name="(settings)/account-settings" options={{ title: "Tiliasetukset" }} />
-                            <Stack.Screen name="(settings)/profile-settings" options={{ title: "Profiiliasetukset" }} />
-                            <Stack.Screen name="(settings)/app-settings" options={{ title: "Sovellusasetukset" }} />
-                            <Stack.Screen name="(settings)/change-password" options={{ title: "Vaihda Salasana" }} />
-                            <Stack.Screen name="(settings)/change-email" options={{ title: "Vaihda Sähköposti" }} />
-                            <Stack.Screen name="(settings)/delete-user" options={{ title: "Poista Käyttäjä" }} />
-                            <Stack.Screen name="(chat)/messages" options={{ title: "" }} />
-                        </Stack.Protected>
-                        <Stack.Protected guard={user && !role}>
-                            <Stack.Screen name="(organization)/setup-organization" options={{
-                                animation: "default", title: "Organisaatio", headerRight: () => (
-                                    <HeaderSignoutButton />
-                                )
-                            }} />
-                            <Stack.Screen name="(organization)/join-organization" options={{ title: "Liity Organisaatioon" }} />
-                            <Stack.Screen name="(organization)/create-organization" options={{ title: "Luo Organisaatio" }} />
-                        </Stack.Protected>
-                        <Stack.Protected guard={user && role === "admin"}>
-                            <Stack.Screen name="(admin)/admin-settings" options={{ title: "Ylläpitäjän Asetukset" }} />
-                            <Stack.Screen name="(admin)/manage-members" options={{ title: "Hallitse Jäseniä" }} />
-                            <Stack.Screen name="(admin)/member-modal" options={{ presentation: 'modal', animation: "slide_from_bottom", title: "Jäsenen hallinta" }} />
-                        </Stack.Protected>
-                        <Stack.Protected guard={!user}>
-                            <Stack.Screen name="auth" options={{ headerShown: false, animation: "none" }} />
-                        </Stack.Protected>
-                    </Stack>
+                    <KeyboardProvider>
+                        <Stack>
+                            <Stack.Protected guard={user && role}>
+                                <Stack.Screen name="(tabs)" options={{ headerShown: false, animation: "none", title: "" }} />
+                                <Stack.Screen name="(settings)/settings" options={{ animation: "default", title: "Asetukset" }} />
+                                <Stack.Screen name="(settings)/account-settings" options={{ title: "Tiliasetukset" }} />
+                                <Stack.Screen name="(settings)/profile-settings" options={{ title: "Profiiliasetukset" }} />
+                                <Stack.Screen name="(settings)/app-settings" options={{ title: "Sovellusasetukset" }} />
+                                <Stack.Screen name="(settings)/change-password" options={{ title: "Vaihda Salasana" }} />
+                                <Stack.Screen name="(settings)/change-email" options={{ title: "Vaihda Sähköposti" }} />
+                                <Stack.Screen name="(settings)/delete-user" options={{ title: "Poista Käyttäjä" }} />
+                                <Stack.Screen name="(chat)/messages" options={{ title: "" }} />
+                            </Stack.Protected>
+                            <Stack.Protected guard={user && !role}>
+                                <Stack.Screen name="(organization)/setup-organization" options={{
+                                    animation: "default", title: "Organisaatio", headerRight: () => (
+                                        <HeaderSignoutButton />
+                                    )
+                                }} />
+                                <Stack.Screen name="(organization)/join-organization" options={{ title: "Liity Organisaatioon" }} />
+                                <Stack.Screen name="(organization)/create-organization" options={{ title: "Luo Organisaatio" }} />
+                            </Stack.Protected>
+                            <Stack.Protected guard={user && role === "admin"}>
+                                <Stack.Screen name="(admin)/admin-settings" options={{ title: "Ylläpitäjän Asetukset" }} />
+                                <Stack.Screen name="(admin)/manage-members" options={{ title: "Hallitse Jäseniä" }} />
+                                <Stack.Screen name="(admin)/member-modal" options={{ presentation: 'modal', animation: "slide_from_bottom", title: "Jäsenen hallinta" }} />
+                            </Stack.Protected>
+                            <Stack.Protected guard={!user}>
+                                <Stack.Screen name="auth" options={{ headerShown: false, animation: "none" }} />
+                            </Stack.Protected>
+                        </Stack>
+                    </KeyboardProvider>
                 </ThemeProvider>
             </BottomSheetModalProvider>
         </GestureHandlerRootView>

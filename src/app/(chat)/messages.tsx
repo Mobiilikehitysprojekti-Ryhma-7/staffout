@@ -9,7 +9,7 @@ import MoreButton from '@/src/components/ui/MoreButton';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import MessageUpdate from '@/src/components/chat/MessageUpdate';
 import useMessages from '@/src/hooks/useMessages';
-
+import { KeyboardStickyView } from 'react-native-keyboard-controller';
 export default function MessagesModal() {
 
   const { channelId, name } = useLocalSearchParams<{ channelId: string; name: string }>();
@@ -70,9 +70,7 @@ export default function MessagesModal() {
   };
 
   return (
-    <><KeyboardAvoidingView style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? headerHeight : 0}>
+    <><KeyboardStickyView style={styles.container}>
       <Stack.Screen
         options={{
           title: name,
@@ -122,7 +120,7 @@ export default function MessagesModal() {
           <SendButton disabled={!newMessage.trim()} />
         </Pressable>
       </View>
-    </KeyboardAvoidingView>
+    </KeyboardStickyView>
       <MessageUpdate
         selectedMessage={selectedMessage}
         setSelectedMessage={setSelectedMessage}
@@ -176,7 +174,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 10,
-    marginBottom: 20,
     borderRadius: 5,
     width: 'auto',
     flex: 1
