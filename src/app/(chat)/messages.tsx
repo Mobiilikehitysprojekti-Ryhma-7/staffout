@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, TextInput, Pressable, FlatList, KeyboardAvoidingView, Platform, Alert, Button } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Pressable, FlatList, KeyboardAvoidingView, Platform, Alert} from 'react-native'
 import { useLocalSearchParams, Stack } from 'expo-router'
-import React, { useCallback, useRef, useMemo, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import SendButton from '@/src/components/ui/MessageButtons';
 import { AvatarPlaceholder } from '@/src/components/ui/AvatarPlaceholder';
 import { Image } from 'react-native';
@@ -9,50 +9,29 @@ import { useUserProfile } from '@/src/hooks/useUserProfile';
 import { getUserById } from '@/src/services/users.service';
 import { useHeaderHeight } from '@react-navigation/elements';
 import MoreButton from '@/src/components/ui/MoreButton';
-import { BottomSheetView, BottomSheetModal, BottomSheetBackdrop, BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { deleteMessage, updateMessage } from '@/src/services/chat/messages.service';
+import { useOrganizationMembership } from '@/src/hooks/useOrganizationMembership';
+import { auth } from '@/src/config/firebaseConfig';
+import MessageOptions from '@/src/components/chat/MessageUpdate';
 
 export default function MessagesModal() {
+
+  const uid = auth.currentUser?.uid;
   const { user } = useUserProfile();
+  const { role } = useOrganizationMembership();
   const { channelId, name } = useLocalSearchParams<{ channelId: string; name: string }>();
   const oid = user?.organizationId;
   const [messages, setMessages] = useState<any[]>([]);
   const [attachments, setAttachments] = useState<string[]>([]);
   const [merged, setMerged] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [selectedMessage, setSelectedMessage] = useState<{ messageId: string; text: string; photoURL: string } | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<{ messageId: string; text: string; } | null>(null);
   const [editMessage, setEditMessage] = useState('');
   const headerHeight = useHeaderHeight();
 
+  // Ref
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const renderBackdrop = useCallback(
-    (props: any) => <BottomSheetBackdrop {...props} appearsOnIndex={1} disappearsOnIndex={-1} pressBehavior="close" />,
-    []
-  );
-
-  const Input = Platform.OS === 'web' ? TextInput : BottomSheetTextInput
-
-  const confirmDelete = () => {
-    if (!selectedMessage) return;
-    Alert.alert(
-      'Poista viesti',
-      'Haluatko varmasti poistaa viestin? Tätä toimintoa ei voi perua.',
-      [
-        { text: 'Peruuta', style: 'cancel' },
-        {
-          text: 'Poista',
-          style: 'destructive',
-          onPress: async () => {
-            if (selectedMessage) {
-              await handleDeleteMessage();
-              setSelectedMessage(null);
-              handleClose();
-            }
-          },
-        },
-      ]
-    );
-  };
 
   useEffect(() => {
     fetchMessages();
@@ -63,7 +42,6 @@ export default function MessagesModal() {
       setMerged([]);
       return;
     }
-
     mergeUserProfile();
   }, [messages]);
 
@@ -94,8 +72,15 @@ export default function MessagesModal() {
     fetchMessages();
   }
 
-  const openEditForm = (messageId: string, text: string, photoURL: string) => {
-    setSelectedMessage({ messageId, text, photoURL });
+  useEffect(() => {
+    if (selectedMessage) {
+      bottomSheetModalRef.current?.present();
+      setEditMessage(selectedMessage.text);
+    }
+  }, [selectedMessage]);
+
+  const openEditForm = (messageId: string, text: string) => {
+    setSelectedMessage({ messageId, text });
     bottomSheetModalRef.current?.present();
   };
 
@@ -116,6 +101,28 @@ export default function MessagesModal() {
     } catch (error) {
       console.error("Error updating message:", error);
     }
+  };
+
+  const confirmDeleteMessage = () => {
+    if (!selectedMessage) return;
+    Alert.alert(
+      'Poista viesti',
+      'Haluatko varmasti poistaa viestin? Tätä toimintoa ei voi perua.',
+      [
+        { text: 'Peruuta', style: 'cancel' },
+        {
+          text: 'Poista',
+          style: 'destructive',
+          onPress: async () => {
+            if (selectedMessage) {
+              await handleDeleteMessage();
+              setSelectedMessage(null);
+              handleClose();
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleDeleteMessage = async () => {
@@ -163,9 +170,11 @@ export default function MessagesModal() {
                   {item.text}
                 </Text>
               </View>
-              <Pressable onPress={() => openEditForm(item.id, item.text, item.photoURL)}>
-                <MoreButton></MoreButton>
-              </Pressable>
+              {(role === 'admin' || item.createdBy === uid) &&
+                <Pressable onPress={() => openEditForm(item.id, item.text)}>
+                  <MoreButton></MoreButton>
+                </Pressable>
+              }
             </View>
           );
         }} />
@@ -178,50 +187,20 @@ export default function MessagesModal() {
       </View>
     </KeyboardAvoidingView>
 
-      {selectedMessage && (
-        <BottomSheetModal
-          ref={bottomSheetModalRef}
-          backdropComponent={renderBackdrop}
-          keyboardBehavior="interactive"
-          keyboardBlurBehavior="restore"
-          enableDynamicSizing={true}
-          onDismiss={() => setSelectedMessage(null)}
-        >
-          <BottomSheetView style={{ padding: 16 }}>
-            <View style={styles.card}>
-              {selectedMessage.photoURL ? (
-                <Image source={{ uri: selectedMessage.photoURL }}
-                  style={styles.avatar} />
-              ) : (
-                <AvatarPlaceholder />
-              )}
-
-              <View style={{ marginHorizontal: 20, backgroundColor: 'transparent', justifyContent: 'center', flex: 1 }}>
-                <Text style={styles.text}>
-                  {selectedMessage.text}
-                </Text>
-              </View>
-            </View>
-            <Text style={styles.label}>Päivitä viesti</Text>
-            <Input
-              placeholder="Päivitä viesti"
-              style={styles.input}
-              value={editMessage}
-              onChangeText={setEditMessage}
-            ></Input>
-            <View style={styles.buttonContainer}>
-              <Button title="Peruuta" onPress={() => (handleClose())} />
-              <Button title="Päivitä viesti" onPress={() => handleUpdateMessage()}></Button>
-              <Button title="Poista viesti" onPress={confirmDelete}></Button>
-            </View>
-          </BottomSheetView>
-        </BottomSheetModal>
-      )}
+  <MessageOptions
+    selectedMessage={selectedMessage}
+    setSelectedMessage={setSelectedMessage}
+    editMessage={editMessage}
+    setEditMessage={setEditMessage}
+    handleClose={handleClose}
+    handleUpdateMessage={handleUpdateMessage}
+    handleDeleteMessage={handleDeleteMessage}
+    confirmDeleteMessage={confirmDeleteMessage}
+    bottomSheetModalRef={bottomSheetModalRef as React.RefObject<BottomSheetModal>}
+  />
     </>
   )
 }
-
-
 
 const styles = StyleSheet.create({
 

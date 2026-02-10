@@ -7,7 +7,7 @@ import useChannels from '@/src/hooks/useChannels';
 import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import ChannelForm from '@/src/components/channels/ChannelForm';
 import MoreButton from '@/src/components/ui/MoreButton';
-import ChannelEdit from '@/src/components/channels/ChannelEdit';
+import ChannelEdit from '@/src/components/channels/ChannelUpdate';
 
 export default function Channels() {
   const {

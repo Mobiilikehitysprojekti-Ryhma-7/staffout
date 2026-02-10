@@ -53,7 +53,7 @@ export async function getUser(forceRefresh = false): Promise<UserProfile | null>
   try {
     const snap = await getDoc(doc(db, "users", current.uid));
     const data = snap.data();
-    const profile: UserProfile = { first: data?.first, last: data?.last, photoURL: data?.photoURL, organizationId: data?.organizationId };
+    const profile: UserProfile = { uid: current.uid, first: data?.first, last: data?.last, photoURL: data?.photoURL, organizationId: data?.organizationId };
 
     await writeCachedProfile(profile);
     return profile;
