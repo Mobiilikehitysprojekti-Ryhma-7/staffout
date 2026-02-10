@@ -1,4 +1,5 @@
 
+import { Keyboard } from "react-native";
 import { useEffect, useState } from "react";
 import { useUserProfile } from "./useUserProfile";
 import { useOrganizationMembership } from "./useOrganizationMembership";
@@ -106,6 +107,7 @@ export default function useMessages(channelId?: string) {
     const startEditMessage = (messageId: string, text: string, createdBy: string) => {
         setSelectedMessage({ messageId, text, createdBy });
         setEditMessage(text);
+        Keyboard.dismiss();
     };
 
     const clearSelection = () => {

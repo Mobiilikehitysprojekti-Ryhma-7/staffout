@@ -7,7 +7,7 @@ import { Image } from 'react-native';
 import { useHeaderHeight } from '@react-navigation/elements';
 import MoreButton from '@/src/components/ui/MoreButton';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import MessageOptions from '@/src/components/chat/MessageUpdate';
+import MessageUpdate from '@/src/components/chat/MessageUpdate';
 import useMessages from '@/src/hooks/useMessages';
 
 export default function MessagesModal() {
@@ -119,7 +119,7 @@ export default function MessagesModal() {
       </View>
     </KeyboardAvoidingView>
 
-      <MessageOptions
+      <MessageUpdate
         selectedMessage={selectedMessage}
         setSelectedMessage={setSelectedMessage}
         editMessage={editMessage}
@@ -137,7 +137,7 @@ export default function MessagesModal() {
           if (deleted) {
             alert("Viesti poistettu onnistuneesti.");
             handleClose();
-          } 
+          }
         }}
         confirmDeleteMessage={confirmDeleteMessage}
         bottomSheetModalRef={bottomSheetModalRef as React.RefObject<BottomSheetModal>}
