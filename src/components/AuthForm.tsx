@@ -1,6 +1,8 @@
 import { Text, TextInput } from '@/src/components/Themed';
 import React from 'react';
 import { Button, KeyboardAvoidingView, StyleSheet, View } from 'react-native';
+import { PRESET_CITIES } from '@/src/constants/cities'
+import { CitySelect } from '@/src/components/ui/CitySelect'
 
 interface AuthFormProps {
   email: string;
@@ -9,6 +11,8 @@ interface AuthFormProps {
   setFirstName: (firstName: string) => void;
   lastName: string;
   setLastName: (lastName: string) => void;
+  city: string;
+  setCity: (city: string) => void;
   password: string;
   setPassword: (password: string) => void;
   confirmPassword: string;
@@ -28,6 +32,8 @@ export default function AuthForm({
   setFirstName,
   lastName,
   setLastName,
+  city,
+  setCity,
   password,
   setPassword,
   confirmPassword,
@@ -39,6 +45,7 @@ export default function AuthForm({
   handleSignup,
   handleSignin,
 }: AuthFormProps) {
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
       <TextInput placeholder="Sähköpostiosoite" value={email} onChangeText={setEmail} style={styles.input} autoCorrect={false} autoCapitalize="none" keyboardType="email-address" />
@@ -47,6 +54,9 @@ export default function AuthForm({
       }
       {
         !signInScreen && <TextInput placeholder="Sukunimi" value={lastName} onChangeText={setLastName} style={styles.input} autoCorrect={false} />
+      }
+      {
+        !signInScreen && <CitySelect value={city} onChange={setCity} options={PRESET_CITIES}/>
       }
       <TextInput placeholder="Salasana" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
       {

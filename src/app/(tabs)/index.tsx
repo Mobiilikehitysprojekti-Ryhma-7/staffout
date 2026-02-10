@@ -1,15 +1,17 @@
-import { StyleSheet, Pressable } from 'react-native';
+import { StyleSheet, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView, Text, View } from '@/src/components/Themed';
 import { useUserProfile } from '@/src/hooks/useUserProfile';
 import React, { useCallback, useMemo } from 'react';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { BENEFITS } from "../../types/benefit";
 import { LatestBenefits } from "../../components/benefits/LatestBenefits";
 import { BenefitDetailsModal } from "../../components/benefits/BenefitDetailsModal";
 import { useBenefitDetails } from "../../hooks/useBenefitDetails";
 import { useOrganizationBenefits } from '@/src/hooks/useOrganizationBenefits';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import CityPieChart from '@/src/components/charts/CityPieChart';
 
 export default function TabOneScreen() {
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const ubd = useBenefitDetails();
 
@@ -35,7 +37,12 @@ export default function TabOneScreen() {
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
         <Text style={styles.topTitle}>Yritys</Text>
-
+      </View>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 16 }]}
+        showsVerticalScrollIndicator={false}
+      >
         <LatestBenefits
           items={newest}
           onPressItem={ubd.openBenefit}
@@ -46,12 +53,14 @@ export default function TabOneScreen() {
           }
         />
 
-        <BenefitDetailsModal
-          visible={ubd.detailsOpen}
-          benefit={ubd.selectedBenefit}
-          onClose={ubd.closeBenefit}
-        />
-      </View>
+        <CityPieChart />
+      </ScrollView>
+
+      <BenefitDetailsModal
+        visible={ubd.detailsOpen}
+        benefit={ubd.selectedBenefit}
+        onClose={ubd.closeBenefit}
+      />
     </SafeAreaView>
   );
 }
@@ -62,8 +71,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff"
   },
   container: {
-    flex: 1,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   topTitle: {
     textAlign: "center",
@@ -71,6 +79,13 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginTop: 8,
     marginBottom: 24,
+  },
+  scroll: {
+    flex: 1
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    gap: 16,
   },
   linkBtn: {
     paddingHorizontal: 12,

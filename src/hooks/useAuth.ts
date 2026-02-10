@@ -9,6 +9,7 @@ export function useAuth() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [city, setCity] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [signInScreen, setSignInScreen] = useState(true);
@@ -25,7 +26,7 @@ export function useAuth() {
 
     try {
       await createUser(email, password);
-      await updateUserProfile(firstName, lastName, undefined);
+      await updateUserProfile(firstName, lastName, undefined, city);
       console.log('User created:', email);
       router.replace('/(tabs)');
     } catch (e: any) {
@@ -62,6 +63,8 @@ export function useAuth() {
     setFirstName,
     lastName,
     setLastName,
+    city,
+    setCity,
     password,
     setPassword,
     confirmPassword,
