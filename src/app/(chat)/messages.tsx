@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TextInput, Pressable, FlatList, KeyboardAvoidin
 import { useLocalSearchParams, Stack } from 'expo-router'
 import React, { useRef, useEffect } from 'react'
 import SendButton from '@/src/components/ui/MessageButtons';
-import { AvatarPlaceholder } from '@/src/components/ui/AvatarPlaceholder';
+import { AvatarPlaceholderSmall } from '@/src/components/ui/AvatarPlaceholder';
 import { Image } from 'react-native';
 import { useHeaderHeight } from '@react-navigation/elements';
 import MoreButton from '@/src/components/ui/MoreButton';
@@ -83,24 +83,29 @@ export default function MessagesModal() {
         renderItem={({ item }) => {
           return (
             <View style={styles.card}>
-              {item.photoURL ? (
-                <Image source={{ uri: item.photoURL }}
-                  style={styles.avatar} />
-              ) : (
-                <AvatarPlaceholder />
-              )}
 
-              <View style={{ marginHorizontal: 20, backgroundColor: 'transparent', justifyContent: 'center', flex: 1 }}>
-                <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                  <Text style={styles.nameText}>
-                    {item.first || "undefined"} {item.last || "undefined"}
-                  </Text>
-                  <Text style={styles.time}>{item.createdAt.toDate().toLocaleString()}</Text>
+
+              <View style={{ backgroundColor: 'transparent', flex: 1, flexDirection: 'column' }}>
+
+                <View style={styles.headerRow}> 
+                  {item.photoURL ? (
+                  <Image source={{ uri: item.photoURL }}
+                    style={styles.avatar} />
+                ) : (
+                  <AvatarPlaceholderSmall />
+                )}
+                  <View style={{ flexDirection: 'column' }}>
+                    <View style={styles.textRow}>
+                      <Text style={styles.nameText}>
+                        {item.first || "undefined"} {item.last || "undefined"}
+                      </Text>
+                      <Text style={styles.time}>
+                        {item.createdAt.toDate().toLocaleString()}
+                      </Text>
+                    </View>
+                    <Text style={styles.text}>{item.text}</Text>
+                  </View>
                 </View>
-
-                <Text style={styles.text}>
-                  {item.text}
-                </Text>
               </View>
               {(role === 'admin' || item.createdBy === uid) &&
                 <Pressable onPress={() => startEditMessage(item.id, item.text, item.createdBy)}>
@@ -118,7 +123,6 @@ export default function MessagesModal() {
         </Pressable>
       </View>
     </KeyboardAvoidingView>
-
       <MessageUpdate
         selectedMessage={selectedMessage}
         setSelectedMessage={setSelectedMessage}
@@ -194,10 +198,20 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   nameText: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "600",
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    columnGap: 10,
+  },
+  textRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    columnGap: 5,
+  },
   avatar: {
-    width: 50, height: 50, borderRadius: 25
+    width: 40, height: 40, borderRadius: 20
   },
 });
