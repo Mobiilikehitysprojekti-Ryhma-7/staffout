@@ -3,6 +3,7 @@ import React from 'react';
 import { Button, KeyboardAvoidingView, StyleSheet, View } from 'react-native';
 import { PRESET_CITIES } from '@/src/constants/cities'
 import { CitySelect } from '@/src/components/ui/CitySelect'
+import { LocationOpt } from "@/src/components/ui/LocationOpt";
 
 interface AuthFormProps {
   email: string;
@@ -13,6 +14,10 @@ interface AuthFormProps {
   setLastName: (lastName: string) => void;
   city: string;
   setCity: (city: string) => void;
+  useGps: boolean;
+  onToggleUseGps: (value: boolean) => void;
+  gpsLoading: boolean;
+  gpsError: string | null;
   password: string;
   setPassword: (password: string) => void;
   confirmPassword: string;
@@ -34,6 +39,10 @@ export default function AuthForm({
   setLastName,
   city,
   setCity,
+  useGps,
+  onToggleUseGps,
+  gpsLoading,
+  gpsError,
   password,
   setPassword,
   confirmPassword,
@@ -55,9 +64,24 @@ export default function AuthForm({
       {
         !signInScreen && <TextInput placeholder="Sukunimi" value={lastName} onChangeText={setLastName} style={styles.input} autoCorrect={false} />
       }
-      {
-        !signInScreen && <CitySelect value={city} onChange={setCity} options={PRESET_CITIES}/>
-      }
+      {!signInScreen && (
+        <>
+          <View style={styles.locationRow}>
+            <View style={styles.locationLeft}>
+              <LocationOpt
+                useGps={useGps}
+                onToggleUseGps={onToggleUseGps}
+                gpsLoading={gpsLoading}
+                gpsError={gpsError}
+              />
+            </View>
+
+            <View style={styles.locationRight}>
+              <CitySelect value={city} onChange={setCity} options={PRESET_CITIES} />
+            </View>
+          </View>
+        </>
+      )}
       <TextInput placeholder="Salasana" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
       {
         !signInScreen && <TextInput placeholder="Vahvista salasana" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
@@ -103,5 +127,19 @@ const styles = StyleSheet.create({
   boldText: {
     fontSize: 14,
     fontWeight: '800',
+  },
+  locationRow: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    flexWrap: "wrap",
+  },
+  locationLeft: {
+    flexShrink: 0,
+  },
+  locationRight: {
+    flexGrow: 1,
+    minWidth: 180,
   },
 });
