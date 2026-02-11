@@ -7,16 +7,21 @@ import {
   arrayRemove
 } from "firebase/firestore";
 import { db, auth } from "../../config/firebaseConfig";
-import MapView, { Marker } from 'react-native-maps';
+// import MapView, { Marker } from 'react-native-maps';
 
 export default function EventItem({ event, onPress, showActions = true }: any) {
   const userId = auth.currentUser?.uid;
-  const isParticipant = event.participants?.includes(userId);
+  // Defensive: ensure event is an object and participants is always an array
+  const participants = Array.isArray(event?.participants) ? event.participants : [];
+  const isParticipant = participants.includes(userId);
 
   const toggleParticipation = async () => {
     if (!userId) return;
-
-    await updateDoc(doc(db, "events", event.id), {
+    if (!event.organizationId) {
+      console.error("Event is missing organizationId, cannot update participation.", event);
+      return;
+    }
+    await updateDoc(doc(db, "organizations", event.organizationId, "events", event.id), {
       participants: isParticipant
         ? arrayRemove(userId)
         : arrayUnion(userId)
@@ -66,19 +71,6 @@ export default function EventItem({ event, onPress, showActions = true }: any) {
           👥 {event.participants?.length || 0}
         </Text>
       </Pressable>
-
-       <MapView
-        style={{ height: 150, marginVertical: 8 }}
-        region={{
-        latitude: event.latitude,
-        longitude: event.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-      }}
-      >
-        <Marker coordinate={{ latitude: event.latitude, longitude: event.longitude }} />
-      </MapView>
-
 
       {showActions && (
         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 8 }}>

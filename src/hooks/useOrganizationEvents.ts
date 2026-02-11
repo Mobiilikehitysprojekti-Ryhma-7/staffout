@@ -15,7 +15,8 @@ export function useOrganizationEvents(organizationId?: string) {
       setItems(
         snap.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
+          organizationId // Always include organizationId in the event object
         }))
       );
     });
