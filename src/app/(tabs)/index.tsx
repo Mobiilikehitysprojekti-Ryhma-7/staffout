@@ -56,6 +56,11 @@ export default function TabOneScreen() {
           }
         />
 
+        <HomeEventPreview
+          events={events}
+          onNavigate={() => router.push("/events")}
+        />
+
         <CityPieChart />
       </ScrollView>
 
@@ -64,12 +69,7 @@ export default function TabOneScreen() {
           benefit={ubd.selectedBenefit}
           onClose={ubd.closeBenefit}
         />
-        <HomeEventPreview
-          events={events}
-          onNavigate={() => router.push("/events")}
-          />
-      </View>
-    </SafeAreaView>
+     </SafeAreaView>
   );
 }
 
