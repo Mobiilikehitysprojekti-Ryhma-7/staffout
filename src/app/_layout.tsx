@@ -56,7 +56,7 @@ function RootLayoutNav() {
         }
     }, [initializing, isMembershipReady]);
 
-    if (initializing || !isMembershipReady) return <LoadingScreen />;
+    if (initializing || loading) return <LoadingScreen />;
 
     return (
         <GestureHandlerRootView>
