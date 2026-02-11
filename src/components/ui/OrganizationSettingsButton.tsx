@@ -5,7 +5,7 @@ import { Feather } from '@expo/vector-icons';
 import { useOrganizationMembership } from '../../hooks/useOrganizationMembership';
 
 export default function OrganizationSettingsButton() {
-    const role = useOrganizationMembership();
+    const { role } = useOrganizationMembership();
     if (role !== 'admin') return null;
   return (
        <Pressable style={styles.actionBtn} onPress={() => router.push('/(admin)/admin-settings')}>

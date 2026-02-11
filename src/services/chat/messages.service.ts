@@ -1,5 +1,5 @@
 import { db } from "../../config/firebaseConfig";
-import { collection, addDoc, setDoc, getDoc, getDocs, doc, orderBy, query } from "firebase/firestore";
+import { collection, addDoc, setDoc, getDoc, getDocs, doc, orderBy, query, deleteDoc } from "firebase/firestore";
 import { auth } from "../../config/firebaseConfig";
 
 export async function createMessage(currentOrg: string, channelId: string, text: string, attachments: string[]) {
@@ -22,4 +22,17 @@ export async function getMessages(currentOrg: string, channelId: string) {
     const querySnapshot = await getDocs(q);
     
     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+}
+
+export async function updateMessage(currentOrg: string, channelId: string, messageId: string, text: string) {
+    const messageRef = doc(db, "organizations", currentOrg, "channels", channelId, "messages", messageId);
+    await setDoc(messageRef, {
+        text: text,
+        editedAt: new Date()
+    }, { merge: true });
+}
+
+export async function deleteMessage(currentOrg: string, channelId: string, messageId: string) {
+    const messageRef = doc(db, "organizations", currentOrg, "channels", channelId, "messages", messageId);
+    await deleteDoc(messageRef);
 }
