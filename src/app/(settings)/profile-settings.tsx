@@ -6,12 +6,15 @@ import { useState, useEffect } from 'react';
 import ImagePickerComponent from '@/src/components/ImagePicker';
 import { updateUserProfile } from '@/src/services/users.service';
 import { uploadAvatar, getAvatarURL } from '@/src/services/storage/storage.service';
+import { PRESET_CITIES } from '@/src/constants/cities'
+import { CitySelect } from '@/src/components/ui/CitySelect'
 
 export default function ProfileSettingsScreen() {
   const { user, reload } = useUserProfile()
   const [firstName, setFirstName] = useState(user?.first || "");
   const [lastName, setLastName] = useState(user?.last || "");
   const [photoURL, setPhotoURL] = useState(user?.photoURL || undefined);
+  const [city, setCity] = useState(user?.city || "");
   const [loading, setLoading] = useState(false);
   const [base64Image, setBase64Image] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -21,6 +24,7 @@ export default function ProfileSettingsScreen() {
       setFirstName(user.first || "");
       setLastName(user.last || "");
       setPhotoURL(user.photoURL || undefined);
+      setCity(user.city || "");
     }
   }, [user]);
 
@@ -43,6 +47,7 @@ export default function ProfileSettingsScreen() {
       if (user &&
         user.first === firstName &&
         user.last === lastName &&
+        user.city === city &&
         !base64Image) {
         setError("Ei muutoksia tallennettavaksi.");
         return;
@@ -62,7 +67,7 @@ export default function ProfileSettingsScreen() {
       }
 
       setPhotoURL(url);
-      await updateUserProfile(firstName.trim(), lastName.trim(), url);
+      await updateUserProfile(firstName.trim(), lastName.trim(), url, city);
 
       await reload(true);
 
@@ -92,6 +97,8 @@ export default function ProfileSettingsScreen() {
         value={lastName}
         placeholder="Sukunimi"
       />
+      <Text style={styles.label}>Asuinkaupunki</Text>
+      <CitySelect value={city} onChange={setCity} options={PRESET_CITIES}/>
       <ImagePickerComponent title="Vaihda profiilikuva" onImageSelected={setBase64Image} photoURL={photoURL} />
       <View style={{ height: 20 }}></View>
       <Button title="Tallenna muutokset" disabled={loading} onPress={handleSubmit} />
