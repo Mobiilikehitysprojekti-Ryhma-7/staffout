@@ -1,103 +1,150 @@
-import { View, Text, StyleSheet, TextInput, Pressable, FlatList, KeyboardAvoidingView, Platform } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Pressable, FlatList, KeyboardAvoidingView, Platform, Alert } from 'react-native'
 import { useLocalSearchParams, Stack } from 'expo-router'
-import React, { useEffect, useState } from 'react'
+import React, { useRef, useEffect } from 'react'
 import SendButton from '@/src/components/ui/MessageButtons';
-import { AvatarPlaceholder } from '@/src/components/ui/AvatarPlaceholder';
+import { AvatarPlaceholderSmall } from '@/src/components/ui/AvatarPlaceholder';
 import { Image } from 'react-native';
-import { getMessages, createMessage } from '@/src/services/chat/messages.service';
-import { useUserProfile } from '@/src/hooks/useUserProfile';
-import { getUserById } from '@/src/services/users.service';
 import { useHeaderHeight } from '@react-navigation/elements';
-
+import MoreButton from '@/src/components/ui/MoreButton';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import MessageUpdate from '@/src/components/chat/MessageUpdate';
+import useMessages from '@/src/hooks/useMessages';
+import { KeyboardStickyView } from 'react-native-keyboard-controller';
 export default function MessagesModal() {
-  const { user } = useUserProfile();
-  const oid = user?.organizationId;
-  const params = useLocalSearchParams<{ channelId: string, name: string }>();
-  const { channelId, name } = params;
-  const [messages, setMessages] = useState<any[]>([]);
-  const [attachments, setAttachments] = useState<string[]>([]);
-  const [merged, setMerged] = useState<any[]>([]);
-  const [newMessage, setNewMessage] = useState('');
+
+  const { channelId, name } = useLocalSearchParams<{ channelId: string; name: string }>();
+  const {
+    merged,
+    role,
+    uid,
+    newMessage,
+    setNewMessage,
+    selectedMessage,
+    setSelectedMessage,
+    editMessage,
+    setEditMessage,
+    sendMessage,
+    handleUpdateMessage,
+    handleDeleteMessage,
+    startEditMessage,
+    clearSelection,
+  } = useMessages(channelId);
   const headerHeight = useHeaderHeight();
+
+  // Ref
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
   useEffect(() => {
-    fetchMessages();
-
-    mergeUserProfile();
-  }, [oid, messages]);
-
-  async function fetchMessages() {
-    if (!oid || !channelId) return;
-    const messages = await getMessages(oid, channelId);
-    setMessages(messages);
-  }
-
-  async function mergeUserProfile() {
-    if (messages.length > 0) {
-      const mergedData = await Promise.all(messages.map(async (message) => {
-        const userProfile = await getUserById(message.createdBy);
-        return { ...message, ...userProfile };
-      }));
-      setMerged(mergedData);
+    if (selectedMessage) {
+      bottomSheetModalRef.current?.present();
     }
-  }
+  }, [selectedMessage]);
 
-  async function sendMessage() {
-    if (!oid || !channelId) return;
-    try {
-      await createMessage(oid, channelId, newMessage, attachments);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-    setNewMessage('');
-    fetchMessages();
-  }
+  const handleClose = () => {
+    clearSelection();
+    bottomSheetModalRef.current?.dismiss();
+  };
+
+  const confirmDeleteMessage = () => {
+    if (!selectedMessage) return;
+    Alert.alert(
+      'Poista viesti',
+      'Haluatko varmasti poistaa viestin? Tätä toimintoa ei voi perua.',
+      [
+        { text: 'Peruuta', style: 'cancel' },
+        {
+          text: 'Poista',
+          style: 'destructive',
+          onPress: async () => {
+            if (selectedMessage) {
+              const deleted = await handleDeleteMessage();
+              if (deleted) {
+                alert("Viesti poistettu onnistuneesti.");
+                handleClose();
+              }
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
-    <KeyboardAvoidingView style={styles.container} 
-    behavior={Platform.OS === "ios" ? "padding" : "height"}
-    keyboardVerticalOffset={Platform.OS === "ios" ? headerHeight : 0}>
+    <><View style={styles.container}>
       <Stack.Screen
         options={{
           title: name,
-        }}
-      />
+        }} />
       <FlatList style={{ width: "100%" }}
         data={merged}
         keyboardShouldPersistTaps="handled"
         renderItem={({ item }) => {
           return (
             <View style={styles.card}>
-              {item.photoURL ? (
-                <Image source={{ uri: item.photoURL }}
-                  style={styles.avatar} />
-              ) : (
-                <AvatarPlaceholder />
-              )}
 
-              <View style={{ marginHorizontal: 20, backgroundColor: 'transparent', justifyContent: 'center', flex: 1 }}>
-                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                  <Text style={styles.nameText}>
-                    {item.first || "undefined"} {item.last || "undefined"}
-                  </Text>
-                  <Text style={styles.time}>{item.createdAt.toDate().toLocaleString()}</Text>
+
+              <View style={{ backgroundColor: 'transparent', flex: 1, flexDirection: 'column' }}>
+
+                <View style={styles.headerRow}>
+                  {item.photoURL ? (
+                    <Image source={{ uri: item.photoURL }}
+                      style={styles.avatar} />
+                  ) : (
+                    <AvatarPlaceholderSmall />
+                  )}
+                  <View style={{ flexDirection: 'column' }}>
+                    <View style={styles.textRow}>
+                      <Text style={styles.nameText}>
+                        {item.first || "undefined"} {item.last || "undefined"}
+                      </Text>
+                      <Text style={styles.time}>
+                        {item.createdAt.toDate().toLocaleString()}
+                      </Text>
+                    </View>
+                    <Text style={styles.text}>{item.text}</Text>
+                  </View>
                 </View>
-
-                <Text style={styles.text}>
-                  {item.text}
-                </Text>
               </View>
+              {(role === 'admin' || item.createdBy === uid) &&
+                <Pressable onPress={() => startEditMessage(item.id, item.text, item.createdBy)}>
+                  <MoreButton></MoreButton>
+                </Pressable>
+              }
             </View>
           );
-        }}
-      />
+        }} />
 
-      <View style={{ flexDirection: 'row', paddingTop: 10, width: "auto" }}>
+      <KeyboardStickyView style={styles.inputContainer}>
         <TextInput style={styles.input} placeholder="Kirjoita viesti..." value={newMessage} onChangeText={setNewMessage} />
         <Pressable onPress={sendMessage} disabled={!newMessage.trim()}>
           <SendButton disabled={!newMessage.trim()} />
         </Pressable>
-      </View>
-    </KeyboardAvoidingView>
-
+      </KeyboardStickyView>
+    </View>
+      <MessageUpdate
+        selectedMessage={selectedMessage}
+        setSelectedMessage={setSelectedMessage}
+        editMessage={editMessage}
+        setEditMessage={setEditMessage}
+        handleClose={handleClose}
+        handleUpdateMessage={async () => {
+          const updated = await handleUpdateMessage();
+          if (updated) {
+            alert("Viesti päivitetty onnistuneesti.");
+            handleClose();
+          }
+        }}
+        handleDeleteMessage={async () => {
+          const deleted = await handleDeleteMessage();
+          if (deleted) {
+            alert("Viesti poistettu onnistuneesti.");
+            handleClose();
+          }
+        }}
+        confirmDeleteMessage={confirmDeleteMessage}
+        bottomSheetModalRef={bottomSheetModalRef as React.RefObject<BottomSheetModal>}
+      />
+    </>
   )
 }
 
@@ -106,18 +153,38 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
     flex: 1,
+    backgroundColor: '#ffffff',
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '400',
+    marginBottom: 5,
+    textAlign: 'left',
+    width: '100%',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  inputContainer: {
+    flexDirection: 'row', 
+    paddingBottom: 20, 
+    paddingTop: 10,
+    width: "auto",
     backgroundColor: '#ffffff',
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 10,
-    marginBottom: 20,
     borderRadius: 5,
     width: 'auto',
-     flex: 1
+    flex: 1
   },
   card: {
     alignItems: 'center',
@@ -136,10 +203,20 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   nameText: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "600",
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    columnGap: 10,
+  },
+  textRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    columnGap: 5,
+  },
   avatar: {
-    width: 50, height: 50, borderRadius: 25
+    width: 40, height: 40, borderRadius: 20
   },
 });

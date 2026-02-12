@@ -45,7 +45,7 @@ export function useAuth() {
       await createUser(email, password);
       await updateUserProfile(firstName, lastName, undefined, city, useGps && locationDraft ? locationDraft : undefined);
       console.log('User created:', email);
-      router.replace('/(tabs)');
+      router.replace('/');
     } catch (e: any) {
       if (e.code === 'auth/email-already-in-use') {
         setError('Sähköposti on jo käytössä!');
@@ -65,7 +65,7 @@ export function useAuth() {
     try {
       await signInUser(email, password);
       console.log('User signed in:', email);
-      router.replace('/(tabs)');
+      router.replace('/');
     } catch (e: any) {
       setError(e.message || "Virhe kirjautumisessa.");
     } finally {
