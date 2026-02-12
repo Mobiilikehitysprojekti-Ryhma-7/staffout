@@ -70,7 +70,7 @@ export default function MessagesModal() {
   };
 
   return (
-    <><KeyboardStickyView style={styles.container}>
+    <><View style={styles.container}>
       <Stack.Screen
         options={{
           title: name,
@@ -85,13 +85,13 @@ export default function MessagesModal() {
 
               <View style={{ backgroundColor: 'transparent', flex: 1, flexDirection: 'column' }}>
 
-                <View style={styles.headerRow}> 
+                <View style={styles.headerRow}>
                   {item.photoURL ? (
-                  <Image source={{ uri: item.photoURL }}
-                    style={styles.avatar} />
-                ) : (
-                  <AvatarPlaceholderSmall />
-                )}
+                    <Image source={{ uri: item.photoURL }}
+                      style={styles.avatar} />
+                  ) : (
+                    <AvatarPlaceholderSmall />
+                  )}
                   <View style={{ flexDirection: 'column' }}>
                     <View style={styles.textRow}>
                       <Text style={styles.nameText}>
@@ -114,13 +114,13 @@ export default function MessagesModal() {
           );
         }} />
 
-      <View style={{ flexDirection: 'row', paddingTop: 10, width: "auto" }}>
+      <KeyboardStickyView style={styles.inputContainer}>
         <TextInput style={styles.input} placeholder="Kirjoita viesti..." value={newMessage} onChangeText={setNewMessage} />
         <Pressable onPress={sendMessage} disabled={!newMessage.trim()}>
           <SendButton disabled={!newMessage.trim()} />
         </Pressable>
-      </View>
-    </KeyboardStickyView>
+      </KeyboardStickyView>
+    </View>
       <MessageUpdate
         selectedMessage={selectedMessage}
         setSelectedMessage={setSelectedMessage}
@@ -153,7 +153,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
     flex: 1,
     backgroundColor: '#ffffff',
   },
@@ -169,6 +170,13 @@ const styles = StyleSheet.create({
     gap: 10,
     justifyContent: 'center',
     marginTop: 20,
+  },
+  inputContainer: {
+    flexDirection: 'row', 
+    paddingBottom: 20, 
+    paddingTop: 10,
+    width: "auto",
+    backgroundColor: '#ffffff',
   },
   input: {
     borderWidth: 1,
