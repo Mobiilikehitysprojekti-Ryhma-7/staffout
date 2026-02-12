@@ -41,6 +41,12 @@ export default function TabOneScreen() {
       <View style={styles.container}>
         <Text style={styles.topTitle}>Yritys</Text>
       </View>
+
+      <HomeEventPreview
+        events={events}
+        onNavigate={() => router.push("/events")}
+      />
+
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 16 }]}
@@ -54,11 +60,6 @@ export default function TabOneScreen() {
               <Text style={styles.linkText}>Kaikki edut</Text>
             </Pressable>
           }
-        />
-
-        <HomeEventPreview
-          events={events}
-          onNavigate={() => router.push("/events")}
         />
 
         <CityPieChart />
