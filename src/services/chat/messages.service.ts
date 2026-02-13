@@ -1,11 +1,13 @@
 import { db } from "../../config/firebaseConfig";
-import { collection, addDoc, setDoc, getDoc, getDocs, doc, orderBy, query, deleteDoc, where, collectionGroup } from "firebase/firestore";
+import { collection, addDoc, setDoc, getDocs, doc, orderBy, query, deleteDoc, where, collectionGroup, limit } from "firebase/firestore";
 import { auth } from "../../config/firebaseConfig";
 
 export async function createMessage(currentOrg: string, channelId: string, text: string, attachments: string[]) {
     if (!auth.currentUser) return
     const messagesRef = collection(db, "organizations", currentOrg, "channels", channelId, "messages");
     addDoc(messagesRef, {
+        oid: currentOrg,
+        channelId: channelId,
         createdAt: new Date(),
         createdBy: auth.currentUser.uid,
         text: text,
@@ -45,4 +47,16 @@ export async function getAllUserMessages() {
     const querySnapshot = await getDocs(q);
          return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     ;
+}
+
+export async function getLatestMessages(oid: string) {
+    if (!auth.currentUser || !oid ) return []
+
+    const q = query(collectionGroup(db, "messages"), 
+        where("oid", "==", oid), 
+        orderBy("createdAt", "desc"), 
+        limit(5));
+
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 }
