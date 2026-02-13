@@ -8,6 +8,9 @@ import { updateUserProfile } from '@/src/services/users.service';
 import { uploadAvatar, getAvatarURL } from '@/src/services/storage/storage.service';
 import { PRESET_CITIES } from '@/src/constants/cities'
 import { CitySelect } from '@/src/components/ui/CitySelect'
+import { getLocationDraft } from "@/src/services/users.service";
+import { LocationOpt } from "@/src/components/ui/LocationOpt";
+import { useLocation } from "@/src/hooks/useLocation";
 
 export default function ProfileSettingsScreen() {
   const { user, reload } = useUserProfile()
@@ -19,6 +22,23 @@ export default function ProfileSettingsScreen() {
   const [base64Image, setBase64Image] = useState<string | null>(null);
   const [error, setError] = useState('');
 
+  // Initialize location switch + seed draft from the saved profile.
+  const initialEnabled =
+    user?.locationEnabled !== undefined ? user.locationEnabled : !!user?.location;
+  const initialDraft = (user?.location as any) ?? null;
+
+  const {
+    useGps,
+    locationDraft,
+    gpsLoading,
+    gpsError,
+    onToggleUseGps,
+  } = useLocation({
+    onCityAutofill: setCity,
+    initialEnabled,
+    initialDraft,
+  });
+
   useEffect(() => {
     if (user) {
       setFirstName(user.first || "");
@@ -27,6 +47,35 @@ export default function ProfileSettingsScreen() {
       setCity(user.city || "");
     }
   }, [user]);
+
+
+
+  const handleRefreshLocation = async () => {
+    try {
+      // Fetch a fresh device location draft (and reverse-geocoded city).
+      const res = await getLocationDraft({ withCity: true });
+      if (!res.ok) {
+        return;
+      }
+
+      // Update UI city and persist the new location+city to the user profile.
+      if (res.data.city) setCity(res.data.city);
+
+      await updateUserProfile(
+        firstName.trim(),
+        lastName.trim(),
+        photoURL ?? "",
+        res.data.city ?? city,
+        res.data
+      );
+
+      await reload(true);
+      alert("Sijainti päivitetty!");
+    } catch (error) {
+    } finally {
+    }
+  };
+
 
   const handleSubmit = async () => {
     if (!firstName.trim() && !lastName.trim()) {
@@ -41,6 +90,10 @@ export default function ProfileSettingsScreen() {
       setError("Sukunimi ei voi olla tyhjä");
       return
     }
+    if (useGps && !locationDraft) {
+      setError("Odota että sijainti haetaan valmiiksi (tai kytke sijainti pois).");
+      return;
+    }
 
     // Check if nothing changed
     if (user) {
@@ -48,6 +101,8 @@ export default function ProfileSettingsScreen() {
         user.first === firstName &&
         user.last === lastName &&
         user.city === city &&
+        user.locationEnabled === useGps &&
+        user.location === locationDraft &&
         !base64Image) {
         setError("Ei muutoksia tallennettavaksi.");
         return;
@@ -67,7 +122,7 @@ export default function ProfileSettingsScreen() {
       }
 
       setPhotoURL(url);
-      await updateUserProfile(firstName.trim(), lastName.trim(), url, city);
+      await updateUserProfile(firstName.trim(), lastName.trim(), url, city, useGps ? locationDraft : null);
 
       await reload(true);
 
@@ -97,8 +152,25 @@ export default function ProfileSettingsScreen() {
         value={lastName}
         placeholder="Sukunimi"
       />
-      <Text style={styles.label}>Asuinkaupunki</Text>
-      <CitySelect value={city} onChange={setCity} options={PRESET_CITIES}/>
+
+      {/* location switch and manual city selection */}
+      <View style={styles.locationRow}>
+        <View style={styles.locationLeft}>
+          <LocationOpt
+            useGps={useGps}
+            onToggleUseGps={onToggleUseGps}
+            gpsLoading={gpsLoading}
+            gpsError={gpsError}
+            onRefresh={handleRefreshLocation}
+          />
+        </View>
+        
+        <View style={styles.locationRight}>
+          <Text style={styles.label}>Asuinkaupunki</Text>
+          <CitySelect value={city} onChange={setCity} options={PRESET_CITIES} />
+        </View>
+      </View>
+      
       <ImagePickerComponent title="Vaihda profiilikuva" onImageSelected={setBase64Image} photoURL={photoURL} />
       <View style={{ height: 20 }}></View>
       <Button title="Tallenna muutokset" disabled={loading} onPress={handleSubmit} />
@@ -134,5 +206,19 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontSize: 14,
     fontWeight: '400',
+  },
+  locationRow: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    flexWrap: "wrap",
+  },
+  locationLeft: {
+    flexShrink: 0,
+  },
+  locationRight: {
+    flexGrow: 1,
+    minWidth: 180,
   },
 });

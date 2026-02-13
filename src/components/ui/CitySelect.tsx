@@ -11,19 +11,19 @@ const DEFAULT_TITLE = "Valitse kaupunki";
 const DEFAULT_PLACEHOLDER = "Asuinkaupunki";
 const DEFAULT_OTHER_OPTION = "Muu…";
 const DEFAULT_OTHER_LABEL = "Kirjoita kaupunki";
-const DEFAULT_OTHER_PLACEHOLDER = "Esim. Joensuu";
+const DEFAULT_OTHER_PLACEHOLDER = "Esim. Kajaani";
 
 export function CitySelect({
   value,
   onChange,
   options,
+
   placeholder = DEFAULT_PLACEHOLDER,
   title = DEFAULT_TITLE,
   otherOptionLabel = DEFAULT_OTHER_OPTION,
   otherInputLabel = DEFAULT_OTHER_LABEL,
   otherInputPlaceholder = DEFAULT_OTHER_PLACEHOLDER,
 }: CitySelectProps) {
-  // Selection and modal state are handled in the hook.
   const {
     open,
     setOpen,
