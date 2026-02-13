@@ -11,7 +11,6 @@ import LoadingScreen from '../LoadingScreen';
 
 
 export default function LatestMessages() {
-    const [messages, setMessages] = useState<any[]>([]);
     const [merged, setMerged] = useState<any[]>([]);
     const { user } = useUserProfile();
     const oid = user?.organizationId;
