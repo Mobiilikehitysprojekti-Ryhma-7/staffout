@@ -74,12 +74,12 @@ export default function LatestMessages() {
             };
         }, [oid])
     );
-    if(loading) {
+    if (loading) {
         return (
-                <LoadingScreen />
-            );
+            <LoadingScreen />
+        );
     }
-    
+
     return (
         <View>
             <Text style={styles.sectionTitle}>Uusimmat viestit</Text>
@@ -137,18 +137,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'flex-start',
         gap: 10,
-        flex: 1, 
+        flex: 1,
     },
 
     contentContainer: {
-        flex: 1, 
+        flex: 1,
         flexDirection: 'column',
     },
 
     textRow: {
         flexDirection: 'row',
         alignItems: 'baseline',
-        flexWrap: 'wrap', 
+        flexWrap: 'wrap',
         columnGap: 5,
     },
 
