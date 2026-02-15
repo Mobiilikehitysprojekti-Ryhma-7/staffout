@@ -9,6 +9,14 @@ export const PRESET_CITIES = [
   "Kuopio",
   "Lahti",
   "Pori",
+  "Joensuu",
+  "Kouvola",
+  "Lappeenranta",
   "Vaasa",
-  "Rovaniemi"
+  "Hämeenlinna",
+  "Seinäjoki",
+  "Rovaniemi",
+  "Porvoo",
+  "Mikkeli",
+  "Salo"
 ];

@@ -1,13 +1,12 @@
-import { View, Text, StyleSheet, TextInput, Pressable, FlatList, KeyboardAvoidingView, Platform, Alert } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Pressable, FlatList, Alert } from 'react-native'
 import { useLocalSearchParams, Stack } from 'expo-router'
 import React, { useRef, useEffect } from 'react'
 import SendButton from '@/src/components/ui/MessageButtons';
 import { AvatarPlaceholderSmall } from '@/src/components/ui/AvatarPlaceholder';
 import { Image } from 'react-native';
-import { useHeaderHeight } from '@react-navigation/elements';
 import MoreButton from '@/src/components/ui/MoreButton';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import MessageUpdate from '@/src/components/chat/MessageUpdate';
+import MessageUpdate from '@/src/components/messages/MessageUpdate';
 import useMessages from '@/src/hooks/useMessages';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 export default function MessagesModal() {
@@ -29,8 +28,6 @@ export default function MessagesModal() {
     startEditMessage,
     clearSelection,
   } = useMessages(channelId);
-  const headerHeight = useHeaderHeight();
-
   // Ref
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -70,7 +67,7 @@ export default function MessagesModal() {
   };
 
   return (
-    <><KeyboardStickyView style={styles.container}>
+    <><View style={styles.container}>
       <Stack.Screen
         options={{
           title: name,
@@ -78,21 +75,20 @@ export default function MessagesModal() {
       <FlatList style={{ width: "100%" }}
         data={merged}
         keyboardShouldPersistTaps="handled"
+        inverted
+        contentContainerStyle={{ flexDirection: 'column-reverse' }}
         renderItem={({ item }) => {
           return (
             <View style={styles.card}>
-
-
-              <View style={{ backgroundColor: 'transparent', flex: 1, flexDirection: 'column' }}>
-
-                <View style={styles.headerRow}> 
+              <View style={{ flex: 1 }}>
+                <View style={styles.headerRow}>
                   {item.photoURL ? (
-                  <Image source={{ uri: item.photoURL }}
-                    style={styles.avatar} />
-                ) : (
-                  <AvatarPlaceholderSmall />
-                )}
-                  <View style={{ flexDirection: 'column' }}>
+                    <Image source={{ uri: item.photoURL }}
+                      style={styles.avatar} />
+                  ) : (
+                    <AvatarPlaceholderSmall />
+                  )}
+                  <View style={styles.contentContainer}>
                     <View style={styles.textRow}>
                       <Text style={styles.nameText}>
                         {item.first || "undefined"} {item.last || "undefined"}
@@ -114,13 +110,13 @@ export default function MessagesModal() {
           );
         }} />
 
-      <View style={{ flexDirection: 'row', paddingTop: 10, width: "auto" }}>
+      <KeyboardStickyView style={styles.inputContainer}>
         <TextInput style={styles.input} placeholder="Kirjoita viesti..." value={newMessage} onChangeText={setNewMessage} />
         <Pressable onPress={sendMessage} disabled={!newMessage.trim()}>
           <SendButton disabled={!newMessage.trim()} />
         </Pressable>
-      </View>
-    </KeyboardStickyView>
+      </KeyboardStickyView>
+    </View>
       <MessageUpdate
         selectedMessage={selectedMessage}
         setSelectedMessage={setSelectedMessage}
@@ -153,22 +149,17 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
     flex: 1,
     backgroundColor: '#ffffff',
   },
-  label: {
-    fontSize: 14,
-    fontWeight: '400',
-    marginBottom: 5,
-    textAlign: 'left',
-    width: '100%',
-  },
-  buttonContainer: {
+  inputContainer: {
     flexDirection: 'row',
-    gap: 10,
-    justifyContent: 'center',
-    marginTop: 20,
+    paddingBottom: 20,
+    paddingTop: 10,
+    width: "auto",
+    backgroundColor: '#ffffff',
   },
   input: {
     borderWidth: 1,
@@ -179,36 +170,55 @@ const styles = StyleSheet.create({
     flex: 1
   },
   card: {
-    alignItems: 'center',
     flexDirection: 'row',
     marginBottom: 10,
     backgroundColor: '#f0f0f0',
     padding: 10,
     borderRadius: 10,
+    width: '100%',
   },
-  text: {
-    fontSize: 14,
-    color: '#000000',
-  },
-  time: {
-    fontSize: 12,
-    color: '#666',
-  },
-  nameText: {
-    fontSize: 14,
-    fontWeight: "600",
-  },
+
   headerRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    columnGap: 10,
+    gap: 10,
+    flex: 1,
   },
+
+  contentContainer: {
+    flex: 1,
+    flexDirection: 'column',
+  },
+
   textRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
+    flexWrap: 'wrap',
     columnGap: 5,
   },
+
   avatar: {
-    width: 40, height: 40, borderRadius: 20
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+
+  nameText: {
+    fontSize: 14,
+    fontWeight: "600",
+    flexShrink: 1,
+  },
+
+  time: {
+    fontSize: 12,
+    color: '#666',
+    flexShrink: 1,
+  },
+
+  text: {
+    fontSize: 14,
+    color: '#000000',
+    flexShrink: 1,
+    marginTop: 5,
   },
 });

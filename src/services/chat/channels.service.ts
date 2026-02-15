@@ -1,5 +1,5 @@
 import { db } from "../../config/firebaseConfig";
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc } from "firebase/firestore";
 import { auth } from "../../config/firebaseConfig";
 
 export async function createChannel(oid: string, name: string) {
@@ -31,4 +31,17 @@ export async function deleteChannel(oid: string, channelId: string) {
     if (!auth.currentUser) return
     const channelDoc = doc(db, "organizations", oid, "channels", channelId);
     await deleteDoc(channelDoc);
+}
+
+export async function getChannelById(oid: string, channelId: string) {
+   if (!oid || !channelId) return null;
+     try {
+       const snap = await getDoc(doc(db, "organizations", oid, "channels", channelId));
+       const data = snap.data();
+       if (!data) return null;
+       return { channelName: data.name, channelId: snap.id };
+     } catch (error) {
+       console.error("Error fetching channel by ID:", error);
+       return null;
+     }
 }

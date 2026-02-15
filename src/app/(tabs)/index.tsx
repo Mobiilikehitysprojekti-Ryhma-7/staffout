@@ -11,6 +11,7 @@ import { useOrganizationEvents } from '@/src/hooks/useOrganizationEvents';
 import HomeEventPreview from "../../components/events/HomeEventPreview";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CityPieChart from '@/src/components/charts/CityPieChart';
+import LatestMessages from '@/src/components/messages/LatestMessages';
 
 export default function TabOneScreen() {
   const insets = useSafeAreaInsets();
@@ -18,7 +19,6 @@ export default function TabOneScreen() {
   const ubd = useBenefitDetails();
 
   const { user, reload } = useUserProfile();
-  const first = user?.first || "";
   
   const { items: benefits } = useOrganizationBenefits(user?.organizationId);
   const { items: events } = useOrganizationEvents(user?.organizationId);
@@ -52,6 +52,7 @@ export default function TabOneScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 16 }]}
         showsVerticalScrollIndicator={false}
       >
+        <LatestMessages />
         <LatestBenefits
           items={newest}
           onPressItem={ubd.openBenefit}
@@ -63,6 +64,7 @@ export default function TabOneScreen() {
         />
 
         <CityPieChart />
+        
       </ScrollView>
 
         <BenefitDetailsModal

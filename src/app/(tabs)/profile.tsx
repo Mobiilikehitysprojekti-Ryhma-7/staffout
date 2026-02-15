@@ -7,6 +7,7 @@ import { getOrganizationById } from '@/src/services/organizations.service';
 import { AvatarPlaceholder, OrganizationAvatarPlaceholder } from '@/src/components/ui/AvatarPlaceholder';
 import OrganizationSettingsButton from '@/src/components/ui/OrganizationSettingsButton';
 import SettingsButton from '@/src/components/ui/SettingsButton';
+import MessagesChart from '@/src/components/charts/MessagesChart';
 
 export default function ProfileScreen() {
   const { user, reload } = useUserProfile();
@@ -16,7 +17,6 @@ export default function ProfileScreen() {
   const [organizationName, setOrganizationName] = useState("");
   const [organizationAvatar, setOrganizationAvatar] = useState("");
   const [organizationDescription, setOrganizationDescription] = useState("");
-
 
   useFocusEffect(
     useCallback(() => {
@@ -43,10 +43,9 @@ export default function ProfileScreen() {
       }
     }
   }, [user]);
+
   return (
     <SafeAreaView style={styles.container}>
-
-
       <View style={styles.card}>
         {photoURL ? (
           <Image source={{ uri: photoURL }}
@@ -55,7 +54,7 @@ export default function ProfileScreen() {
           <AvatarPlaceholder />
         )}
         <View style={{ flex: 1, marginHorizontal: 20, backgroundColor: 'transparent' }}>
-          <Text style={styles.nameText}>
+          <Text style={styles.title}>
             {user ? `${firstName} ${lastName}` : 'Loading...'}
           </Text>
         </View>
@@ -72,19 +71,27 @@ export default function ProfileScreen() {
               <OrganizationAvatarPlaceholder />
             )}
             <View style={{ flex: 1, marginHorizontal: 20, backgroundColor: 'transparent' }}>
-              {organizationName && <Text style={styles.subheader2}>{organizationName}</Text>}
-              {organizationDescription && <Text style={styles.description}>{organizationDescription}</Text>}
+              {organizationName &&
+                <Text style={styles.organizationTitle}>
+                  {organizationName}
+                </Text>}
+              {organizationDescription &&
+                <Text style={styles.description}>
+                  {organizationDescription}
+                </Text>}
             </View>
           </View>
           <OrganizationSettingsButton />
         </View>
       )}
-
-
-      <Text style={styles.subheader}>Analytiikka</Text>
-      <Text style={styles.subheader}>Viime kuukauden tapahtumat</Text>
-
-
+      
+      <Text style={styles.title}>
+        Analytiikka
+      </Text>
+      <Text style={styles.description}>
+        Viestit / päivä (nykyinen kuukausi)
+      </Text>
+      <MessagesChart />
     </SafeAreaView>
   );
 }
@@ -92,7 +99,6 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     padding: 20,
   },
   avatar: {
@@ -107,31 +113,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: '100%'
   },
-  actionBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#111",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  nameText: {
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  subheader2: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#666",
-  },
-  description: {
-    fontSize: 14,
-    fontWeight: "400",
-    color: "#666",
-  },
-  subheader: {
+  title: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 20,
-  }
+  },
+  organizationTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#666',
+  },
+  description: {
+    marginTop: 5,
+    fontSize: 14,
+    fontWeight: '400',
+    color: '#666',
+  },
 });

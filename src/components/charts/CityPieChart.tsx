@@ -8,7 +8,7 @@ import { CHART_PALETTE } from "@/src/constants/chartColors";
 import type { CityStat } from "@/src/types/cityStats";
 import { CityPieLegend } from "./cityPieChartLegend/CityPieLegend";
 import { PRESET_CITIES } from "@/src/constants/cities";
-import { buildPresetCityMap, cityToBucket } from "@/src/utils/cityBucket";
+import { buildPresetCityMap, buildChartCityBuckets } from "@/src/utils/cityBucket";
 
 export default function CityPieChart() {
 
@@ -25,9 +25,10 @@ export default function CityPieChart() {
     const innerRadius = Math.floor(radius * 0.6);
     const centerLabelFontSize = Math.max(10, Math.floor(radius * 0.22));
 
+    // Load organization users (with loading state + reload helper)
     const { users, loading, reload } = useOrganizationUsers(orgId);
-    const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
+    const [selectedCity, setSelectedCity] = useState<string | null>(null);
     const presetMap = useMemo(() => buildPresetCityMap(PRESET_CITIES), []);
 
     useFocusEffect(
@@ -36,37 +37,12 @@ export default function CityPieChart() {
         }, [reload])
     );
 
+    // Build chart buckets (preset + promoted custom cities + "Muu" category) and compute totals
     const { stats, total } = useMemo(() => {
-        const counts: Record<string, number> = {};
-
-        (users ?? []).forEach((u: any) => {
-            const bucket = cityToBucket(u?.city, presetMap);
-            counts[bucket] = (counts[bucket] ?? 0) + 1;
+        const { finalEntries, total } = buildChartCityBuckets(users ?? [], presetMap, {
+            minCustomCount: 2,
+            maxCities: 6,
         });
-
-        const missingCount = counts["Ei asetettu"] ?? 0;
-        const customOtherCount = counts["Muu"] ?? 0;
-
-        // Only sort real preset cities (exclude fixed buckets)
-        const cityEntries = Object.entries(counts).filter(
-            ([city]) => city !== "Muu" && city !== "Ei asetettu"
-        );
-
-        cityEntries.sort((a, b) => b[1] - a[1]);
-
-        const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
-
-        // Keep legend readable: top N preset cities + merge the rest into "Muu"
-        const MAX = 6;
-        const topPresets = cityEntries.slice(0, MAX);
-        const restPresets = cityEntries.slice(MAX);
-        const restTotal = restPresets.reduce((sum, [, n]) => sum + n, 0);
-
-        const finalEntries: Array<[string, number]> = [...topPresets];
-
-        const muuTotal = customOtherCount + restTotal;
-        if (muuTotal > 0) finalEntries.push(["Muu", muuTotal]);
-        if (missingCount > 0) finalEntries.push(["Ei asetettu", missingCount]);
 
         const stats: CityStat[] = finalEntries.map(([city, count], idx) => ({
             city,
