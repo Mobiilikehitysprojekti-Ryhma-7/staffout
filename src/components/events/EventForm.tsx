@@ -14,26 +14,26 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 export default function EventForm({ organizationId, onEventCreated }: { organizationId: string, onEventCreated?: (event: any) => void }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
   const [eventDate, setEventDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   // const [location, setLocation] = useState<{ latitude: number, longitude: number } | null>(null);
 
   const createEvent = async () => {
     if (!title.trim() || !organizationId) return;
-    // if (!location) return; // Require location
+    // if (!location.trim()) return; // Require location if needed
 
     const docRef = await addDoc(
       collection(db, "organizations", organizationId, "events"),
       {
         title,
         description,
+        location,
         eventDate: Timestamp.fromDate(eventDate),
         participants: [],
         createdBy: auth.currentUser?.uid,
         createdAt: serverTimestamp(),
         organizationId, // Ensure this is always present
-        // latitude: location.latitude,
-        // longitude: location.longitude,
       }
     );
 
@@ -42,6 +42,7 @@ export default function EventForm({ organizationId, onEventCreated }: { organiza
       id: docRef.id,
       title,
       description,
+      location,
       eventDate,
       participants: [],
       createdBy: auth.currentUser?.uid,
@@ -51,6 +52,7 @@ export default function EventForm({ organizationId, onEventCreated }: { organiza
 
     setTitle("");
     setDescription("");
+    setLocation("");
     setEventDate(new Date());
   };
 
@@ -69,6 +71,13 @@ export default function EventForm({ organizationId, onEventCreated }: { organiza
         placeholder="Tapahtuman kuvaus"
         value={description}
         onChangeText={setDescription}
+        style={{ borderWidth: 1, padding: 8, marginBottom: 6 }}
+      />
+
+      <TextInput
+        placeholder="Tapahtumapaikka (esim. osoite, tila, kaupunki)"
+        value={location}
+        onChangeText={setLocation}
         style={{ borderWidth: 1, padding: 8, marginBottom: 6 }}
       />
 

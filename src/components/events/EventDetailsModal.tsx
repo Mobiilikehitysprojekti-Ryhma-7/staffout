@@ -15,6 +15,9 @@ export default function EventDetailsModal({ visible, event, onClose }) {
         <View style={styles.modalContent}>
           <Text style={styles.title}>{event.title}</Text>
           <Text style={styles.description}>{event.description}</Text>
+          {event.location && (
+            <Text style={styles.location}>📍 {event.location}</Text>
+          )}
           <Text style={styles.date}>
             📅 {event.eventDate?.toDate ? event.eventDate.toDate().toLocaleString() : event.eventDate}
           </Text>
@@ -50,6 +53,11 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     marginBottom: 12,
+  },
+  location: {
+    fontSize: 14,
+    marginBottom: 8,
+    color: '#444',
   },
   date: {
     fontSize: 14,

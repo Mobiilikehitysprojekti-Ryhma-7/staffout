@@ -29,20 +29,11 @@ export default function EventItem({ event, onPress, showActions = true }: any) {
   };
 
   const deleteEvent = async () => {
-    Alert.alert("Poista tapahtuma?", "Toimintoa ei voi peruuttaa", [
-      { text: "Peruuta", style: "cancel" },
-      {
-        text: "Poista",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await deleteDoc(doc(db, "organizations", event.organizationId, "events", event.id));
-          } catch (error) {
-            console.error("Error deleting event: ", error);
-          }
-        }
-      }
-    ]);
+    try {
+      await deleteDoc(doc(db, "organizations", event.organizationId, "events", event.id));
+    } catch (error) {
+      console.error("Error deleting event: ", error);
+    }
   };
 
   return (
@@ -62,11 +53,12 @@ export default function EventItem({ event, onPress, showActions = true }: any) {
             ? event.description.slice(0, 60) + '...'
             : event.description}
         </Text>
-
+        {event.location && (
+          <Text style={{ color: '#444', marginTop: 2 }}>📍 {event.location}</Text>
+        )}
         <Text>
           📅 {event.eventDate?.toDate().toLocaleString()}
         </Text>
-
         <Text>
           👥 {event.participants?.length || 0}
         </Text>

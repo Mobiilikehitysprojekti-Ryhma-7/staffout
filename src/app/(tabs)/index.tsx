@@ -11,6 +11,7 @@ import { useOrganizationEvents } from '@/src/hooks/useOrganizationEvents';
 import HomeEventPreview from "../../components/events/HomeEventPreview";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CityPieChart from '@/src/components/charts/CityPieChart';
+import EventLocationPieChart from '@/src/components/charts/EventLocationPieChart';
 import LatestMessages from '@/src/components/messages/LatestMessages';
 
 export default function TabOneScreen() {
@@ -42,16 +43,15 @@ export default function TabOneScreen() {
         <Text style={styles.topTitle}>Yritys</Text>
       </View>
 
-      <HomeEventPreview
-        events={events}
-        onNavigate={() => router.push("/events")}
-      />
-
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 16 }]}
         showsVerticalScrollIndicator={false}
       >
+        <HomeEventPreview
+        events={events}
+        onNavigate={() => router.push("/events")}
+        />
         <LatestMessages />
         <LatestBenefits
           items={newest}
@@ -64,6 +64,8 @@ export default function TabOneScreen() {
         />
 
         <CityPieChart />
+        <Text style={{ fontSize: 16, fontWeight: '600', marginTop: 24, marginBottom: 8 }}>Tapahtumat paikkakunnittain</Text>
+        <EventLocationPieChart />
         
       </ScrollView>
 
