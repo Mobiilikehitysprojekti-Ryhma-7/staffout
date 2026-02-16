@@ -47,3 +47,25 @@ export const getOrganizationAvatarURL = async (path: string) => {
   return data.publicUrl + '?t=' + Date.now();
 }
 
+export const uploadBenefitImage = async (base64: any, benefitId: string) => {
+  const avatar = decode(base64);
+  const { data, error } = await supabase
+    .storage
+    .from('benefits')
+    .upload(`${benefitId}.jpg`, avatar, {
+      contentType: 'image/jpeg',
+      cacheControl: '3600',
+      upsert: true,
+    });
+
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+export const getBenefitImageURL = async (path: string) => {
+  const { data } = supabase
+    .storage
+    .from('benefits')
+    .getPublicUrl(path)
+  return data.publicUrl + '?t=' + Date.now();
+}

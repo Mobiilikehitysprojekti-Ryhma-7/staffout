@@ -30,7 +30,13 @@ export function BenefitCard({
       <Image source={item.image} style={styles.cardImage} />
 
       <View style={styles.cardBody}>
-        <Text style={styles.cardTitle}>{item.title}</Text>
+        <Text
+          style={styles.cardTitle}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {item.title}
+        </Text>
         <Text
           style={styles.cardDescription}
           numberOfLines={1}
@@ -45,15 +51,17 @@ export function BenefitCard({
         </View>
 
         {/* Badge */}
-        <View style={styles.badge}>
-          {item.badge.family === "fa" ? (
-            <FontAwesome name={item.badge.name as any} size={14} color="#fff" />
-          ) : item.badge.family === "mi" ? (
-            <MaterialIcons name={item.badge.name as any} size={16} color="#fff" />
-          ) : (
-            <MaterialCommunityIcons name={item.badge.name as any} size={16} color="#fff" />
-          )}
-        </View>
+        {item.badge && (
+          <View style={styles.badge}>
+            {item.badge.family === "fa" ? (
+              <FontAwesome name={item.badge.name as any} size={14} color="#fff" />
+            ) : item.badge.family === "mi" ? (
+              <MaterialIcons name={item.badge.name as any} size={16} color="#fff" />
+            ) : (
+              <MaterialCommunityIcons name={item.badge.name as any} size={16} color="#fff" />
+            )}
+          </View>
+        )}
       </View>
     </Pressable>
   );
