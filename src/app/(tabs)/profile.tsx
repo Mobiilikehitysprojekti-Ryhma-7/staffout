@@ -89,7 +89,7 @@ export default function ProfileScreen() {
         Analytiikka
       </Text>
       <Text style={styles.description}>
-        Viestit / päivä (nykyinen kuukausi)
+        Viestit / päivä (30pv)
       </Text>
       <MessagesChart />
     </SafeAreaView>
