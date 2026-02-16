@@ -65,14 +65,13 @@ export function useBenefits(all: Benefit[], defaultSort: SortKey = "validUntil")
 
       try {
 
-        /* const benefitRef = doc(collection(db, "benefits"));
-        const benefitId = benefitRef.id;  */
+        const benefitRef = doc(collection(db, "benefits"));
+        const benefitId = benefitRef.id; 
 
         let photoURL = "";
         if (base64Image) {
-          // Ei toimi, vaatii todennäköisesti jotain säätöä supabasen puolella
-          /* const upload = await uploadBenefitImage(base64Image, benefitId);
-          photoURL = await getBenefitImageURL(upload.path); */
+          const upload = await uploadBenefitImage(base64Image, benefitId);
+          photoURL = await getBenefitImageURL(upload.path);
         }
 
         await createBenefit({

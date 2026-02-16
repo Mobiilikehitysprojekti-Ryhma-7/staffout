@@ -47,7 +47,6 @@ export const getOrganizationAvatarURL = async (path: string) => {
   return data.publicUrl + '?t=' + Date.now();
 }
 
-// Ei toimi, vaatii todennäköisesti jotain säätöä supabasen puolella
 export const uploadBenefitImage = async (base64: any, benefitId: string) => {
   const avatar = decode(base64);
   const { data, error } = await supabase
@@ -58,13 +57,12 @@ export const uploadBenefitImage = async (base64: any, benefitId: string) => {
       cacheControl: '3600',
       upsert: true,
     });
-  //console.log("upload.path:", data?.path);
+  console.log("upload.path:", data?.path);
 
   if (error) throw new Error(error.message);
   return data;
 };
 
-// Ei toimi, vaatii todennäköisesti jotain säätöä supabasen puolella
 export const getBenefitImageURL = async (path: string) => {
   const { data } = supabase
     .storage
