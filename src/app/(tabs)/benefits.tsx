@@ -10,17 +10,19 @@ import { useBenefits } from "../../hooks/useBenefits";
 import { useBenefitDetails } from "../../hooks/useBenefitDetails";
 import { useOrganizationBenefits } from "@/src/hooks/useOrganizationBenefits";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
+import { useOrganization } from "@/src/hooks/useOrganization";
+import OrganizationCard from "@/src/components/ui/OrganizationCard";
+import { useFocusEffect } from "expo-router";
 import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import BenefitForm from '@/src/components/benefits/BenefitForm';
 import BenefitEdit from "@/src/components/benefits/BenefitEdit";
 
 export default function Benefits() {
-  const { user } = useUserProfile();
+  const { user, reload } = useUserProfile();
   const { items: orgBenefits } = useOrganizationBenefits(user?.organizationId);
   const ub = useBenefits(orgBenefits ?? [], "validUntil");
 
   const {
-    benefits,
     role,
     benefitTitle,
     setBenefitTitle,
@@ -101,6 +103,15 @@ export default function Benefits() {
       ]
     );
   };
+  //const { user, reload } = useUserProfile();
+
+  const { organization } = useOrganization(user, user?.organizationId);
+
+    useFocusEffect(
+      useCallback(() => {
+        reload(true);
+      }, [reload])
+    );
 
   // Details modal state
   const ubd = useBenefitDetails();
@@ -126,16 +137,16 @@ export default function Benefits() {
     openEditForm(b);
   };
 
-
-/*   useEffect(() => {
-    console.log("UI items:", ub.items.length, ub.items[0]?.title);
-  }, [ub.items]); */
-
-
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-        <Text style={styles.topTitle}>Yritys</Text>
+          <OrganizationCard
+                  organizationId={user?.organizationId}
+                  organizationName={organization?.name}
+                  organizationDescription={organization?.description}
+                  organizationAvatar={organization?.photoURL}
+                  interactive={false}
+                />
 
         <BenefitsHeader
           showClear={ub.hasActiveControls}

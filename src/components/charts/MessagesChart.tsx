@@ -16,38 +16,55 @@ export default function MessagesChart() {
         const messages = await getAllUserMessages();
         setMessages(messages || []);
     }
+    
+const rangeDays = 30;
+const today = new Date();
+const priorDate = new Date(today);
+priorDate.setHours(0, 0, 0, 0);
+priorDate.setDate(today.getDate() - (rangeDays - 1));
+
 
     // Count messages of the day for the current month
     const countDuplicates = (messages: any[]): Record<string, number> => {
 
         const counts: Record<string, number> = {};
         messages.forEach((value: any) => {
-            if (value.createdAt.toDate().getMonth() === new Date().getMonth() && value.createdAt.toDate().getFullYear() === new Date().getFullYear()) {
+            const messageDate = value.createdAt.toDate();
+            if (messageDate >= priorDate) {
+                const dateKey = `${messageDate.getDate()}-${messageDate.getMonth() + 1}`;
                 
-                if (!counts[value.createdAt.toDate().getDate()]) {
-                    counts[value.createdAt.toDate().getDate()] = 1;
+                if (!counts[dateKey]) {
+                    counts[dateKey] = 1;
                 } else {
-                    counts[value.createdAt.toDate().getDate()]++;
+                    counts[dateKey]++;
                 }
             }
         });
+        console.log(counts)
         return counts;
     };
 
     const result = useMemo(() => countDuplicates(messages), [messages]);
 
-    const barData = Array.from({ length: new Date().getDate() }, (_, i) => ({
-        value: result[i + 1] || 0,
-        label: (i + 1) % 3 === 0 ? (i + 1).toString() : '',
-    }));
+    const barData = Array.from({ length: rangeDays }, (_, i) => {
+        const date = new Date(today);
+        date.setDate(today.getDate() - (rangeDays - 1) + i);
+        return {
+            value: result[`${date.getDate()}-${date.getMonth() + 1}`] || 0,
+            label: `${date.getDate()}-${date.getMonth() + 1}`
+        };
+    });
+
+
 
     return (
         <LineChart
             areaChart
             data={barData}
             height={250}
-            initialSpacing={0}
-            spacing={15}
+            initialSpacing={20}
+            spacing={40}
+            scrollToEnd
             color1="skyblue"
             textColor1="green"
             hideDataPoints
