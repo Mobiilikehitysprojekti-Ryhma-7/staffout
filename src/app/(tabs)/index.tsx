@@ -18,13 +18,15 @@ export default function TabOneScreen() {
 
   const { user, reload } = useUserProfile();
   
-  const { items: benefits } = useOrganizationBenefits(user?.organizationId);
+  const { items: benefits, reload: reloadBenefits } =
+    useOrganizationBenefits(user?.organizationId);
 
-   useFocusEffect(
-      useCallback(() => {
-        reload(true);
-      }, [reload])
-    );
+  useFocusEffect(
+    useCallback(() => {
+      reload(true);
+      reloadBenefits();
+    }, [reload, reloadBenefits])
+  );
 
   const newest = useMemo(() => {
     return [...benefits]

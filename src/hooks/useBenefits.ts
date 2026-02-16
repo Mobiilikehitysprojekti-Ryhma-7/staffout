@@ -1,5 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Benefit, BenefitCategory } from "../types/benefit";
+import { useOrganizationMembership } from './useOrganizationMembership';
+import { useUserProfile } from "./useUserProfile";
+import { doc, collection } from "firebase/firestore";
+import { db } from "../config/firebaseConfig";
+import { uploadBenefitImage, getBenefitImageURL } from "../services/storage/storage.service";
+import { readAllBenefitsFromOrganization, Badge, updateBenefit, deleteBenefit, createBenefit } from "../services/benefits.service";
 
 export type SortKey = "title-asc" | "title-desc" | "category" | "validUntil" | "location";
 
@@ -7,6 +13,133 @@ export type SortKey = "title-asc" | "title-desc" | "category" | "validUntil" | "
 // Maintains separate "applied" and "draft" states for both filter and sort,
 // so that modals can edit draft state without immediately affecting the list.
 export function useBenefits(all: Benefit[], defaultSort: SortKey = "validUntil") {
+
+  const { user } = useUserProfile();
+  const oid = user?.organizationId;
+  const {role} = useOrganizationMembership();
+  const [benefits, setBenefits] = useState<Benefit[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [benefitTitle, setBenefitTitle] = useState<string>('');
+  const [benefitCategory, setBenefitCategory] = useState<BenefitCategory | null>(null);
+  const [benefitPhotoURL, setBenefitPhotoURL] = useState<string>('');
+  const [benefitDescription, setBenefitDescription] = useState<string>('');
+  const [benefitValidUntil, setBenefitValidUntil] = useState<Date | null>(null);
+  const [benefitBadge, setBenefitBadge] = useState<Badge>({ family: "", name: "" });
+  const [base64Image, setBase64Image] = useState<string | null>(null);
+
+  const fetchSeqRef = useRef(0);
+
+  async function fetchBenefits() {
+    if (!oid) return;
+
+    const seq = ++fetchSeqRef.current;   // this call is the newest (for now)
+    setLoading(true);
+
+    try {
+      const list = await readAllBenefitsFromOrganization(oid);
+
+      // If a newer fetch started while we waited, ignore this result
+      if (seq !== fetchSeqRef.current) return;
+
+      setBenefits((list ?? []) as Benefit[]);
+    } finally {
+      // Only the newest fetch is allowed to flip loading off
+      if (seq === fetchSeqRef.current) setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchBenefits();
+
+    return () => {
+      fetchSeqRef.current++; // invalidate any in-flight fetch
+    };
+  }, [oid]);
+
+  const handleCreateBenefit = async () => {
+    if (benefitTitle.trim().length === 0) {
+      alert("Otsikko ei voi olla tyhjä.");
+      return false;
+    }
+    if (oid && benefitTitle && benefitCategory && benefitDescription && benefitValidUntil) {
+
+      try {
+
+        /* const benefitRef = doc(collection(db, "benefits"));
+        const benefitId = benefitRef.id;  */
+
+        let photoURL = "";
+        if (base64Image) {
+          // Ei toimi, vaatii todennäköisesti jotain säätöä supabasen puolella
+          /* const upload = await uploadBenefitImage(base64Image, benefitId);
+          photoURL = await getBenefitImageURL(upload.path); */
+        }
+
+        await createBenefit({
+          organizationId: oid,
+          badge: benefitBadge,
+          category: benefitCategory,
+          description: benefitDescription,
+          title: benefitTitle,
+          photoURL: photoURL,
+          validUntil: benefitValidUntil
+        });
+        setBenefitTitle('');
+        setBenefitCategory(null);
+        setBenefitPhotoURL('');
+        setBase64Image(null);
+        setBenefitDescription('');
+        setBenefitValidUntil(null);
+        setBenefitBadge({ family: "", name: "" });
+        alert("Etu luotu onnistuneesti.");
+        await fetchBenefits();
+        clearAll();
+        return true;
+      } catch (error) {
+        console.error("Failed to create benefit:", error);
+        return false;
+      }
+    }
+    return false;
+  }
+
+  const handleUpdateBenefit = async (benefitId: string) => {
+    if (benefitTitle.trim().length === 0) {
+      alert("Otsikko ei voi olla tyhjä.");
+      return false;
+    }
+    if (oid && benefitCategory) {
+      try {
+        await updateBenefit(oid, benefitId, benefitTitle, benefitDescription, benefitCategory, benefitPhotoURL);
+        setBenefitTitle('');
+        setBenefitCategory(null);
+        setBenefitPhotoURL('');
+        setBenefitDescription('');
+        alert("Etu päivitetty.");
+        await fetchBenefits();
+        clearAll();
+        return true;
+      } catch (error) {
+        console.error("Failed to update benefit:", error);
+        return false;
+      }
+    }
+    return false;
+  }
+
+  const handleDeleteBenefit = async (benefitId: string) => {
+    if(!oid) return false;
+    try {
+      await deleteBenefit(oid, benefitId);
+      alert("Etu poistettu.");
+      await fetchBenefits();
+      clearAll();
+      return true;
+    } catch (error) {
+      console.error("Failed to delete benefit:", error);
+      return false
+    }
+  }
 
   // Applied values
   const [appliedCats, setAppliedCats] = useState<Set<BenefitCategory>>(new Set());
@@ -52,8 +185,10 @@ export function useBenefits(all: Benefit[], defaultSort: SortKey = "validUntil")
 
   // Compute filtered + sorted items
   const items = useMemo(() => {
+    const source = benefits ?? [];
+
     const base =
-      appliedCats.size === 0 ? all : all.filter((b) => appliedCats.has(b.category));
+      appliedCats.size === 0 ? source : source.filter((b) => appliedCats.has(b.category));
 
     const copy = [...base];
 
@@ -100,6 +235,27 @@ export function useBenefits(all: Benefit[], defaultSort: SortKey = "validUntil")
     setDraftSort,
     openSortDraft,
     applySort,
+
+    benefits,
+    loading,
+    role,
+    handleCreateBenefit,
+    benefitTitle,
+    setBenefitTitle,
+    benefitCategory,
+    setBenefitCategory,
+    benefitBadge,
+    setBenefitBadge,
+    benefitPhotoURL,
+    setBenefitPhotoURL,
+    benefitDescription,
+    setBenefitDescription,
+    benefitValidUntil,
+    setBenefitValidUntil,
+    handleUpdateBenefit,
+    handleDeleteBenefit,
+    base64Image,
+    setBase64Image,
 
     // reset
     clearAll,
