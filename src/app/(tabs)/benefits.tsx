@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BenefitsHeader } from "../../components/benefits/BenefitsHeader";
@@ -10,13 +10,26 @@ import { useBenefits } from "../../hooks/useBenefits";
 import { useBenefitDetails } from "../../hooks/useBenefitDetails";
 import { useOrganizationBenefits } from "@/src/hooks/useOrganizationBenefits";
 import { useUserProfile } from "@/src/hooks/useUserProfile";
+import { useOrganization } from "@/src/hooks/useOrganization";
+import OrganizationCard from "@/src/components/ui/OrganizationCard";
+import { useFocusEffect } from "expo-router";
+
 
 export default function Benefits() {
   // Modal visibility UI-only state
   const [filterOpen, setFilterOpen] = useState(false);
   const [sortOpen, setSortOpen] = useState(false);
 
-  const { user } = useUserProfile();
+  const { user, reload } = useUserProfile();
+
+  const { organization } = useOrganization(user, user?.organizationId);
+
+    useFocusEffect(
+      useCallback(() => {
+        reload(true);
+      }, [reload])
+    );
+
   const { items: benefits } = useOrganizationBenefits(user?.organizationId);
 
   // List state
@@ -36,11 +49,19 @@ export default function Benefits() {
     setSortOpen(true);
   };
 
+ 
+
 
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-        <Text style={styles.topTitle}>Yritys</Text>
+          <OrganizationCard
+                  organizationId={user?.organizationId}
+                  organizationName={organization?.name}
+                  organizationDescription={organization?.description}
+                  organizationAvatar={organization?.photoURL}
+                  interactive={false}
+                />
 
         <BenefitsHeader
           showClear={ub.hasActiveControls}
