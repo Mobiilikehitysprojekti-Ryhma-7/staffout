@@ -57,7 +57,6 @@ export const uploadBenefitImage = async (base64: any, benefitId: string) => {
       cacheControl: '3600',
       upsert: true,
     });
-  console.log("upload.path:", data?.path);
 
   if (error) throw new Error(error.message);
   return data;
