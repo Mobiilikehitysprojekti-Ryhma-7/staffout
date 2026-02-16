@@ -1,15 +1,29 @@
-import { Alert, Text, Button, FlatList, StyleSheet, Pressable, View } from 'react-native'
+import { Alert, Button, FlatList, StyleSheet, Pressable } from 'react-native'
+import { SafeAreaView, Text, View } from '@/src/components/Themed';
 import { useCallback, useRef, useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import useChannels from '@/src/hooks/useChannels';
 import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import ChannelForm from '@/src/components/channels/ChannelForm';
 import MoreButton from '@/src/components/ui/MoreButton';
 import ChannelEdit from '@/src/components/channels/ChannelUpdate';
+import { useOrganization } from '@/src/hooks/useOrganization';
+import { useUserProfile } from '@/src/hooks/useUserProfile';
+import OrganizationCard from '@/src/components/ui/OrganizationCard';
 
 export default function Channels() {
+
+   const { user, reload } = useUserProfile();
+
+   const { organization } = useOrganization(user, user?.organizationId);
+
+     useFocusEffect(
+       useCallback(() => {
+         reload(true);
+       }, [reload])
+     );
+   
   const {
     channels,
     loading,
@@ -75,6 +89,13 @@ export default function Channels() {
 
   return (
     <SafeAreaView style={styles.container}>
+         <OrganizationCard
+        organizationId={user?.organizationId}
+        organizationName={organization?.name}
+        organizationDescription={organization?.description}
+        organizationAvatar={organization?.photoURL}
+        interactive={false}
+      />
       {channels.length > 0 ?
         <FlatList style={{ width: '100%' }}
           data={channels}
@@ -142,7 +163,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    paddingHorizontal: 20,
   },
   channelItem: {
     height: 40,
