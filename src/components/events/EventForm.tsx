@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Button } from "react-native";
+import { View, Text, TextInput, Button, Platform } from "react-native";
 import { useState } from "react";
 import {
   addDoc,
@@ -92,8 +92,10 @@ export default function EventForm({ organizationId, onEventCreated }: { organiza
             value={eventDate}
             mode="datetime"
             display="default"
-            onChange={(_, selectedDate) => {
-              setShowPicker(false);
+            onChange={(event, selectedDate) => {
+              if (Platform.OS === 'android') {
+                setShowPicker(false);
+              }
               if (selectedDate) {
                 setEventDate(selectedDate);
               }
