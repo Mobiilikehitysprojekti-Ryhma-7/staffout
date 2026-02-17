@@ -1,11 +1,12 @@
-import { db } from "../config/firebaseConfig";
-import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { auth, db } from "../config/firebaseConfig";
+import { collection, addDoc, getDocs, query, orderBy, limit, deleteDoc, updateDoc, doc, serverTimestamp } from "firebase/firestore";
 import type { Benefit, BenefitCategory } from "../types/benefit";
 
-type Badge = { family: "fa" | "mi" | "mci"; name: string };
+export type Badge = { family: "fa" | "mi" | "mci" | ""; name: string };
 
 type createBenefitParams = {
     organizationId: string,
+    badge: Badge,
     category: string,
     description: string,
     title: string,
@@ -82,16 +83,34 @@ function mapBenefit(id: string, d: BenefitDoc): Benefit {
     };
 }
 
-export async function createBenefit({organizationId, category, description, title, photoURL, validUntil}: createBenefitParams) {
+export async function createBenefit({organizationId, badge, category, description, title, photoURL, validUntil}: createBenefitParams) {
     const benefitsRef = collection(db, "organizations", organizationId, "benefits");
     await addDoc(benefitsRef, {
-        createdAt: new Date(),
+        createdAt: serverTimestamp(),
+        badge: badge || null,
         category,
         description,
         title,
         photoURL,
         validUntil
     });
+}
+
+export async function updateBenefit(oid: string, benefitId: string, title: string, description: string, category: string, photoURL?: string) {
+    if (!auth.currentUser) return
+    const benefitDoc = doc(db, "organizations", oid, "benefits", benefitId);
+    await updateDoc(benefitDoc, {
+        title: title,
+        description: description,
+        category: category,
+        photoURL: photoURL
+    });
+}
+
+export async function deleteBenefit(oid: string, benefitId: string) {
+    if (!auth.currentUser) return
+    const benefitDoc = doc(db, "organizations", oid, "benefits", benefitId);
+    await deleteDoc(benefitDoc);
 }
 
 // Read all benefits for the given organization

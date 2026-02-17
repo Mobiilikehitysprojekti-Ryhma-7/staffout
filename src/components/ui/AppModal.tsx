@@ -17,6 +17,8 @@ type Props = {
   children: React.ReactNode;
   footer?: React.ReactNode;
 
+  headerRight?: React.ReactNode;
+
   // sizing
   width?: ViewStyle["width"];
   maxWidth?: number;
@@ -35,6 +37,7 @@ export function AppModal({
   onClose,
   children,
   footer,
+  headerRight,
   width = "100%",
   maxWidth = 720,
   containerStyle,
@@ -54,7 +57,19 @@ export function AppModal({
 
         {/* Sheet on top */}
         <View style={[styles.sheet, { width, maxWidth, maxHeight: maxH, height: fixedH }, containerStyle]}>
-          {title ? <Text style={styles.title}>{title}</Text> : null}
+          {(title || headerRight) ? (
+            <View style={styles.header}>
+              {title ? (
+                <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+                  {title}
+                </Text>
+              ) : (
+                <View style={{ flex: 1 }} />
+              )}
+
+              {headerRight ? <View style={styles.headerRight}>{headerRight}</View> : null}
+            </View>
+          ) : null}
 
           {scroll ? (
             <ScrollView
@@ -89,11 +104,6 @@ const styles = StyleSheet.create({
     padding: 16,
     overflow: "hidden",
   },
-  title: {
-    fontSize: 22,
-    fontWeight: "800",
-    marginBottom: 12,
-  },
   body: {
   },
   scroll: {
@@ -108,5 +118,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     gap: 12,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  headerRight: {
+    /* width: 44, */
+    justifyContent: "center",
+    alignItems: "flex-end"
+  },
+  title: {
+    flex: 1,
+    textAlign: "left",
+    fontSize: 22,
+    fontWeight: "800",
+    marginBottom: 12,
   },
 });

@@ -14,7 +14,7 @@ export type Benefit = {
   shortDescription?: string;
   category: BenefitCategory;
   image: ImageSourcePropType;
-  badge?: { family: "fa" | "mi" | "mci"; name: string };
+  badge?: { family: "fa" | "mi" | "mci" | ""; name: string };
   validUntil: Date;
   location?: {
     latitude: number;

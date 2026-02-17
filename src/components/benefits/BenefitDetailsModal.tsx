@@ -2,6 +2,16 @@ import React from "react";
 import { Image, Pressable, StyleSheet, Text } from "react-native";
 import { AppModal } from "../ui/AppModal";
 import type { Benefit } from "../../types/benefit";
+import MoreButton from "@/src/components/ui/MoreButton";
+
+type Props = {
+  visible: boolean;
+  benefit: Benefit | null;
+  onClose: () => void;
+
+  canEdit?: boolean;
+  onMorePress?: () => void;
+};
 
 // Details modal shows full description.
 // Uses asset metadata to keep image aspect ratio consistent across platforms.
@@ -9,13 +19,13 @@ export function BenefitDetailsModal({
   visible,
   benefit,
   onClose,
-}: {
-  visible: boolean;
-  benefit: Benefit | null;
-  onClose: () => void;
-}) {
+  canEdit = false,
+  onMorePress,
+}: Props) {
 
   if (!benefit) return null;
+
+  const showMore = canEdit && !!onMorePress;
 
   return (
     <AppModal
@@ -23,6 +33,13 @@ export function BenefitDetailsModal({
       title={benefit.title}
       onClose={onClose}
       scroll
+      headerRight={
+        showMore ? (
+          <Pressable onPress={onMorePress} hitSlop={12}>
+            <MoreButton />
+          </Pressable>
+        ) : null
+      }
       footer={
         <Pressable style={[styles.btn, styles.btnPrimary]} onPress={onClose}>
           <Text style={styles.btnPrimaryText}>Sulje</Text>

@@ -13,6 +13,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CityPieChart from '@/src/components/charts/CityPieChart';
 import EventLocationPieChart from '@/src/components/charts/EventLocationPieChart';
 import LatestMessages from '@/src/components/messages/LatestMessages';
+import OrganizationCard from '@/src/components/ui/OrganizationCard';
+import { useOrganization } from '@/src/hooks/useOrganization';
 
 export default function TabOneScreen() {
   const insets = useSafeAreaInsets();
@@ -20,15 +22,19 @@ export default function TabOneScreen() {
   const ubd = useBenefitDetails();
 
   const { user, reload } = useUserProfile();
-  
-  const { items: benefits } = useOrganizationBenefits(user?.organizationId);
+
+  const { organization } = useOrganization(user, user?.organizationId);
+
+  const { items: benefits, reload: reloadBenefits } =
+    useOrganizationBenefits(user?.organizationId);
   const { items: events } = useOrganizationEvents(user?.organizationId);
 
-   useFocusEffect(
-      useCallback(() => {
-        reload(true);
-      }, [reload])
-    );
+  useFocusEffect(
+    useCallback(() => {
+      reload(true);
+      reloadBenefits();
+    }, [reload, reloadBenefits])
+  );
 
   const newest = useMemo(() => {
     return [...benefits]
@@ -40,7 +46,13 @@ export default function TabOneScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>
-        <Text style={styles.topTitle}>Yritys</Text>
+        <OrganizationCard
+          organizationId={user?.organizationId}
+          organizationName={organization?.name}
+          organizationDescription={organization?.description}
+          organizationAvatar={organization?.photoURL}
+          interactive={false}
+        />
       </View>
 
       <ScrollView
