@@ -1,7 +1,8 @@
 import { StyleSheet, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView, Text, View } from '@/src/components/Themed';
 import { useUserProfile } from '@/src/hooks/useUserProfile';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useEffect, useRef } from 'react';
+import Toast from 'react-native-toast-message';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { LatestBenefits } from "../../components/benefits/LatestBenefits";
 import { BenefitDetailsModal } from "../../components/benefits/BenefitDetailsModal";
@@ -28,6 +29,42 @@ export default function TabOneScreen() {
   const { items: benefits, reload: reloadBenefits } =
     useOrganizationBenefits(user?.organizationId);
   const { items: events } = useOrganizationEvents(user?.organizationId);
+
+  // Track previous events for change detection
+  const prevEventsRef = useRef<any[]>([]);
+  useEffect(() => {
+    const prevEvents = prevEventsRef.current;
+    if (prevEvents.length === 0 && events.length > 0) {
+      // Initial load, just set ref
+      prevEventsRef.current = events;
+      return;
+    }
+    // Detect added events
+    if (events.length > prevEvents.length) {
+      const added = events.find(e => !prevEvents.some(pe => pe.id === e.id));
+      if (added) {
+        Toast.show({
+          type: 'success',
+          text1: 'Uusi tapahtuma',
+          text2: `Tapahtuma "${added.title}" lisätty!`,
+          position: 'bottom',
+        });
+      }
+    }
+    // Detect deleted events
+    if (events.length < prevEvents.length) {
+      const removed = prevEvents.find(pe => !events.some(e => e.id === pe.id));
+      if (removed) {
+        Toast.show({
+          type: 'info',
+          text1: 'Tapahtuma poistettu',
+          text2: `Tapahtuma "${removed.title}" poistettu!`,
+          position: 'bottom',
+        });
+      }
+    }
+    prevEventsRef.current = events;
+  }, [events]);
 
   useFocusEffect(
     useCallback(() => {

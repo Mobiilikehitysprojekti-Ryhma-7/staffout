@@ -7,6 +7,7 @@ import {
   arrayRemove
 } from "firebase/firestore";
 import { db, auth } from "../../config/firebaseConfig";
+import Toast from 'react-native-toast-message';
 // import MapView, { Marker } from 'react-native-maps';
 
 export default function EventItem({ event, onPress, showActions = true }: any) {
@@ -31,8 +32,20 @@ export default function EventItem({ event, onPress, showActions = true }: any) {
   const deleteEvent = async () => {
     try {
       await deleteDoc(doc(db, "organizations", event.organizationId, "events", event.id));
+      Toast.show({
+        type: 'success',
+        text1: 'Tapahtuma poistettu',
+        text2: `Tapahtuma "${event.title}" poistettu onnistuneesti!`,
+        position: 'bottom',
+      });
     } catch (error) {
       console.error("Error deleting event: ", error);
+      Toast.show({
+        type: 'error',
+        text1: 'Virhe poistettaessa',
+        text2: 'Tapahtuman poistaminen epäonnistui.',
+        position: 'bottom',
+      });
     }
   };
 
