@@ -8,7 +8,7 @@ type createEventParams = {
     startDate: Date, 
     endDate: Date, 
     photoURL: string, 
-    location: string
+    location: string,
 }
 
 type Event = {
@@ -34,7 +34,7 @@ export async function createEvent({organizationId, description, title, startDate
         startDate,
         endDate,
         photoURL,
-        location
+        location,
     });
 }
 export async function getAllEventsFromOrganization(organizationId: string): Promise<Event[]> {

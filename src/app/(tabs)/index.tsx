@@ -7,8 +7,11 @@ import { LatestBenefits } from "../../components/benefits/LatestBenefits";
 import { BenefitDetailsModal } from "../../components/benefits/BenefitDetailsModal";
 import { useBenefitDetails } from "../../hooks/useBenefitDetails";
 import { useOrganizationBenefits } from '@/src/hooks/useOrganizationBenefits';
+import { useOrganizationEvents } from '@/src/hooks/useOrganizationEvents';
+import HomeEventPreview from "../../components/events/HomeEventPreview";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CityPieChart from '@/src/components/charts/CityPieChart';
+import EventLocationPieChart from '@/src/components/charts/EventLocationPieChart';
 import LatestMessages from '@/src/components/messages/LatestMessages';
 import OrganizationCard from '@/src/components/ui/OrganizationCard';
 import { useOrganization } from '@/src/hooks/useOrganization';
@@ -24,6 +27,7 @@ export default function TabOneScreen() {
 
   const { items: benefits, reload: reloadBenefits } =
     useOrganizationBenefits(user?.organizationId);
+  const { items: events } = useOrganizationEvents(user?.organizationId);
 
   useFocusEffect(
     useCallback(() => {
@@ -50,11 +54,16 @@ export default function TabOneScreen() {
           interactive={false}
         />
       </View>
+
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 16 }]}
         showsVerticalScrollIndicator={false}
       >
+        <HomeEventPreview
+          events={events}
+          onNavigate={() => router.push("/events")}
+        />
         <LatestMessages />
         <LatestBenefits
           items={newest}
@@ -67,15 +76,17 @@ export default function TabOneScreen() {
         />
 
         <CityPieChart />
-
+        <Text style={{ fontSize: 16, fontWeight: '600', marginTop: 24, marginBottom: 8 }}>Tapahtumat paikkakunnittain</Text>
+        <EventLocationPieChart />
+        
       </ScrollView>
 
-      <BenefitDetailsModal
-        visible={ubd.detailsOpen}
-        benefit={ubd.selectedBenefit}
-        onClose={ubd.closeBenefit}
-      />
-    </SafeAreaView>
+        <BenefitDetailsModal
+          visible={ubd.detailsOpen}
+          benefit={ubd.selectedBenefit}
+          onClose={ubd.closeBenefit}
+        />
+     </SafeAreaView>
   );
 }
 

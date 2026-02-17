@@ -1,11 +1,12 @@
 import { useFocusEffect } from 'expo-router';
 import { Text, View, SafeAreaView } from '@/src/components/Themed';
-import { StyleSheet, Image } from 'react-native';
+import { StyleSheet, Image, ScrollView } from 'react-native';
 import { useUserProfile } from '@/src/hooks/useUserProfile';
 import { useCallback } from 'react';
 import { AvatarPlaceholder } from '@/src/components/ui/AvatarPlaceholder';
 import SettingsButton from '@/src/components/ui/SettingsButton';
 import MessagesChart from '@/src/components/charts/MessagesChart';
+import EventsChart from '@/src/components/charts/EventsChart';
 import { useOrganization } from '@/src/hooks/useOrganization';
 import OrganizationCard from '@/src/components/ui/OrganizationCard';
 
@@ -48,10 +49,13 @@ export default function ProfileScreen() {
       <Text style={styles.title}>
         Analytiikka
       </Text>
-      <Text style={styles.description}>
-        Viestit / päivä (30pv)
-      </Text>
-      <MessagesChart />
+      <ScrollView style={{ width: '100%' }} contentContainerStyle={{ paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
+        <Text style={styles.description}>Viestit / päivä (30pv)</Text>
+        <MessagesChart />
+        <Text style={[styles.description, { marginTop: 24 }]}>Tapahtumat / päivä (nykyinen kuukausi)</Text>
+        {/* @ts-ignore */}
+        <EventsChart />
+      </ScrollView>
     </SafeAreaView>
   );
 }
