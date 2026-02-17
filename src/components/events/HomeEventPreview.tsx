@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import EventDetailsModal from "./EventDetailsModal";
 
+
 export default function HomeEventPreview({ events, onNavigate }: { events: any[], onNavigate: () => void }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -22,7 +23,7 @@ export default function HomeEventPreview({ events, onNavigate }: { events: any[]
   }
 
   return (
-    <View style={{ margin: 16 }}>
+    <View style={styles.wrap}>
       <View style={styles.headerRow}>
         <Text style={styles.sectionTitle}>Tulevat tapahtumat</Text>
         <Pressable onPress={onNavigate} style={styles.linkBtn}>
@@ -57,6 +58,9 @@ export default function HomeEventPreview({ events, onNavigate }: { events: any[]
 }
 
 const styles = StyleSheet.create({
+  wrap: {
+    marginTop: 18,
+  },
   headerRow: {
     flexDirection: "row",
     alignItems: "center",

@@ -49,8 +49,8 @@ export default function TabOneScreen() {
         showsVerticalScrollIndicator={false}
       >
         <HomeEventPreview
-        events={events}
-        onNavigate={() => router.push("/events")}
+          events={events}
+          onNavigate={() => router.push("/events")}
         />
         <LatestMessages />
         <LatestBenefits
