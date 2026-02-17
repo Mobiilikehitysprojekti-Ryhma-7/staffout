@@ -10,13 +10,13 @@ import { db, auth } from "../../config/firebaseConfig";
 import DateTimePicker from "@react-native-community/datetimepicker";
 // import MapView, { Marker } from 'react-native-maps';
 
-
 export default function EventForm({ organizationId, onEventCreated }: { organizationId: string, onEventCreated?: (event: any) => void }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
   const [eventDate, setEventDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   // const [location, setLocation] = useState<{ latitude: number, longitude: number } | null>(null);
 
   const createEvent = async () => {
@@ -87,17 +87,54 @@ export default function EventForm({ organizationId, onEventCreated }: { organiza
           onPress={() => setShowPicker(true)}
           color="#888"
         />
+        {/* Platform-specific pickers */}
         {showPicker && (
+          Platform.OS === "android" ? (
+            <DateTimePicker
+              value={eventDate}
+              mode="date"
+              display="spinner"
+              onChange={(event, selectedDate) => {
+                setShowPicker(false);
+                if (selectedDate) {
+                  // Set date, then show time picker
+                  const newDate = new Date(eventDate);
+                  newDate.setFullYear(selectedDate.getFullYear());
+                  newDate.setMonth(selectedDate.getMonth());
+                  newDate.setDate(selectedDate.getDate());
+                  setEventDate(newDate);
+                  setShowTimePicker(true);
+                }
+              }}
+            />
+          ) : (
+            <DateTimePicker
+              value={eventDate}
+              mode="datetime"
+              display="spinner"
+              onChange={(event, selectedDate) => {
+                setShowPicker(false);
+                if (selectedDate) setEventDate(selectedDate);
+              }}
+            />
+          )
+        )}
+        {/* Android time picker */}
+        {showTimePicker && Platform.OS === "android" && (
           <DateTimePicker
             value={eventDate}
-            mode="datetime"
+            mode="time"
             display="spinner"
-            onChange={(event, selectedDate) => {
-              if (Platform.OS === 'android') {
-                setShowPicker(false);
-              }
-              if (selectedDate) {
-                setEventDate(selectedDate);
+            onChange={(event, selectedTime) => {
+              setShowTimePicker(false);
+              if (selectedTime) {
+                // Combine date and time
+                const newDate = new Date(eventDate);
+                newDate.setHours(selectedTime.getHours());
+                newDate.setMinutes(selectedTime.getMinutes());
+                newDate.setSeconds(0);
+                newDate.setMilliseconds(0);
+                setEventDate(newDate);
               }
             }}
           />
