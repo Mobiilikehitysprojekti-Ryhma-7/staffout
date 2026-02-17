@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { useUserProfile } from "./useUserProfile";
 import { useOrganizationMembership } from "./useOrganizationMembership";
 import { getUserById } from "@/src/services/users.service";
+import { uploadMessageImage, getMessageImageURL } from "../services/storage/storage.service";
+import { doc, collection } from "firebase/firestore";
+import { db } from "../config/firebaseConfig";
 import {
     createMessage,
     deleteMessage,
@@ -25,11 +28,11 @@ export default function useMessages(channelId?: string) {
 
     const [messages, setMessages] = useState<any[]>([]);
     const [merged, setMerged] = useState<any[]>([]);
-    const [attachments] = useState<string[]>([]);
     const [newMessage, setNewMessage] = useState("");
     const [selectedMessage, setSelectedMessage] = useState<SelectedMessage | null>(null);
     const [editMessage, setEditMessage] = useState("");
     const [loading, setLoading] = useState(true);
+    const [base64Image, setBase64Image] = useState<string | null>(null);
 
     useEffect(() => {
         fetchMessages();
@@ -64,8 +67,20 @@ export default function useMessages(channelId?: string) {
     async function sendMessage() {
         if (!oid || !channelId || newMessage.trim().length === 0) return false;
         try {
-            await createMessage(oid, channelId, newMessage, attachments);
+
+            const messageRef = doc(collection(db, "messages"));
+            const messageId = messageRef.id;
+
+            let photoURL = "";
+            if (base64Image) {
+                const upload = await uploadMessageImage(base64Image, messageId);
+                photoURL = await getMessageImageURL(upload.path);
+            }
+
+            const attachmentsToSend = photoURL ? [photoURL] : [];
+            await createMessage(oid, channelId, newMessage, attachmentsToSend);
             setNewMessage("");
+            setBase64Image(null);
             await fetchMessages();
             return true;
         } catch (error) {
@@ -131,5 +146,7 @@ export default function useMessages(channelId?: string) {
         handleDeleteMessage,
         startEditMessage,
         clearSelection,
+        base64Image,
+        setBase64Image,
     };
 }

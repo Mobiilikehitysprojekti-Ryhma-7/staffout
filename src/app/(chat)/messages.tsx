@@ -1,14 +1,14 @@
-import { View, Text, StyleSheet, TextInput, Pressable, FlatList, Alert } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Pressable, FlatList, Alert, Image } from 'react-native'
 import { useLocalSearchParams, Stack } from 'expo-router'
 import React, { useRef, useEffect } from 'react'
-import SendButton from '@/src/components/ui/MessageButtons';
+import { SendButton, AddButton } from '@/src/components/ui/MessageButtons';
 import { AvatarPlaceholderSmall } from '@/src/components/ui/AvatarPlaceholder';
-import { Image } from 'react-native';
 import MoreButton from '@/src/components/ui/MoreButton';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import MessageUpdate from '@/src/components/messages/MessageUpdate';
 import useMessages from '@/src/hooks/useMessages';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
+import MessageImagePicker from '@/src/components/messages/MessageImagePicker';
 export default function MessagesModal() {
 
   const { channelId, name } = useLocalSearchParams<{ channelId: string; name: string }>();
@@ -27,6 +27,8 @@ export default function MessagesModal() {
     handleDeleteMessage,
     startEditMessage,
     clearSelection,
+    base64Image,
+    setBase64Image,
   } = useMessages(channelId);
   // Ref
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -97,6 +99,9 @@ export default function MessagesModal() {
                         {item.createdAt.toDate().toLocaleString()}
                       </Text>
                     </View>
+                    {item.attachments.length > 0 && (
+                      <Image source={{ uri: item.attachments[0] }} style={styles.attachmentImage} />
+                    )}
                     <Text style={styles.text}>{item.text}</Text>
                   </View>
                 </View>
@@ -111,6 +116,9 @@ export default function MessagesModal() {
         }} />
 
       <KeyboardStickyView style={styles.inputContainer}>
+
+        <MessageImagePicker onImageSelected={setBase64Image} resetTrigger={base64Image === null}></MessageImagePicker>
+
         <TextInput style={styles.input} placeholder="Kirjoita viesti..." value={newMessage} onChangeText={setNewMessage} />
         <Pressable onPress={sendMessage} disabled={!newMessage.trim()}>
           <SendButton disabled={!newMessage.trim()} />
@@ -155,6 +163,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   inputContainer: {
+    gap: 10,
     flexDirection: 'row',
     paddingBottom: 20,
     paddingTop: 10,
@@ -219,6 +228,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#000000',
     flexShrink: 1,
+    marginTop: 5,
+  },
+
+  attachmentImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 8,
     marginTop: 5,
   },
 });
