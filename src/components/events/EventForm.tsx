@@ -91,7 +91,7 @@ export default function EventForm({ organizationId, onEventCreated }: { organiza
           <DateTimePicker
             value={eventDate}
             mode="datetime"
-            display="default"
+            display="spinner"
             onChange={(event, selectedDate) => {
               if (Platform.OS === 'android') {
                 setShowPicker(false);
