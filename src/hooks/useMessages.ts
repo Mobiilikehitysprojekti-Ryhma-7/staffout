@@ -67,7 +67,7 @@ export default function useMessages(channelId?: string) {
     async function sendMessage() {
         if (!oid || !channelId || newMessage.trim().length === 0) return false;
         try {
-
+            setLoading(true)
             const messageRef = doc(collection(db, "messages"));
             const messageId = messageRef.id;
 
@@ -81,10 +81,12 @@ export default function useMessages(channelId?: string) {
             await createMessage(oid, channelId, newMessage, attachmentsToSend);
             setNewMessage("");
             setBase64Image(null);
+            setLoading(false)
             await fetchMessages();
             return true;
         } catch (error) {
             console.error("Error sending message:", error);
+            setLoading(false)
             return false;
         }
     }

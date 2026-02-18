@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TextInput, Pressable, FlatList, Alert, Image } from 'react-native'
 import { useLocalSearchParams, Stack } from 'expo-router'
 import React, { useRef, useEffect } from 'react'
-import { SendButton, AddButton } from '@/src/components/ui/MessageButtons';
+import { SendButton } from '@/src/components/ui/MessageButtons';
 import { AvatarPlaceholderSmall } from '@/src/components/ui/AvatarPlaceholder';
 import MoreButton from '@/src/components/ui/MoreButton';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
@@ -14,6 +14,7 @@ export default function MessagesModal() {
   const { channelId, name } = useLocalSearchParams<{ channelId: string; name: string }>();
   const {
     merged,
+    loading,
     role,
     uid,
     newMessage,
@@ -107,7 +108,7 @@ export default function MessagesModal() {
                 </View>
               </View>
               {(role === 'admin' || item.createdBy === uid) &&
-                <Pressable onPress={() => startEditMessage(item.id, item.text, item.createdBy)}>
+                <Pressable onPress={() => startEditMessage(item.id, item.text, item.createdBy)} style={{ marginLeft: 10 }}>
                   <MoreButton></MoreButton>
                 </Pressable>
               }
@@ -120,8 +121,8 @@ export default function MessagesModal() {
         <MessageImagePicker onImageSelected={setBase64Image} resetTrigger={base64Image === null}></MessageImagePicker>
 
         <TextInput style={styles.input} placeholder="Kirjoita viesti..." value={newMessage} onChangeText={setNewMessage} />
-        <Pressable onPress={sendMessage} disabled={!newMessage.trim()}>
-          <SendButton disabled={!newMessage.trim()} />
+        <Pressable onPress={sendMessage} disabled={!newMessage.trim() || loading}>
+          <SendButton disabled={!newMessage.trim() || loading} />
         </Pressable>
       </KeyboardStickyView>
     </View>
@@ -232,9 +233,12 @@ const styles = StyleSheet.create({
   },
 
   attachmentImage: {
-    width: 200,
-    height: 200,
-    borderRadius: 8,
+    width: 225,
+    height: 225,
+    backgroundColor: '#e0e0e0',
+    resizeMode: 'contain',
+    alignSelf: 'flex-start',
     marginTop: 5,
+    borderRadius: 10,
   },
 });

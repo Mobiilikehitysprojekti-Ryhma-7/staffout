@@ -28,9 +28,6 @@ export default function ImagePickerComponent({ onImageSelected, photoURL, resetT
 
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
         });
 
         if (result.canceled) return;
@@ -38,7 +35,7 @@ export default function ImagePickerComponent({ onImageSelected, photoURL, resetT
         const renderedImage = result.assets[0].uri;
         const resized = await manipulateAsync(
             renderedImage,
-            [{ resize: { width: 400, height: 400 } }],
+            [{ resize: { width: 500} }],
             { compress: 0.8, format: SaveFormat.JPEG, base64: true }
         );
 
@@ -48,12 +45,12 @@ export default function ImagePickerComponent({ onImageSelected, photoURL, resetT
 
     return (
         <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-            <Pressable onPress={() => setImage(null)}>
+           {image && <Pressable onPress={() => setImage(null)}>
                 <Image
-                    source={image ? { uri: image } : photoURL ? { uri: photoURL } : undefined}
+                    source={{ uri: image }}
                     style={{ width: 40, height: 40, borderRadius: 10, marginRight: 10 }}
                 />
-            </Pressable>
+            </Pressable>}
 
             <Pressable disabled={!!image} onPress={pickImage}>
                 <AddButton disabled={!!image}></AddButton>
