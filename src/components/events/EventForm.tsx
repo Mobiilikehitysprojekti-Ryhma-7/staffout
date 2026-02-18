@@ -1,4 +1,5 @@
 import { View, Text, TextInput, Button, Platform } from "react-native";
+import Toast from 'react-native-toast-message';
 import { useState } from "react";
 import {
   addDoc,
@@ -48,7 +49,15 @@ export default function EventForm({ organizationId, onEventCreated }: { organiza
       createdBy: auth.currentUser?.uid,
       createdAt: new Date(), // serverTimestamp is not available immediately, so use local time for now
     };
+
     if (onEventCreated) onEventCreated(newEvent);
+
+    Toast.show({
+      type: 'success',
+      text1: 'Tapahtuma luotu',
+      text2: `Tapahtuma "${title}" lisätty onnistuneesti!`,
+      position: 'bottom',
+    });
 
     setTitle("");
     setDescription("");
