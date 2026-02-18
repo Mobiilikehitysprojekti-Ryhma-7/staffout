@@ -1,7 +1,7 @@
 import { BottomSheetView, BottomSheetModal, BottomSheetBackdrop, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { Button, Text, TextInput, Platform, StyleSheet, View, Pressable } from 'react-native';
 import React, { useCallback } from 'react'
-import SendButton from '../ui/MessageButtons';
+import { SendButton } from '../ui/MessageButtons';
 import { useUserProfile } from '../../hooks/useUserProfile';
 
 type MessageOptionsProps = {
