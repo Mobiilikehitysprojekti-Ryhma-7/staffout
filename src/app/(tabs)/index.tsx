@@ -1,14 +1,18 @@
 import { StyleSheet, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView, Text, View } from '@/src/components/Themed';
 import { useUserProfile } from '@/src/hooks/useUserProfile';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useEffect, useRef } from 'react';
+import Toast from 'react-native-toast-message';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { LatestBenefits } from "../../components/benefits/LatestBenefits";
 import { BenefitDetailsModal } from "../../components/benefits/BenefitDetailsModal";
 import { useBenefitDetails } from "../../hooks/useBenefitDetails";
 import { useOrganizationBenefits } from '@/src/hooks/useOrganizationBenefits';
+import { useOrganizationEvents } from '@/src/hooks/useOrganizationEvents';
+import HomeEventPreview from "../../components/events/HomeEventPreview";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CityPieChart from '@/src/components/charts/CityPieChart';
+import EventLocationPieChart from '@/src/components/charts/EventLocationPieChart';
 import LatestMessages from '@/src/components/messages/LatestMessages';
 import OrganizationCard from '@/src/components/ui/OrganizationCard';
 import { useOrganization } from '@/src/hooks/useOrganization';
@@ -24,6 +28,43 @@ export default function TabOneScreen() {
 
   const { items: benefits, reload: reloadBenefits } =
     useOrganizationBenefits(user?.organizationId);
+  const { items: events } = useOrganizationEvents(user?.organizationId);
+
+  // Track previous events for change detection
+  const prevEventsRef = useRef<any[]>([]);
+  useEffect(() => {
+    const prevEvents = prevEventsRef.current;
+    if (prevEvents.length === 0 && events.length > 0) {
+      // Initial load, just set ref
+      prevEventsRef.current = events;
+      return;
+    }
+    // Detect added events
+    if (events.length > prevEvents.length) {
+      const added = events.find(e => !prevEvents.some(pe => pe.id === e.id));
+      if (added) {
+        Toast.show({
+          type: 'success',
+          text1: 'Uusi tapahtuma',
+          text2: `Tapahtuma "${added.title}" lisätty!`,
+          position: 'bottom',
+        });
+      }
+    }
+    // Detect deleted events
+    if (events.length < prevEvents.length) {
+      const removed = prevEvents.find(pe => !events.some(e => e.id === pe.id));
+      if (removed) {
+        Toast.show({
+          type: 'info',
+          text1: 'Tapahtuma poistettu',
+          text2: `Tapahtuma "${removed.title}" poistettu!`,
+          position: 'bottom',
+        });
+      }
+    }
+    prevEventsRef.current = events;
+  }, [events]);
 
   useFocusEffect(
     useCallback(() => {
@@ -50,11 +91,16 @@ export default function TabOneScreen() {
           interactive={false}
         />
       </View>
+
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 16 }]}
         showsVerticalScrollIndicator={false}
       >
+        <HomeEventPreview
+          events={events}
+          onNavigate={() => router.push("/events")}
+        />
         <LatestMessages />
         <LatestBenefits
           items={newest}
@@ -67,15 +113,17 @@ export default function TabOneScreen() {
         />
 
         <CityPieChart />
-
+        <Text style={{ fontSize: 16, fontWeight: '600', marginTop: 24, marginBottom: 8 }}>Tapahtumat paikkakunnittain</Text>
+        <EventLocationPieChart />
+        
       </ScrollView>
 
-      <BenefitDetailsModal
-        visible={ubd.detailsOpen}
-        benefit={ubd.selectedBenefit}
-        onClose={ubd.closeBenefit}
-      />
-    </SafeAreaView>
+        <BenefitDetailsModal
+          visible={ubd.detailsOpen}
+          benefit={ubd.selectedBenefit}
+          onClose={ubd.closeBenefit}
+        />
+     </SafeAreaView>
   );
 }
 
