@@ -7,7 +7,7 @@ import { db } from "../config/firebaseConfig";
 import { uploadBenefitImage, getBenefitImageURL } from "../services/storage/storage.service";
 import { readAllBenefitsFromOrganization, Badge, updateBenefit, deleteBenefit, createBenefit } from "../services/benefits.service";
 
-export type SortKey = "title-asc" | "title-desc" | "category" | "validUntil" | "location";
+export type SortKey = "title-asc" | "title-desc" | "category" | "validUntil";
 
 // Hook managing filtering and sorting of benefits list.
 // Maintains separate "applied" and "draft" states for both filter and sort,
@@ -206,11 +206,6 @@ export function useBenefits(all: Benefit[], defaultSort: SortKey = "validUntil")
     
     if (appliedSort === "validUntil")
       copy.sort((a, b) => a.validUntil.getTime() - b.validUntil.getTime());
-
-    // For location sort, we have to know the user's location.
-    // Placeholder for the implementation.
-    if (appliedSort === "location") {
-    }
 
     return copy;
   }, [all, appliedCats, appliedSort, defaultSort]);
