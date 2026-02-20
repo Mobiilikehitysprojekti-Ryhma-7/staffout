@@ -6,7 +6,7 @@ import { router } from 'expo-router';
 export default function AccountSettingsScreen() {
   return (
     <View style={styles.container}>
-      <View style={{ alignItems: 'flex-start' }}>
+
         <Pressable onPress={() => router.push('/(settings)/change-password')} style={styles.pressable}>
           <View style={styles.content}>
             <MaterialIcons style={styles.icon} name="lock" size={20} color="black" />
@@ -30,7 +30,6 @@ export default function AccountSettingsScreen() {
               <Text style={styles.label}>Poista käyttäjä</Text>
             </View></View>
         </Pressable>
-      </View>
 
     </View>
   );
@@ -39,7 +38,6 @@ export default function AccountSettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     padding: 20,
   },
   label: {
@@ -49,7 +47,7 @@ const styles = StyleSheet.create({
   pressable: {
     marginTop: 10,
     padding: 12,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   icon: {
     marginRight: 5,

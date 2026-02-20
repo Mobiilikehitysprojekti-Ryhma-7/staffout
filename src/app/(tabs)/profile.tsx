@@ -9,6 +9,7 @@ import MessagesChart from '@/src/components/charts/MessagesChart';
 import EventsChart from '@/src/components/charts/EventsChart';
 import { useOrganization } from '@/src/hooks/useOrganization';
 import OrganizationCard from '@/src/components/ui/OrganizationCard';
+import { typography } from '@/src/styles/regularStyles';
 
 export default function ProfileScreen() {
   const { user, reload } = useUserProfile();
@@ -31,7 +32,7 @@ export default function ProfileScreen() {
           <AvatarPlaceholder />
         )}
         <View style={{ flex: 1, marginHorizontal: 20, backgroundColor: 'transparent' }}>
-          <Text style={styles.title}>
+          <Text style={styles.name}>
             {user ? `${user.first} ${user.last}` : 'Loading...'}
           </Text>
         </View>
@@ -46,7 +47,7 @@ export default function ProfileScreen() {
         interactive={true}
       />
 
-      <Text style={styles.title}>
+      <Text style={styles.sectionTitle}>
         Analytiikka
       </Text>
       <ScrollView style={{ width: '100%' }} contentContainerStyle={{ paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
@@ -77,9 +78,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: '100%'
   },
-  title: {
+  name: {
     fontSize: 18,
     fontWeight: '600',
+  },
+  sectionTitle: {
+    ...typography.title,
   },
   description: {
     fontSize: 14,

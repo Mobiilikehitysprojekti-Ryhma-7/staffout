@@ -1,7 +1,7 @@
-import { useColorScheme } from '@/src/components/useColorScheme';
+import { useColorScheme } from '@/src/hooks/useColorScheme';
 import Toast from 'react-native-toast-message';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import LoadingScreen from '../components/LoadingScreen';
+import LoadingScreen from '../components/ui/LoadingScreen';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';

@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Feather, MaterialIcons } from "@expo/vector-icons";
+import { typography } from "@/src/styles/regularStyles";
 
 // Header component for the Benefits section.
 export function BenefitsHeader({
@@ -47,10 +48,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 14,
   },
-  sectionTitle: {
-    fontSize: 28,
-    fontWeight: "800"
-  },
+  sectionTitle: 
+    typography.title,
+  
   actions: {
     flexDirection: "row",
     gap: 10

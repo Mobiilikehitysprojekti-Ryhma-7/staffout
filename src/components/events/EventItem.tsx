@@ -52,7 +52,6 @@ export default function EventItem({ event, onPress, showActions = true }: any) {
   return (
     <View
       style={{
-        borderWidth: 1,
         borderRadius: 8,
         padding: 12,
         marginBottom: 12,
@@ -60,7 +59,10 @@ export default function EventItem({ event, onPress, showActions = true }: any) {
       }}
     >
       <Pressable onPress={onPress}>
-        <Text style={{ fontSize: 18 }}>{event.title}</Text>
+        <Text style={{
+          fontSize: 18,
+          fontWeight: "800"
+        }}>{event.title}</Text>
         <Text>
           {event.description && event.description.length > 60
             ? event.description.slice(0, 60) + '...'

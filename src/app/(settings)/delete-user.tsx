@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { removeUser, reauthenticateUser } from '@/src/services/auth/auth.service';
 import { Text } from '@/src/components/Themed';
 import { auth } from '@/src/config/firebaseConfig';
+import { typography } from '@/src/styles/regularStyles';
 
 export default function DeleteUserScreen() {
     const [password, setPassword] = useState('');
@@ -35,7 +36,9 @@ export default function DeleteUserScreen() {
     }
     return (
         <KeyboardAvoidingView style={styles.container} behavior="padding">
+            <Text style={typography.body}>Sähköposti</Text>
             <TextInput placeholder="Sähköposti" value={email} editable={false} style={styles.input} autoCorrect={false} keyboardType="email-address" />
+            <Text style={typography.body}>Salasana</Text>
             <TextInput placeholder="Salasana" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
             <Button onPress={handleRemoveUser} title="Poista Käyttäjä" disabled={isDisabled} />
             {error ? <Text style={styles.error}>{error}</Text> : null}

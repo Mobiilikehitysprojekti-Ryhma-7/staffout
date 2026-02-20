@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { Benefit } from "../../types/benefit";
+import { typography } from "@/src/styles/regularStyles";
 
 function Title(title: string) {
   const t = title.trim();
@@ -67,8 +68,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   sectionTitle: {
-    fontSize: 28,
-    fontWeight: "800",
+    ...typography.title,
   },
   rightSlot: {
     marginLeft: 12,

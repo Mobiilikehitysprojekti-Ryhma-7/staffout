@@ -9,6 +9,7 @@ import {
 } from "firebase/firestore";
 import { db, auth } from "../../config/firebaseConfig";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { regularStyles, typography } from "../../styles/regularStyles";
 // import MapView, { Marker } from 'react-native-maps';
 
 export default function EventForm({ organizationId, onEventCreated }: { organizationId: string, onEventCreated?: (event: any) => void }) {
@@ -66,31 +67,31 @@ export default function EventForm({ organizationId, onEventCreated }: { organiza
   };
 
   return (
-    <View style={{marginBottom: 24}}>
-      <Text style={{ fontSize: 20, fontWeight: "bold" }}>Tapahtumat</Text>
+    <View style={{marginBottom: 10}}>
+      <Text style={typography.title}>Tapahtumat</Text>
 
       <TextInput
         placeholder="Otsikko"
         value={title}
         onChangeText={setTitle}
-        style={{ borderWidth: 1, padding: 8, marginVertical: 6 }}
+        style={regularStyles.input}
       />
 
       <TextInput
         placeholder="Tapahtuman kuvaus"
         value={description}
         onChangeText={setDescription}
-        style={{ borderWidth: 1, padding: 8, marginBottom: 6 }}
+        style={regularStyles.input}
       />
 
       <TextInput
         placeholder="Tapahtumapaikka (esim. osoite, tila, kaupunki)"
         value={location}
         onChangeText={setLocation}
-        style={{ borderWidth: 1, padding: 8, marginBottom: 6 }}
+        style={regularStyles.input}
       />
 
-      <View style={{ marginBottom: 16 }}>
+      <View style={{ marginBottom: 10 }}>
         <Button
           title={`📅 ${eventDate.toLocaleString()}`}
           onPress={() => setShowPicker(true)}
@@ -151,7 +152,7 @@ export default function EventForm({ organizationId, onEventCreated }: { organiza
       </View>
 
 
-      <View style={{ marginBottom: 8 }}>
+      <View style={{ marginBottom: 10 }}>
         <Button title="Luo tapahtuma" onPress={createEvent} color="#888" />
       </View>
     </View>

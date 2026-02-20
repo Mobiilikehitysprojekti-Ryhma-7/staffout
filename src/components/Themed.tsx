@@ -7,7 +7,7 @@ import { Text as DefaultText, View as DefaultView, TextInput as DefaultTextInput
 import { SafeAreaView as RNSafeAreaView, SafeAreaViewProps as RNSafeAreaViewProps } from 'react-native-safe-area-context';
 
 import Colors from '@/src/constants/Colors';
-import { useColorScheme } from '../components/useColorScheme';
+import { useColorScheme } from '../hooks/useColorScheme';
 
 type ThemeProps = {
   lightColor?: string;

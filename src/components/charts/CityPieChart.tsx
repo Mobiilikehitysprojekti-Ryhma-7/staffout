@@ -9,6 +9,7 @@ import type { CityStat } from "@/src/types/cityStats";
 import { CityPieLegend } from "./cityPieChartLegend/CityPieLegend";
 import { PRESET_CITIES } from "@/src/constants/cities";
 import { buildPresetCityMap, buildChartCityBuckets } from "@/src/utils/cityBucket";
+import { typography } from "@/src/styles/regularStyles";
 
 export default function CityPieChart() {
 
@@ -147,9 +148,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8
     },
     title: {
-        fontSize: 28,
-        fontWeight: "800",
-        marginBottom: 10
+        ...typography.title
     },
     centerBig: {
         fontSize: 22,
