@@ -1,17 +1,26 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { View, SafeAreaView, Text } from '@/src/components/Themed';
 import { StyleSheet } from "react-native";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../config/firebaseConfig";
-
-
 import EventForm from "../../components/events/EventForm";
 import EventList from "../../components/events/EventList";
 import { useUserProfile } from "../../hooks/useUserProfile";
+import { useOrganization } from '@/src/hooks/useOrganization';
+import { useFocusEffect } from "expo-router";
+import OrganizationCard from "../../components/ui/OrganizationCard";
 
 export default function EventsScreen() {
   const [events, setEvents] = useState<any[]>([]);
-  const { user, error } = useUserProfile();
+
+    const { user, reload, error } = useUserProfile();
+    const { organization } = useOrganization(user, user?.organizationId);
+  
+       useFocusEffect(
+         useCallback(() => {
+           reload(true);
+         }, [reload])
+       );
   const organizationId = user?.organizationId;
 
   useEffect(() => {
@@ -39,8 +48,15 @@ export default function EventsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={{ flex: 1, padding: 16 }}>
+    <SafeAreaView style={styles.container}>
+      <View style={{ flex: 1 }}>
+              <OrganizationCard
+                organizationId={user?.organizationId}
+                organizationName={organization?.name}
+                organizationDescription={organization?.description}
+                organizationAvatar={organization?.photoURL}
+                interactive={false}
+              />
         <EventForm organizationId={organizationId} />
         <EventList events={events} />
       </View>

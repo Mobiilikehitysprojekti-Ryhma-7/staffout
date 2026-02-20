@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import EventDetailsModal from "./EventDetailsModal";
+import { typography } from "@/src/styles/regularStyles";
 
 
 export default function HomeEventPreview({ events, onNavigate }: { events: any[], onNavigate: () => void }) {
@@ -67,8 +68,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   sectionTitle: {
-    fontSize: 28,
-    fontWeight: "800",
+    ...typography.title
   },
   linkBtn: {
     paddingHorizontal: 12,

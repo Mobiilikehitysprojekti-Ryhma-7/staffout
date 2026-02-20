@@ -1,4 +1,4 @@
-import AuthForm from '@/src/components/AuthForm';
+import AuthForm from '@/src/components/auth/AuthForm';
 import { useAuth } from '@/src/hooks/useAuth';
 import React from 'react';
 

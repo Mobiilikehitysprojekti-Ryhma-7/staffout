@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native'
-import React, { useCallback, useState, useEffect } from 'react'
+import React, { useCallback, useState } from 'react'
 import { getLatestMessages } from '../../services/chat/messages.service';
 import { getUserById } from '../../services/users.service';
 import { useFocusEffect } from 'expo-router';
@@ -7,7 +7,8 @@ import { useUserProfile } from '@/src/hooks/useUserProfile';
 import { AvatarPlaceholderSmall } from '../ui/AvatarPlaceholder';
 import { getChannelById } from '@/src/services/chat/channels.service';
 import { router } from 'expo-router';
-import LoadingScreen from '../LoadingScreen';
+import LoadingScreen from '../ui/LoadingScreen';
+import { typography } from "@/src/styles/regularStyles";
 
 
 export default function LatestMessages() {
@@ -117,10 +118,7 @@ export default function LatestMessages() {
 
 const styles = StyleSheet.create({
     sectionTitle: {
-        fontSize: 28,
-        fontWeight: "800",
-        marginBottom: 10,
-        alignSelf: 'flex-start',
+        ...typography.title,
     },
 
     card: {
