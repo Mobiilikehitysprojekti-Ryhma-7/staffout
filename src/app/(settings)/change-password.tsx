@@ -2,6 +2,7 @@ import { View, TextInput, StyleSheet, Button, Alert, KeyboardAvoidingView } from
 import { useState } from 'react';
 import { updatePassword, reauthenticateUser } from '@/src/services/auth/auth.service';
 import { Text } from '@/src/components/Themed';
+import { typography } from '@/src/styles/regularStyles';
 export default function ChangePasswordScreen() {
     const [password, setPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -44,8 +45,11 @@ export default function ChangePasswordScreen() {
     }
     return (
         <KeyboardAvoidingView style={styles.container} behavior="padding">
+            <Text style={typography.body}>Nykyinen Salasana</Text>
             <TextInput placeholder="Nykyinen Salasana" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
+            <Text style={typography.body}>Uusi Salasana</Text>
             <TextInput placeholder="Uusi Salasana" value={newPassword} onChangeText={setNewPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
+            <Text style={typography.body}>Vahvista Uusi Salasana</Text>
             <TextInput placeholder="Vahvista Uusi Salasana" value={confirmNewPassword} onChangeText={setConfirmNewPassword} secureTextEntry={true} style={styles.input} autoCorrect={false} />
             <Button onPress={handleChangePassword} title="Vaihda Salasana" disabled={isDisabled} />
             {error ? <Text style={styles.error}>{error}</Text> : null}

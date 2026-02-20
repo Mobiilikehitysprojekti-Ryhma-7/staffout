@@ -18,14 +18,15 @@ export const typography = StyleSheet.create({
         marginBottom: 10,
         alignSelf: 'flex-start',
     },
-    cardTitle: {
-
-    },
     subtitle: {
         fontSize: 18,
         fontWeight: '600',
     },
     body: {
-        fontSize: 16,
+        fontSize: 14,
+        fontWeight: '400',
+        marginBottom: 5,
+        alignItems: 'flex-start',
+        width: '100%',
     },
 })
